@@ -468,7 +468,7 @@ ltt_sensitivity <- function(data_ages, average = 'median') {
     this_groups <- this_groups[this_order]
 
     colnames(this_ages) <- 1:ncol(this_ages)
-    this_ages <- tidyr::pivot_longer(tibble::as.tibble(this_ages), 1:ncol(this_ages)) %>%
+    this_ages <- tidyr::pivot_longer(tibble::as_tibble(this_ages), 1:ncol(this_ages)) %>%
       dplyr::mutate(name = as.numeric(name)) %>% dplyr::arrange(name, dplyr::desc(value)) %>%
       dplyr::mutate(type = rep(as.character(unique(this_groups)),
                         each = sample * num_nodes),
