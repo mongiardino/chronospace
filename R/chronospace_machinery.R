@@ -9,9 +9,9 @@
 #' not meaningful for factors with less than three levels).
 #'
 #' @details This function uses between-group PCA to find the set of axes maximizing variation in ages data between the
-#' groups of chronograms obtained through different methodological approaches. By default variation is set as “non-redundant”,
+#' groups of chronograms obtained through different methodological approaches. By default variation is set as "non-redundant",
 #' meaning bgPCA of each factor is performed using the variation left after removing the portion associated to all the
-#' other factors. If variation = “total” (or if there is only one factor being assessed), bgPCA is performed over the raw
+#' other factors. If variation = "total" (or if there is only one factor being assessed), bgPCA is performed over the raw
 #' variation in node ages.
 #'
 #' @return The total and non-redundant percentages of variation accounted for each factor are informed. Also a list
@@ -92,7 +92,7 @@ bgprcomp <- function(x, groups){
   x_centered <- scale(x, scale = F, center = T)
   x_gmeans <- apply(X = x_centered, MARGIN = 2, FUN = tapply, groups, mean)
 
-  V_g <- cov(x_gmeans)
+  V_g <- stats::cov(x_gmeans)
   eig <- eigen(V_g)
 
   scores <- x_centered%*%eig$vectors

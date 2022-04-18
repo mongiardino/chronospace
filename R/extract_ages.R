@@ -5,6 +5,8 @@
 #' @description Extract and organize ages from files containing the posterior distributions of time-calibrated
 #' phylogenetic trees (i.e. chronograms) obtained through different methodological decisions.
 #'
+#' @importFrom magrittr %>%
+#'
 #' @param path A character string specifying the path to the folder containing (only) the input files.
 #' @param type  A list of g vectors (one for each factor being tested) specifying the group to which the chronograms
 #'  from each file will be assigned to.
@@ -50,7 +52,7 @@ extract_ages <- function(path = NA, type, sample) {
   #loop through the tree files, load them and subsample them to the number
   #specified in 'sample'
   for(i in 1:length(files)) {
-    trees <- read.tree(paste0(getwd(), '/', files[i]))
+    trees <- ape::read.tree(paste0(getwd(), '/', files[i]))
     if(!is.na(sample)) {
       trees <- trees[sample(1:length(trees), sample)]
     }
@@ -67,14 +69,14 @@ extract_ages <- function(path = NA, type, sample) {
   tree <- all_trees[[1]]
   clades <- list()
   for(i in 1:tree$Nnode) {
-    clades[i] <- list(tree$tip.label[unlist(Descendants(tree, length(tree$tip.label)+i, type = 'tips'))])
+    clades[i] <- list(tree$tip.label[unlist(phangorn::Descendants(tree, length(tree$tip.label)+i, type = 'tips'))])
   }
 
   #build the matrix that will contain node ages (columns) for each tree (rows)
   ages <- matrix(0, ncol = length(clades), nrow = length(all_trees))
 
   #assign values from the oldest node (i.e., root)
-  root <- sapply(all_trees, function(x) max(nodeHeights(x)))
+  root <- sapply(all_trees, function(x) max(phytools::nodeHeights(x)))
   ages[,1] <- root
 
   #assign values to all other nodes
@@ -86,7 +88,7 @@ extract_ages <- function(path = NA, type, sample) {
     if(length(unique(node)) == 1) {
       node <- node[1]
       pos <- which(all_trees[[1]]$edge[,2] == node)
-      ages[,i] <- root - sapply(all_trees, function(x) nodeHeights(x)[pos,2])
+      ages[,i] <- root - sapply(all_trees, function(x) phytools::nodeHeights(x)[pos,2])
 
       #otherwise this takes a while, but the correct matching is confirmed such
       #that dates from the same clade are placed in the same column regardless
@@ -94,7 +96,7 @@ extract_ages <- function(path = NA, type, sample) {
     } else {
       for(j in 1:length(all_trees)) {
         ages[j,i] <- root[j] -
-          nodeHeights(all_trees[[j]])[which(all_trees[[j]]$edge[,2] == node[j]),2]
+          phytools::nodeHeights(all_trees[[j]])[which(all_trees[[j]]$edge[,2] == node[j]),2]
       }
     }
   }
@@ -112,7 +114,7 @@ extract_ages <- function(path = NA, type, sample) {
                                    sep = '_')
 
   data_ages <- cbind(data_ages, types_of_runs)
-  data_ages <- data_ages %>% mutate_if(sapply(data_ages, is.character), as.factor)
+  data_ages <- data_ages %>% dplyr::mutate_if(sapply(data_ages, is.character), as.factor)
 
   #export
   return(data_ages)

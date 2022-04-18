@@ -2,8 +2,10 @@
 
 #' Plot chronospace ordination(s) and axes' extremes
 #'
+#' @import ggplot2
+#'
 #' @description For each factor, generate the two basic graphical representations of a chronospace: the projection of
-#' the sampled chronograms into the synthetic chronospace axes, and the two ‘theoretical’ extremes of those axes.
+#' the sampled chronograms into the synthetic chronospace axes, and the two 'theoretical' extremes of those axes.
 #'
 #' @param obj An object containing one or more ordinations created using [chronospace()].
 #' @param tree An object of class "phylo" containing the same fixed topology as the trees sampled from the posterior.
@@ -36,7 +38,7 @@
 #' allowing interpretation of the synthetic ordination maximizing variation in node age between the groups of each factor.
 #' The first of these is a graphical projection of the samples of phylogenetic trees used to generate the ordination into
 #' its synthetic axes, which can be either a histogram for factors with only two levels, or a bivariate scatterplot for
-#' factors with three or more levels. The second output consists of ‘theoretical’ trees representing the positive and
+#' factors with three or more levels. The second output consists of 'theoretical' trees representing the positive and
 #' negative extremes of each synthetic axis, depicting the variation in nodes ages captured by it.
 #'
 #' @return A list containing the histogram/scatterplot and axes' extremes for each factor included.
@@ -90,11 +92,11 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
 
       #compute groups centroids from original variables; calculate and standardize distances between centroids
       cents_original<-apply(X = ages, MARGIN = 2, FUN = tapply, groups, mean)
-      dists<-as.matrix(dist(cents_original))
+      dists<-as.matrix(stats::dist(cents_original))
       dists_std<-dists/max(dists)
 
       #generate combinations
-      combins<-combn(x = levels(groups), m = 2)
+      combins<-utils::combn(x = levels(groups), m = 2)
 
       #plot chronospace
       chronospace<-ggplot(to_plot, aes(x = coordinates.1, y = coordinates.2, color = groups)) +
@@ -113,7 +115,7 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
         for(h in 1:ncol(combins)){
           rdf<-cents_df[combins[,h],]
           width<-(5*dists_std[combins[1,h], combins[2,h]])-2
-          chronospace <- chronospace + geom_line(data=rdf, aes(x = coordinates.1, y = coordinates.2), color=gray.colors(n=10)[1], size=width*dist.width)
+          chronospace <- chronospace + geom_line(data=rdf, aes(x = coordinates.1, y = coordinates.2), color=grDevices::gray.colors(n=10)[1], size=width*dist.width)
         }
       }
 
@@ -133,7 +135,7 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
     #obtain clades from tree
     clades <- list()
     for(j in 1:tree$Nnode) {
-      clades[j] <- list(tree$tip.label[unlist(Descendants(tree, length(tree$tip.label)+j, type = 'tips'))])
+      clades[j] <- list(tree$tip.label[unlist(phangorn::Descendants(tree, length(tree$tip.label)+j, type = 'tips'))])
     }
 
     #Finally, compute changes in each branch captured by the bgPCA axes (needs a
@@ -158,8 +160,8 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
 
         #ages implied by moving along this bgPCA axis 'sdev' number of standard
         #deviations to both sides
-        assign(paste0('plus_sd_', j), revPCA(sdev*sd(bgPCA$x[,ax[j]]), bgPCA$rotation[,ax[j]], mean))
-        assign(paste0('minus_sd_', j), revPCA(-sdev*sd(bgPCA$x[,ax[j]]), bgPCA$rotation[,ax[j]], mean))
+        assign(paste0('plus_sd_', j), revPCA(sdev*stats::sd(bgPCA$x[,ax[j]]), bgPCA$rotation[,ax[j]], mean))
+        assign(paste0('minus_sd_', j), revPCA(-sdev*stats::sd(bgPCA$x[,ax[j]]), bgPCA$rotation[,ax[j]], mean))
 
         #check number of descendants stemming from each node
         clade_size <- unlist(lapply(clades, length))
@@ -175,7 +177,7 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
           if(length(which_clades) > 0) {
             for(l in 1:length(which_clades)) {
               #which node are we talking about
-              node_to_change <- getMRCA(tree, unlist(clades[which_clades[l]]))
+              node_to_change <- ape::getMRCA(tree, unlist(clades[which_clades[l]]))
 
               #get node ages for this node
               dif_minus <- get(paste0('minus_sd_', j))[,which_clades[l]]
@@ -214,18 +216,18 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
                 #for descendant clades do the following
                 for(m in 1:length(nodes_of_descendants)) {
                   #obtain all descendants
-                  tips <- unlist(Descendants(tree, nodes_of_descendants[m],
+                  tips <- unlist(phangorn::Descendants(tree, nodes_of_descendants[m],
                                              type = 'tips'))
 
                   #remove from the age the age of the descendant node, which is
                   #already set up correctly as the loop goes from smaller to
                   #larger clades
                   tree_minus$edge.length[which(tree_minus$edge[,2] == nodes_of_descendants[m])] <-
-                    dif_minus - dist.nodes(tree_minus)[tips[1], nodes_of_descendants[m]]
+                    dif_minus - ape::dist.nodes(tree_minus)[tips[1], nodes_of_descendants[m]]
                   tree_mean$edge.length[which(tree_mean$edge[,2] == nodes_of_descendants[m])] <-
-                    dif_mean - dist.nodes(tree_mean)[tips[1], nodes_of_descendants[m]]
+                    dif_mean - ape::dist.nodes(tree_mean)[tips[1], nodes_of_descendants[m]]
                   tree_plus$edge.length[which(tree_plus$edge[,2] == nodes_of_descendants[m])] <-
-                    dif_plus - dist.nodes(tree_plus)[tips[1], nodes_of_descendants[m]]
+                    dif_plus - ape::dist.nodes(tree_plus)[tips[1], nodes_of_descendants[m]]
                 }
               }
             }
@@ -238,11 +240,11 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
 
         #if time marks have been specified, use them to  draw vertical lines in the corresponding tree
         if(!is.null(timemarks)){
-          t.max <- max(nodeHeights(tree_minus))
+          t.max <- max(phytools::nodeHeights(tree_minus))
           timemarks1.1 <- timemarks[which(timemarks <= t.max)]
           timemarks1.2 <- t.max - timemarks1.1
 
-          t.max <- max(nodeHeights(tree_plus))
+          t.max <- max(phytools::nodeHeights(tree_plus))
           timemarks2.1 <- timemarks[which(timemarks <= t.max)]
           timemarks2.2 <- t.max-timemarks2.1
         } else {
@@ -250,9 +252,9 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
         }
 
         #convert phylo trees into ggtrees, adding delta in branch length to the metadata
-        tree_plus_gg <- ggtree(tree_plus, size = 1.5) %<+%
+        tree_plus_gg <- ggtree::ggtree(tree_plus, size = 1.5) %<+%
           data.frame(node = tree_plus$edge[,2], delta = changes_plus)
-        tree_minus_gg <- ggtree(tree_minus, size = 1.5) %<+%
+        tree_minus_gg <- ggtree::ggtree(tree_minus, size = 1.5) %<+%
           data.frame(node = tree_minus$edge[,2], delta = changes_minus)
 
         #create graphics for each extreme of the bgPC j
@@ -296,6 +298,8 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
 #get senstive nodes ----------------------------------------------------
 
 #' Obtain the most sensitive nodes and depict their age distribution
+#'
+#' @import ggplot2
 #'
 #' @description Identify the most sensitive nodes associated to each factor, and plot their ages proportion distributions.
 #'
@@ -362,7 +366,7 @@ sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades, factors=
     #obtain clades from tree
     clades = list()
     for(j in 1:tree$Nnode) {
-      clades[j] <- list(tree$tip.label[unlist(Descendants(tree, length(tree$tip.label)+j,
+      clades[j] <- list(tree$tip.label[unlist(phangorn::Descendants(tree, length(tree$tip.label)+j,
                                                           type = 'tips'))])
     }
 
@@ -379,8 +383,8 @@ sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades, factors=
 
 
       #obtain corresponding node number and the descendant taxa
-      node <- mrca.phylo(tree, clades[[clade]])
-      desc <- Descendants(tree, node = node, type = 'children')
+      node <- phangorn::mrca.phylo(tree, clades[[clade]])
+      desc <- phangorn::Descendants(tree, node = node, type = 'children')
 
       #obtain representative taxa from either side of the split
       for(k in 1:length(desc)) {
@@ -389,7 +393,7 @@ sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades, factors=
           desc[k] <- tree$tip.label[as.numeric(desc[k])]
           #else choose a random tip from the descendant clade
         } else {
-          desc[k] <- tree$tip.label[sample(unlist(Descendants(tree, node = as.numeric(desc[k]),
+          desc[k] <- tree$tip.label[sample(unlist(phangorn::Descendants(tree, node = as.numeric(desc[k]),
                                                               type = 'tips')), 1)]
         }
       }
@@ -420,10 +424,9 @@ sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades, factors=
 
     #plot and save, accounting for a varying number of columns depending on the
     #nodes plotted
-    most_affected <- annotate_figure(ggarrange(plotlist = plots,
+    most_affected <- ggpubr::annotate_figure(ggpubr::ggarrange(plotlist = plots,
                                                common.legend = T, legend = 'bottom',
                                                ncol = ceiling(num_nodes/5), nrow = 5))
-    #plot(most_affected)
     results[[i]] <- most_affected
   }
 
@@ -435,6 +438,9 @@ sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades, factors=
 #LTT by group-------------------------------------------------------------------
 
 #' Plot average Lineage Through Time (LTT) curves
+#'
+#' @importFrom magrittr %>%
+#' @import ggplot2
 #'
 #' @description For each factor, plot the LTT curve of each level averaged across the corresponding  subsample of
 #' chronograms.
@@ -462,30 +468,30 @@ ltt_sensitivity <- function(data_ages, average = 'median') {
     this_groups <- this_groups[this_order]
 
     colnames(this_ages) <- 1:ncol(this_ages)
-    this_ages <- pivot_longer(as.tibble(this_ages), 1:ncol(this_ages)) %>%
-      mutate(name = as.numeric(name)) %>% arrange(name, desc(value)) %>%
-      mutate(type = rep(as.character(unique(this_groups)),
+    this_ages <- tidyr::pivot_longer(tibble::as.tibble(this_ages), 1:ncol(this_ages)) %>%
+      dplyr::mutate(name = as.numeric(name)) %>% dplyr::arrange(name, dplyr::desc(value)) %>%
+      dplyr::mutate(type = rep(as.character(unique(this_groups)),
                         each = sample * num_nodes),
              num_lineages = rep(2:(num_nodes + 1), length(this_groups)))
 
     if(average == 'mean') {
-      ages_average <- this_ages %>% group_by(type, num_lineages) %>%
-        summarise(av_value = mean(value), .groups = 'drop')
+      ages_average <- this_ages %>% dplyr::group_by(type, num_lineages) %>%
+        dplyr::summarise(av_value = mean(value), .groups = 'drop')
     }
     if(average == 'median') {
-      ages_average <- this_ages %>% group_by(type, num_lineages) %>%
-        summarise(av_value = median(value), .groups = 'drop')
+      ages_average <- this_ages %>% dplyr::group_by(type, num_lineages) %>%
+        dplyr::summarise(av_value = stats::median(value), .groups = 'drop')
     }
 
-    to_add <- ages_average %>% mutate(num_lineages = num_lineages - 1)
-    ages_average <- rbind(ages_average, to_add) %>% arrange(type, num_lineages)
+    to_add <- ages_average %>% dplyr::mutate(num_lineages = num_lineages - 1)
+    ages_average <- rbind(ages_average, to_add) %>% dplyr::arrange(type, num_lineages)
 
     plots[[i]] <- ggplot(ages_average, aes(x = av_value, y = num_lineages, color = type)) +
       geom_line(alpha = 0.3, size = 2) + scale_y_log10() + scale_x_reverse() +
       theme_bw() + xlab('Age (Ma)') + ylab('Number of lineages')
   }
 
-  ltts <- annotate_figure(ggarrange(plotlist = plots,
+  ltts <- ggpubr::annotate_figure(ggpubr::ggarrange(plotlist = plots,
                                     common.legend = F, legend = 'bottom',
                                     ncol = ncol(groups), nrow = 1))
 
