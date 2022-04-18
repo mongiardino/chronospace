@@ -82,7 +82,7 @@ extract_ages <- function(path = NA, type, sample) {
   #assign values to all other nodes
   for(i in 2:ncol(ages)) {
     #check node number associated with clade i
-    node <- sapply(all_trees, findMRCA, clades[[i]])
+    node <- sapply(all_trees, phytools::findMRCA, clades[[i]])
 
     #if the clade is always associated with the same number this runs fast
     if(length(unique(node)) == 1) {
