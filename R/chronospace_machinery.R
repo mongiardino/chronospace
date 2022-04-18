@@ -28,7 +28,7 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
 
   #factors names
   if(is.null(dim(groups))) groups <- data.frame(groups)
-  facnames<-paste0("factor_", LETTERS[1:ncol(groups)])
+  facnames <- paste0("factor_", LETTERS[1:ncol(groups)])
 
   #create object for storing overall results, assign names
   results <- vector(mode = "list", length = ncol(groups))
@@ -46,13 +46,20 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
     perc_tot <- 100 * (expvar/totvar)
 
     #report proportion of total variation explained
+    if(ncol(groups) > 1) {
+      catnames <- paste0('(', paste(unique(groups[,i]), collapse = '/'), ')')
+      cat(paste('--- Results for', facnames[i], catnames, '---\n'))
+    } else {
+      cat('Results:\n')
+    }
+
     cat(paste0('Proportion of total variation in node ages explained by ',
                facnames[i], ' = ',
-               round(perc_tot, digits=3),
+               round(perc_tot, digits = 3),
                '%', '\n'))
 
-    if(ncol(groups)>1){
-      #use bgPCA to compute an ordinaion that is residual to all factors but factor i
+    if(ncol(groups) > 1){
+      #use bgPCA to compute an ordination that is residual to all factors but factor i
       bgPCA2.1 <- bgprcomp(x = ages, groups = groups[,-i])
       resids2.1 <- bgPCA2.1$residuals
 
@@ -66,19 +73,21 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
       #report proportion of non-redundant variation explained
       cat(paste0('Proportion of non-redundant variation in node ages explained by ',
                  facnames[i], ' = ',
-                 round(perc_nonred, digits=3),
-                 '%', '\n'))
-    } else {cat('(There is only one factor, non-redundant variation omitted)\n')}
+                 round(perc_nonred, digits = 3),
+                 '%', '\n\n'))
+    } else {
+      cat('(There is only one factor, non-redundant variation omitted)\n\n')
+    }
 
     #select which bgPCA results are going to be used
-    if(vartype == "total" | ncol(groups)==1) bgPCA <- bgPCA1
-    if(vartype == "non-redundant" & ncol(groups)>1) bgPCA <- bgPCA2.2
+    if(vartype == "total" | ncol(groups) == 1) bgPCA <- bgPCA1
+    if(vartype == "non-redundant" & ncol(groups) > 1) bgPCA <- bgPCA2.2
 
     #store bgPCA results, along with total variation and groups of factor i
-    bgPCA$totvar<-totvar
-    bgPCA$groups<-groups[,i]
-    bgPCA$ages<-ages
-    results[[i]]<-bgPCA
+    bgPCA$totvar <- totvar
+    bgPCA$groups <- groups[,i]
+    bgPCA$ages <- ages
+    results[[i]] <- bgPCA
   }
 
   return(invisible(results))
@@ -86,7 +95,7 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
 
 
 # internal between-group PCA function ---------------------------------------------
-bgprcomp <- function(x, groups){
+bgprcomp <- function(x, groups) {
 
   grandmean <- colMeans(x)
   x_centered <- scale(x, scale = F, center = T)
@@ -108,5 +117,5 @@ bgprcomp <- function(x, groups){
 
 
 # internal reverse PCA function -----------------------------------------------------
-revPCA<-function(scores, vectors, center){ t(t(scores%*%t(vectors))+center) }
+revPCA <- function(scores, vectors, center) { t(t(scores %*% t(vectors)) + center) }
 

@@ -45,17 +45,19 @@
 #' @export
 #'
 #' @examples
-plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
-                           ellipses=TRUE, centroids=FALSE, distances=FALSE,
-                           colors=1:5, factors=1:length(obj), axes=c(1,2), pt.alpha=0.5, pt.size=1.5, ell.width=1.2, dist.width=1, ct.size=5) {
+plot.chronospace<-function(obj, tree = NA, sdev = 1, timemarks = NULL,
+                           ellipses=TRUE, centroids=FALSE, distances = FALSE,
+                           colors = 1:5, factors = 1:length(obj), axes = c(1, 2),
+                           pt.alpha = 0.5, pt.size = 1.5, ell.width = 1.2,
+                           dist.width = 1, ct.size = 5) {
 
-  if(length(axes)!=2) axes<-c(1,2)
+  if(length(axes) != 2) axes <- c(1, 2)
 
   #create object for storing overall results, assign names
   results <- vector(mode = "list", length = length(obj))
   names(results) <- facnames <- names(obj)
 
-  #get ordinations and Pc extremes for factor i
+  #get ordinations and PC extremes for factor i
   for(i in 1:length(obj)){
 
     #create object for storing results of factor i, assing names
@@ -83,73 +85,91 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
         geom_histogram(alpha = 0.5, position = 'identity', bins = 30) + theme_bw() +
         scale_fill_manual(values = colors) + ylab('Count') +
         theme(legend.title = element_blank(), panel.grid = element_blank()) +
-        xlab(paste0('bgPCA axis 1 (', round((100*apply(bgPCA$x,2,var)[1]/totvar), 2), '% of variance)'))
+        xlab(paste0('bgPCA axis 1 (',
+                    round((100 * apply(bgPCA$x,2,var)[1] / totvar), 2), '% of variance)'))
 
     } else { #bivariate
       #compute groups centroids from bgPCA scores
-      cents<-apply(X = bgPCA$x, MARGIN = 2, FUN = tapply, groups, mean)
-      cents_df<-data.frame(coordinates.1=cents[,1], coordinates.2=cents[,2], groups=rownames(cents))
+      cents <- apply(X = bgPCA$x, MARGIN = 2, FUN = tapply, groups, mean)
+      cents_df <- data.frame(coordinates.1 = cents[,1],
+                             coordinates.2 = cents[,2],
+                             groups = rownames(cents))
 
-      #compute groups centroids from original variables; calculate and standardize distances between centroids
-      cents_original<-apply(X = ages, MARGIN = 2, FUN = tapply, groups, mean)
-      dists<-as.matrix(stats::dist(cents_original))
-      dists_std<-dists/max(dists)
+      #compute groups centroids from original variables;
+      #calculate and standardize distances between centroids
+      cents_original <- apply(X = ages, MARGIN = 2, FUN = tapply, groups, mean)
+      dists <- as.matrix(stats::dist(cents_original))
+      dists_std <- dists / max(dists)
 
       #generate combinations
-      combins<-utils::combn(x = levels(groups), m = 2)
+      combins <- utils::combn(x = levels(groups), m = 2)
 
       #plot chronospace
-      chronospace<-ggplot(to_plot, aes(x = coordinates.1, y = coordinates.2, color = groups)) +
-        geom_point(alpha = pt.alpha, size=pt.size, key_glyph = "point") +
+      chronospace <- ggplot(to_plot, aes(x = coordinates.1, y = coordinates.2, color = groups)) +
+        geom_point(alpha = pt.alpha, size = pt.size, key_glyph = "point") +
         theme_bw() + scale_color_manual(values = colors) +
         theme(legend.title = element_blank(), panel.grid = element_blank()) +
-        xlab(paste0('bgPCA axis ', axes[1],  ' (', round((100*apply(bgPCA$x,2,var)[1]/totvar), 2), '% of variance)')) +
-        ylab(paste0('bgPCA axis ', axes[2],  ' (', round((100*apply(bgPCA$x,2,var)[2]/totvar), 2), '% of variance)'))
+        xlab(paste0('bgPCA axis ', axes[1],  ' (',
+                    round((100 * apply(bgPCA$x,2,var)[1] / totvar), 2), '% of variance)')) +
+        ylab(paste0('bgPCA axis ', axes[2],  ' (',
+                    round((100 * apply(bgPCA$x,2,var)[2] / totvar), 2), '% of variance)'))
 
       if(ellipses){
         chronospace <- chronospace +
-          stat_ellipse(lwd=ell.width, key_glyph = "point")
+          stat_ellipse(lwd = ell.width, key_glyph = "point")
       }
 
       if(distances){
         for(h in 1:ncol(combins)){
-          rdf<-cents_df[combins[,h],]
-          width<-(5*dists_std[combins[1,h], combins[2,h]])-2
-          chronospace <- chronospace + geom_line(data=rdf, aes(x = coordinates.1, y = coordinates.2), color=grDevices::gray.colors(n=10)[1], size=width*dist.width)
+          rdf <- cents_df[combins[,h],]
+          width <- (5 * dists_std[combins[1,h], combins[2,h]]) - 2
+          chronospace <- chronospace +
+            geom_line(data = rdf, aes(x = coordinates.1, y = coordinates.2),
+                      color = grDevices::gray.colors(n = 10)[1], size = width * dist.width)
         }
       }
 
-      if(centroids|distances){
+      if(centroids | distances){
         chronospace <- chronospace +
-          geom_point(shape=21, data=cents_df, color="black", fill = colors[1:nlevels(groups)], aes(x = coordinates.1, y = coordinates.2), size=ct.size)
+          geom_point(data = cents_df, aes(x = coordinates.1, y = coordinates.2),
+                     color = "black", shape = 21,
+                     fill = colors[1:nlevels(groups)],
+                     size = ct.size)
       }
 
       chronospace <- chronospace +
-        guides(colour = guide_legend(override.aes = list(alpha=1, shape=21, color="black", fill = colors[1:nlevels(groups)], size=3.5)))
-
+        guides(colour = guide_legend(override.aes = list(alpha = 1, shape = 21,
+                                                         color = "black",
+                                                         fill = colors[1:nlevels(groups)],
+                                                         size = 3.5)))
     }
 
     #save chronospace
     results_i$ordination <- chronospace
-
-    #obtain clades from tree
-    clades <- list()
-    for(j in 1:tree$Nnode) {
-      clades[j] <- list(tree$tip.label[unlist(phangorn::Descendants(tree, length(tree$tip.label)+j, type = 'tips'))])
-    }
 
     #Finally, compute changes in each branch captured by the bgPCA axes (needs a
     #tree!)
     if(is.na(tree)[1]) {
       cat('Plotting changes on branch lengths can only be shown if a tree is provided\n')
     } else {
+      #obtain clades from tree
+      clades <- list()
+      for(j in 1:tree$Nnode) {
+        clades[j] <- list(tree$tip.label[unlist(phangorn::Descendants(tree, length(tree$tip.label) + j,
+                                                                      type = 'tips'))])
+      }
+
       #ages implied by a position at the origin of the bgPCA plot
       mean <- matrix(colMeans(ages), ncol = 1)
 
       #create object for storing the extremes of the bgPC j
       PCextremes <- vector(mode = "list", length = num_functions)
 
-      if(num_functions==1) ax<-1 else ax<-axes
+      if(num_functions == 1) {
+        ax <- 1
+      } else {
+        ax <- axes
+      }
 
       #loop through the bgPCA axes (depending on the number of groups in the
       #variable being tested)
@@ -160,8 +180,10 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
 
         #ages implied by moving along this bgPCA axis 'sdev' number of standard
         #deviations to both sides
-        assign(paste0('plus_sd_', j), revPCA(sdev*stats::sd(bgPCA$x[,ax[j]]), bgPCA$rotation[,ax[j]], mean))
-        assign(paste0('minus_sd_', j), revPCA(-sdev*stats::sd(bgPCA$x[,ax[j]]), bgPCA$rotation[,ax[j]], mean))
+        assign(paste0('plus_sd_', j), revPCA(sdev*stats::sd(bgPCA$x[,ax[j]]),
+                                             bgPCA$rotation[,ax[j]], mean))
+        assign(paste0('minus_sd_', j), revPCA(-sdev*stats::sd(bgPCA$x[,ax[j]]),
+                                              bgPCA$rotation[,ax[j]], mean))
 
         #check number of descendants stemming from each node
         clade_size <- unlist(lapply(clades, length))
@@ -196,7 +218,8 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
                 #if it is not a cherry
               } else {
                 #get nodes of direct descendant
-                nodes_of_descendants <- tree$edge[,2][which(tree$edge[,1] == node_to_change)]
+                nodes_of_descendants <- tree$edge[,2][which(tree$edge[,1] ==
+                                                              node_to_change)]
 
                 #if any descendant is a tip do as above, assign branch length ==
                 #node age
@@ -274,7 +297,7 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
 
         #combine both into a single graphic and store
         PCextremes[[j]] <- negative + positive + plot_layout(guides = "collect") &
-          theme(legend.position="bottom")
+          theme(legend.position = "bottom")
 
       }
 
@@ -289,7 +312,7 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
 
   }
 
-  factors<-factors[!factors>length(results)]
+  factors <- factors[!factors > length(results)]
   return(results[factors])
 
 }
@@ -325,7 +348,8 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
 #' @export
 #'
 #' @examples
-sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades, factors=1:length(obj), colors=1:5){
+sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades,
+                            factors = 1:length(obj), colors = 1:5){
 
   #create object for storing overall results, assign names
   results <- vector(mode = "list", length = length(obj))
@@ -430,7 +454,7 @@ sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades, factors=
     results[[i]] <- most_affected
   }
 
-  factors<-factors[!factors>length(results)]
+  factors <- factors[!factors > length(results)]
   return(results[factors])
 }
 
@@ -452,6 +476,7 @@ sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades, factors=
 #'
 #' @examples
 ltt_sensitivity <- function(data_ages, average = 'median') {
+
   ages <- data_ages[,which(grepl('clade', colnames(data_ages)))]
   groups <- data_ages[,which(grepl('factor', colnames(data_ages)))]
   plots <- vector(mode = "list", length = ncol(groups))

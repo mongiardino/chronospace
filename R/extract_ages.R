@@ -40,7 +40,7 @@ extract_ages <- function(path = NA, type, sample) {
   #check that tree files and factors provided in 'types' match correctly
   cat("Check that labels are assigned correctly to the input files.\n",
       "If there is an error, modify the order of factors in 'type'\n",
-      "or the name of input files for the two to match.\n\n", sep = '')
+      "or the name of input files, for the two to match.\n\n", sep = '')
 
   for(i in 1:length(files)) {
     to_print <- paste0('file = ', files[i], ' | type = ',
