@@ -1,31 +1,26 @@
-# internal between-group PCA function ---------------------------------------------
-bgprcomp <- function(x, groups){
-
-  grandmean <- colMeans(x)
-  x_centered <- scale(x, scale = F, center = T)
-  x_gmeans <- apply(X = x_centered, MARGIN = 2, FUN = tapply, groups, mean)
-
-  V_g <- cov(x_gmeans)
-  eig <- eigen(V_g)
-
-  scores <- x_centered%*%eig$vectors
-  scores <- cbind(scores[,1:(nlevels(groups) - 1)])
-  rotation <- eig$vectors
-
-  preds <- scores %*% t(rotation[,1:ncol(scores)])
-  resids <- x - preds
-
-  return(list(x = scores, residuals = resids, rotation = rotation,
-              values = eig$values, center = grandmean, gmeans = x_gmeans))
-}
-
-
-# internal reverse PCA function -----------------------------------------------------
-revPCA<-function(scores, vectors, center){ t(t(scores%*%t(vectors))+center) }
-
-
 #create chronospace-------------------------------------------------------------------
-chronospace <- function(data_ages, variation = "non-redundant")  {
+
+#' Create chronospace
+#'
+#' @description Compute the ordination maximizing variation in node ages using between-group PCA (one for each factor).
+#'
+#' @param data_ages A matrix created using [extract_ages()].
+#' @param vartype Character, indicating the type of variation to be retained ("total" or "non-redundant", see Details;
+#' not meaningful for factors with less than three levels).
+#'
+#' @details This function uses between-group PCA to find the set of axes maximizing variation in ages data between the
+#' groups of chronograms obtained through different methodological approaches. By default variation is set as “non-redundant”,
+#' meaning bgPCA of each factor is performed using the variation left after removing the portion associated to all the
+#' other factors. If variation = “total” (or if there is only one factor being assessed), bgPCA is performed over the raw
+#' variation in node ages.
+#'
+#' @return The total and non-redundant percentages of variation accounted for each factor are informed. Also a list
+#' containing the ordination computed for each factor is returned.
+#'
+#' @export
+#'
+#' @examples
+chronospace <- function(data_ages, vartype = "non-redundant")  {
 
   #split data.frame 'data_ages' into ages and factors
   ages <- data_ages[,which(grepl('clade', colnames(data_ages)))]
@@ -76,8 +71,8 @@ chronospace <- function(data_ages, variation = "non-redundant")  {
     } else {cat('(There is only one factor, non-redundant variation omitted)\n')}
 
     #select which bgPCA results are going to be used
-    if(variation == "total" | ncol(groups)==1) bgPCA <- bgPCA1
-    if(variation == "non-redundant" & ncol(groups)>1) bgPCA <- bgPCA2.2
+    if(vartype == "total" | ncol(groups)==1) bgPCA <- bgPCA1
+    if(vartype == "non-redundant" & ncol(groups)>1) bgPCA <- bgPCA2.2
 
     #store bgPCA results, along with total variation and groups of factor i
     bgPCA$totvar<-totvar
@@ -88,3 +83,30 @@ chronospace <- function(data_ages, variation = "non-redundant")  {
 
   return(invisible(results))
 }
+
+
+# internal between-group PCA function ---------------------------------------------
+bgprcomp <- function(x, groups){
+
+  grandmean <- colMeans(x)
+  x_centered <- scale(x, scale = F, center = T)
+  x_gmeans <- apply(X = x_centered, MARGIN = 2, FUN = tapply, groups, mean)
+
+  V_g <- cov(x_gmeans)
+  eig <- eigen(V_g)
+
+  scores <- x_centered%*%eig$vectors
+  scores <- cbind(scores[,1:(nlevels(groups) - 1)])
+  rotation <- eig$vectors
+
+  preds <- scores %*% t(rotation[,1:ncol(scores)])
+  resids <- x - preds
+
+  return(list(x = scores, residuals = resids, rotation = rotation,
+              values = eig$values, center = grandmean, gmeans = x_gmeans))
+}
+
+
+# internal reverse PCA function -----------------------------------------------------
+revPCA<-function(scores, vectors, center){ t(t(scores%*%t(vectors))+center) }
+

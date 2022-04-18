@@ -1,7 +1,51 @@
 #plot chronospace-------------------------------------------------------------------
+
+#' Plot chronospace ordination(s) and axes' extremes
+#'
+#' @description For each factor, generate the two basic graphical representations of a chronospace: the projection of
+#' the sampled chronograms into the synthetic chronospace axes, and the two ‘theoretical’ extremes of those axes.
+#'
+#' @param obj An object containing one or more ordinations created using [chronospace()].
+#' @param tree An object of class "phylo" containing the same fixed topology as the trees sampled from the posterior.
+#' @param sdev Numeric, indicating at how many standard deviations should the extremes of the chronospace axes be
+#' depicted.
+#' @param timemarks Numeric; an optional vector containing ages to be marked by vertical lines in chronospace
+#' representations.
+#' @param colors The colors used to represent groups (i.e. levels) of each factor.
+#' @param factors Numeric; the factor or factors whose results are to be retained (by default, the first two axes).
+#' @param axes Numeric of length two, specifying the axes to be depicted (not meaningful for factors with less than
+#' three levels).
+#' @param ellipses Logical, indicating whether to plot data ellipses for each group (not meaningful for factors with
+#' less than three levels).
+#' @param centroids Logical, indicating whether to plot groups' centroids (not meaningful for factors with less than
+#' three levels).
+#' @param distances Logical, indicating whether to plot lines between groups' centroids whose width is proportional
+#' to the distances between them in the original variable space (not meaningful for factors with less than three levels).
+#' @param pt.alpha Numeric, indicating the transparency level of individual points in the scatter (not meaningful for
+#' factors with less than three levels).
+#' @param pt.size Numeric, indicating the size of individual points in the scatter (not meaningful for factors with
+#' less than three levels).
+#' @param ell.width Numeric, indicating line width for data ellipses (not meaningful for factors with less than three
+#' levels).
+#' @param dist.width Numeric; scaling factor for the width of lines representing multivariate distances between groups'
+#' centroids (not meaningful for factors with less than three levels).
+#' @param ct.size Numeric, indicating the size of the points marking groups' centroids (not meaningful for factors with
+#' less than three levels).
+#'
+#' @details Starting from the object returned by [chronospace()], this function creates the two basic types of plots
+#' allowing interpretation of the synthetic ordination maximizing variation in node age between the groups of each factor.
+#' The first of these is a graphical projection of the samples of phylogenetic trees used to generate the ordination into
+#' its synthetic axes, which can be either a histogram for factors with only two levels, or a bivariate scatterplot for
+#' factors with three or more levels. The second output consists of ‘theoretical’ trees representing the positive and
+#' negative extremes of each synthetic axis, depicting the variation in nodes ages captured by it.
+#'
+#' @return A list containing the histogram/scatterplot and axes' extremes for each factor included.
+#' @export
+#'
+#' @examples
 plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
-                           colors=1:5, factors=1:length(obj), axes=c(1,2), pt.alpha=0.5, pt.size=1.5, ell.width=1.2, dist.width=1, ct.size=5,
-                           ellipses=TRUE, centroids=FALSE, distances=FALSE) {
+                           ellipses=TRUE, centroids=FALSE, distances=FALSE,
+                           colors=1:5, factors=1:length(obj), axes=c(1,2), pt.alpha=0.5, pt.size=1.5, ell.width=1.2, dist.width=1, ct.size=5) {
 
   if(length(axes)!=2) axes<-c(1,2)
 
@@ -248,9 +292,36 @@ plot.chronospace<-function(obj, tree=NA, sdev=1, timemarks = NULL,
 
 }
 
+
 #get senstive nodes ----------------------------------------------------
-sensitive_nodes <- function(obj, tree, amount_of_change, factors=1:length(obj),
-                            chosen_clades, colors=1:5){
+
+#' Obtain the most sensitive nodes and depict their age distribution
+#'
+#' @description Identify the most sensitive nodes associated to each factor, and plot their ages proportion distributions.
+#'
+#' @param obj An object containing one or more ordinations created using [chronospace()].
+#' @param tree An object of class "phylo" containing the same fixed topology as the trees from the posterior.
+#' @param amount_of_change Numeric, specyfing the desired amount of variation in age (expressed in million of years)
+#' above which the nodes are retained and depicted.
+#' @param chosen_clades Numeric, indicating the desired number of most sensitive nodes to be retained and depicted.
+#' @param factors Numeric; the factor or factors whose results are to be retained (by default, the first two axes).
+#' Ignored if amount_of_change is explicited.
+#' @param colors The colors used to represent groups (i.e. levels) of each factor.
+#'
+#' @details This function identifies, for each factor, the nodes in the fixed topology whose ages are most sensitive
+#' (i.e. variable) as a function of the corresponding levels. These can be done either by indicating a threshold for
+#' variation in age above which nodes are considered relevant, or by specifying the number of most sensitive nodes which
+#' must be retained. The nodes are named using two terminals selected at random from the two subclades defined by each
+#' node.
+#'
+#' For each of these most sensitive nodes, the function will plot the distribution of relative proportion of ages, by level.
+#'
+#' @return A panel showing the relative proportions distribution for the age of each of the most sensitive nodes
+#' #associated to each factor.
+#' @export
+#'
+#' @examples
+sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades, factors=1:length(obj), colors=1:5){
 
   #create object for storing overall results, assign names
   results <- vector(mode = "list", length = length(obj))
@@ -360,7 +431,20 @@ sensitive_nodes <- function(obj, tree, amount_of_change, factors=1:length(obj),
   return(results[factors])
 }
 
+
 #LTT by group-------------------------------------------------------------------
+
+#' Plot average Lineage Through Time (LTT) curves
+#'
+#' @description For each factor, plot the LTT curve of each level averaged across the corresponding  subsample of
+#' chronograms.
+#'
+#' @param data_ages A matrix created using [extract_ages()].
+#' @param average Character, indicating whether the 'mean' or 'median' is to be used in computations.
+#'
+#' @export
+#'
+#' @examples
 ltt_sensitivity <- function(data_ages, average = 'median') {
   ages <- data_ages[,which(grepl('clade', colnames(data_ages)))]
   groups <- data_ages[,which(grepl('factor', colnames(data_ages)))]
