@@ -2,6 +2,7 @@
 
 #' Plot chronospace ordination(s) and axes' extremes
 #'
+#' @importFrom ggtree %<+%
 #' @import ggplot2
 #'
 #' @description For each factor, generate the two basic graphical representations of a chronospace: the projection of
