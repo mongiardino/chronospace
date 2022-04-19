@@ -18,8 +18,10 @@ Imports:
     dplyr,
     ggplot2,
     ggpubr,
-    ggtree,
+    ggtree (>= 3.2.1),
     magrittr,
     patchwork,
     phangorn,
     phytools
+Remotes:  
+    bioc::https://bioconductor.org/packages/release/bioc/html/ggtree.html
