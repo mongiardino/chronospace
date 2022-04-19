@@ -297,7 +297,7 @@ plot.chronospace<-function(obj, tree = NA, sdev = 1, timemarks = NULL,
           geom_vline(xintercept = timemarks2.2, lty = 2, col = "gray")
 
         #combine both into a single graphic and store
-        PCextremes[[j]] <- negative + positive + plot_layout(guides = "collect") &
+        PCextremes[[j]] <- negative + positive + patchwork::plot_layout(guides = "collect") &
           theme(legend.position = "bottom")
 
       }
