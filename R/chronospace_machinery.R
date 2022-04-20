@@ -74,7 +74,7 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
       expvar2.2 <- sum(apply(bgPCA2.2$x, 2, var))
 
       #compute percentage of non-redundant variation explained
-      perc_nonred <- 100 * (expvar2.2/totvar)
+      perc_nonred <- 100 * (expvar2.2 / totvar)
 
       #report proportion of non-redundant variation explained
       cat(paste0('Proportion of non-redundant variation in node ages explained by ',
@@ -112,7 +112,7 @@ bgprcomp <- function(x, groups) {
   V_g <- stats::cov(x_gmeans)
   eig <- eigen(V_g)
 
-  scores <- x_centered%*%eig$vectors
+  scores <- x_centered %*% eig$vectors
   scores <- cbind(scores[,1:(nlevels(groups) - 1)])
   rotation <- eig$vectors
 
