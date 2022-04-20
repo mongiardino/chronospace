@@ -63,8 +63,8 @@ extract_ages <- function(path = NA, type, sample) {
     if(is.na(path)) {
       trees <- ape::read.tree(paste0(getwd(), '/', files[i]))
     } else {
-        trees <- ape::read.tree(paste0(path, '/', files[i]))
-        }
+      trees <- ape::read.tree(paste0(path, '/', files[i]))
+    }
     if(!is.na(sample)) {
       trees <- trees[sample(1:length(trees), sample)]
     }

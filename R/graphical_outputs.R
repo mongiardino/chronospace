@@ -256,7 +256,7 @@ plot.chronospace<-function(obj, tree = NA, sdev = 1, timemarks = NULL,
                 for(m in 1:length(nodes_of_descendants)) {
                   #obtain all descendants
                   tips <- unlist(phangorn::Descendants(tree, nodes_of_descendants[m],
-                                             type = 'tips'))
+                                                       type = 'tips'))
 
                   #remove from the age the age of the descendant node, which is
                   #already set up correctly as the loop goes from smaller to
@@ -417,7 +417,7 @@ sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades,
     clades = list()
     for(j in 1:tree$Nnode) {
       clades[j] <- list(tree$tip.label[unlist(phangorn::Descendants(tree, length(tree$tip.label)+j,
-                                                          type = 'tips'))])
+                                                                    type = 'tips'))])
     }
 
     #make room to save the individual plots
@@ -444,7 +444,7 @@ sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades,
           #else choose a random tip from the descendant clade
         } else {
           desc[k] <- tree$tip.label[sample(unlist(phangorn::Descendants(tree, node = as.numeric(desc[k]),
-                                                              type = 'tips')), 1)]
+                                                                        type = 'tips')), 1)]
         }
       }
 
@@ -475,8 +475,8 @@ sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades,
     #plot and save, accounting for a varying number of columns depending on the
     #nodes plotted
     most_affected <- ggpubr::annotate_figure(ggpubr::ggarrange(plotlist = plots,
-                                               common.legend = T, legend = 'bottom',
-                                               ncol = ceiling(num_nodes/5), nrow = 5))
+                                                               common.legend = T, legend = 'bottom',
+                                                               ncol = ceiling(num_nodes/5), nrow = 5))
     results[[i]] <- most_affected
   }
 
@@ -523,8 +523,8 @@ ltt_sensitivity <- function(data_ages, average = 'median') {
     this_ages <- tidyr::pivot_longer(tibble::as_tibble(this_ages), 1:ncol(this_ages)) %>%
       dplyr::mutate(name = as.numeric(name)) %>% dplyr::arrange(name, dplyr::desc(value)) %>%
       dplyr::mutate(type = rep(as.character(unique(this_groups)),
-                        each = sample * num_nodes),
-             num_lineages = rep(2:(num_nodes + 1), length(this_groups)))
+                               each = sample * num_nodes),
+                    num_lineages = rep(2:(num_nodes + 1), length(this_groups)))
 
     if(average == 'mean') {
       ages_average <- this_ages %>% dplyr::group_by(type, num_lineages) %>%
@@ -544,8 +544,8 @@ ltt_sensitivity <- function(data_ages, average = 'median') {
   }
 
   ltts <- ggpubr::annotate_figure(ggpubr::ggarrange(plotlist = plots,
-                                    common.legend = F, legend = 'bottom',
-                                    ncol = ncol(groups), nrow = 1))
+                                                    common.legend = F, legend = 'bottom',
+                                                    ncol = ncol(groups), nrow = 1))
 
   return(ltts)
 
