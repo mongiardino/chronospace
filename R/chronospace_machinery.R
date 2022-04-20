@@ -49,7 +49,7 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
     #compute percentage of variation explained
     totvar <- sum(apply(ages, 2, var))
     expvar <- sum(apply(bgPCA1$x, 2, var))
-    perc_tot <- 100 * (expvar/totvar)
+    perc_tot <- 100 * (expvar / totvar)
 
     #report proportion of total variation explained
     if(ncol(groups) > 1) {
