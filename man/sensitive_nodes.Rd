@@ -14,33 +14,43 @@ sensitive_nodes(
 )
 }
 \arguments{
-\item{obj}{An object containing one or more ordinations created using \code{\link[=chronospace]{chronospace()}}.}
+\item{obj}{An object containing one or more ordinations created using
+\code{\link[=chronospace]{chronospace()}}.}
 
-\item{tree}{An object of class "phylo" containing the same fixed topology as the trees from the posterior.}
+\item{tree}{An object of class "phylo" containing the same fixed topology as
+the trees from the posterior.}
 
-\item{amount_of_change}{Numeric, specyfing the desired amount of variation in age (expressed in million of years)
-above which the nodes are retained and depicted.}
+\item{amount_of_change}{Numeric, specyfing the desired amount of variation in
+age (expressed in million of years) above which the nodes are retained and
+depicted.}
 
-\item{chosen_clades}{Numeric, indicating the desired number of most sensitive nodes to be retained and depicted.}
+\item{chosen_clades}{Numeric, indicating the desired number of most sensitive
+nodes to be retained and depicted.}
 
-\item{factors}{Numeric; the factor or factors whose results are to be retained (by default, the first two axes).
-Ignored if amount_of_change is explicited.}
+\item{factors}{Numeric; the factor or factors whose results are to be
+retained (by default, the first two axes). Ignored if amount_of_change is
+explicited.}
 
-\item{colors}{The colors used to represent groups (i.e. levels) of each factor.}
+\item{colors}{The colors used to represent groups (i.e. levels) of each
+factor.}
 }
 \value{
-A panel showing the relative proportions distribution for the age of each of the most sensitive nodes
-#associated to each factor.
+A panel showing the relative proportions distribution for the age of
+each of the most sensitive nodes #associated to each factor.
 }
 \description{
-Identify the most sensitive nodes associated to each factor, and plot their ages proportion distributions.
+Identify the most sensitive nodes associated to each factor, and
+plot their ages proportion distributions.
 }
 \details{
-This function identifies, for each factor, the nodes in the fixed topology whose ages are most sensitive
-(i.e. variable) as a function of the corresponding levels. These can be done either by indicating a threshold for
-variation in age above which nodes are considered relevant, or by specifying the number of most sensitive nodes which
-must be retained. The nodes are named using two terminals selected at random from the two subclades defined by each
-node.
+This function identifies, for each factor, the nodes in the fixed
+topology whose ages are most sensitive (i.e. variable) as a function of the
+corresponding levels. These can be done either by indicating a threshold
+for variation in age above which nodes are considered relevant, or by
+specifying the number of most sensitive nodes which must be retained. The
+nodes are named using two terminals selected at random from the two
+subclades defined by each node.
 
-For each of these most sensitive nodes, the function will plot the distribution of relative proportion of ages, by level.
+For each of these most sensitive nodes, the function will plot the
+distribution of relative proportion of ages, by level.
 }

@@ -9,9 +9,10 @@ ltt_sensitivity(data_ages, average = "median")
 \arguments{
 \item{data_ages}{A matrix created using \code{\link[=extract_ages]{extract_ages()}}.}
 
-\item{average}{Character, indicating whether the 'mean' or 'median' is to be used in computations.}
+\item{average}{Character, indicating whether the 'mean' or 'median' is to be
+used in computations.}
 }
 \description{
-For each factor, plot the LTT curve of each level averaged across the corresponding  subsample of
-chronograms.
+For each factor, plot the LTT curve of each level averaged
+across the corresponding  subsample of chronograms.
 }

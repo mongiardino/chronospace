@@ -7,27 +7,35 @@
 extract_ages(path = NA, type, sample)
 }
 \arguments{
-\item{path}{A character string specifying the path to the folder containing (only) the input files.}
+\item{path}{A character string specifying the path to the folder containing
+(only) the input files.}
 
-\item{type}{A list of g vectors (one for each factor being tested) specifying the group to which the chronograms
-from each file will be assigned to.}
+\item{type}{A list of g vectors (one for each factor being tested)
+specifying the group to which the chronograms from each file will be
+assigned to.}
 
 \item{sample}{The fixed number of trees to retain from each file.}
 }
 \value{
-A t x (n + g) matrix in which each row is one of t trees, and each of the first n clumns reprresents a node
-in the fixed topology. The last g columns indicate classification of each tree to each of the methodological groups.
+A t x (n + g) matrix in which each row is one of t trees, and each of
+the first n clumns reprresents a node in the fixed topology. The last g
+columns indicate classification of each tree to each of the methodological
+groups.
 }
 \description{
-Extract and organize ages from files containing the posterior distributions of time-calibrated
-phylogenetic trees (i.e. chronograms) obtained through different methodological decisions.
+Extract and organize ages from files containing the posterior
+distributions of time-calibrated phylogenetic trees (i.e. chronograms)
+obtained through different methodological decisions.
 }
 \details{
-This function imports and prepare the ages data such that they are suitable for analysis using chronospace.
-The input files are a series of files in Newick format containing time-calibrated trees taken from the posterior
-distributions of separate Bayesian inferences of the same dataset (can be either different runs of the same analysis
-or separate analyses). These should differ in specific aspects of their initial setting whose effects are of interest
-(e.g. the model of evolution used and/or the method employed to subsample genes) and be stored in an exclusive folder.
-The topology is assumed constrained, such that chronograms differ only in the branch lengths (and therefore, in their
-inferred node ages).
+This function imports and prepare the ages data such that they are
+suitable for analysis using chronospace. The input files are a series of
+files in Newick format containing time-calibrated trees taken from the
+posterior distributions of separate Bayesian inferences of the same dataset
+(can be either different runs of the same analysis or separate analyses).
+These should differ in specific aspects of their initial setting whose
+effects are of interest (e.g. the model of evolution used and/or the method
+employed to subsample genes) and be stored in an exclusive folder. The
+topology is assumed constrained, such that chronograms differ only in the
+branch lengths (and therefore, in their inferred node ages).
 }

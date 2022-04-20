@@ -2,20 +2,26 @@
 
 #' Create chronospace
 #'
-#' @description Compute the ordination maximizing variation in node ages using between-group PCA (one for each factor).
+#' @description Compute the ordination maximizing variation in node ages using
+#'   between-group PCA (one for each factor).
 #'
 #' @param data_ages A matrix created using [extract_ages()].
-#' @param vartype Character, indicating the type of variation to be retained ("total" or "non-redundant", see Details;
-#' not meaningful for factors with less than three levels).
+#' @param vartype Character, indicating the type of variation to be retained
+#'   (\code{"total"} or \code{"non-redundant"}, see Details; not meaningful for
+#'   factors with less than three levels).
 #'
-#' @details This function uses between-group PCA to find the set of axes maximizing variation in ages data between the
-#' groups of chronograms obtained through different methodological approaches. By default variation is set as "non-redundant",
-#' meaning bgPCA of each factor is performed using the variation left after removing the portion associated to all the
-#' other factors. If variation = "total" (or if there is only one factor being assessed), bgPCA is performed over the raw
-#' variation in node ages.
+#' @details This function uses between-group PCA to find the set of axes
+#'   maximizing variation in ages data between the groups of chronograms
+#'   obtained through different methodological approaches. By default
+#'   \code{vartype = "non-redundant"}, meaning bgPCA of each factor is performed
+#'   using the variation left after removing the portion associated to all the
+#'   other factors. If \code{vartype = "total"} (or if there is only one factor
+#'   being assessed), bgPCA is performed over the raw variation in node ages.
 #'
-#' @return The total and non-redundant percentages of variation accounted for each factor are informed. Also a list
-#' containing the ordination computed for each factor is returned.
+#' @return The total and non-redundant percentages of variation accounted for
+#'   each factor are informed. An object of class \code{"chronospace"} is
+#'   returned invisibly, with a list containing the ordination computed for each
+#'   factor.
 #'
 #' @export
 #'
@@ -89,6 +95,8 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
     bgPCA$ages <- ages
     results[[i]] <- bgPCA
   }
+
+  class(results) <- "chronospace"
 
   return(invisible(results))
 }

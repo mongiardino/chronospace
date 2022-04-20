@@ -23,59 +23,74 @@
 )
 }
 \arguments{
-\item{obj}{An object containing one or more ordinations created using \code{\link[=chronospace]{chronospace()}}.}
+\item{obj}{An object containing one or more ordinations created using
+\code{\link[=chronospace]{chronospace()}}.}
 
-\item{tree}{An object of class "phylo" containing the same fixed topology as the trees sampled from the posterior.}
+\item{tree}{An object of class "phylo" containing the same fixed topology as
+the trees sampled from the posterior.}
 
-\item{sdev}{Numeric, indicating at how many standard deviations should the extremes of the chronospace axes be
-depicted.}
+\item{sdev}{Numeric, indicating at how many standard deviations should the
+extremes of the chronospace axes be depicted.}
 
-\item{timemarks}{Numeric; an optional vector containing ages to be marked by vertical lines in chronospace
-representations.}
+\item{timemarks}{Numeric; an optional vector containing ages to be marked by
+vertical lines in chronospace representations.}
 
-\item{ellipses}{Logical, indicating whether to plot data ellipses for each group (not meaningful for factors with
-less than three levels).}
+\item{ellipses}{Logical, indicating whether to plot data ellipses for each
+group (not meaningful for factors with less than three levels).}
 
-\item{centroids}{Logical, indicating whether to plot groups' centroids (not meaningful for factors with less than
-three levels).}
+\item{centroids}{Logical, indicating whether to plot groups' centroids (not
+meaningful for factors with less than three levels).}
 
-\item{distances}{Logical, indicating whether to plot lines between groups' centroids whose width is proportional
-to the distances between them in the original variable space (not meaningful for factors with less than three levels).}
-
-\item{colors}{The colors used to represent groups (i.e. levels) of each factor.}
-
-\item{factors}{Numeric; the factor or factors whose results are to be retained (by default, the first two axes).}
-
-\item{axes}{Numeric of length two, specifying the axes to be depicted (not meaningful for factors with less than
-three levels).}
-
-\item{pt.alpha}{Numeric, indicating the transparency level of individual points in the scatter (not meaningful for
-factors with less than three levels).}
-
-\item{pt.size}{Numeric, indicating the size of individual points in the scatter (not meaningful for factors with
-less than three levels).}
-
-\item{ell.width}{Numeric, indicating line width for data ellipses (not meaningful for factors with less than three
+\item{distances}{Logical, indicating whether to plot lines between groups'
+centroids whose width is proportional to the distances between them in the
+original variable space (not meaningful for factors with less than three
 levels).}
 
-\item{dist.width}{Numeric; scaling factor for the width of lines representing multivariate distances between groups'
-centroids (not meaningful for factors with less than three levels).}
+\item{colors}{The colors used to represent groups (i.e. levels) of each
+factor.}
 
-\item{ct.size}{Numeric, indicating the size of the points marking groups' centroids (not meaningful for factors with
-less than three levels).}
+\item{factors}{Numeric; the factor or factors whose results are to be
+retained (by default, the first two axes).}
+
+\item{axes}{Numeric of length two, specifying the axes to be depicted (not
+meaningful for factors with less than three levels).}
+
+\item{pt.alpha}{Numeric, indicating the transparency level of individual
+points in the scatter (not meaningful for factors with less than three
+levels).}
+
+\item{pt.size}{Numeric, indicating the size of individual points in the
+scatter (not meaningful for factors with less than three levels).}
+
+\item{ell.width}{Numeric, indicating line width for data ellipses (not
+meaningful for factors with less than three levels).}
+
+\item{dist.width}{Numeric; scaling factor for the width of lines representing
+multivariate distances between groups' centroids (not meaningful for
+factors with less than three levels).}
+
+\item{ct.size}{Numeric, indicating the size of the points marking groups'
+centroids (not meaningful for factors with less than three levels).}
 }
 \value{
-A list containing the histogram/scatterplot and axes' extremes for each factor included.
+A list containing the histogram/scatterplot and axes' extremes for
+each factor included.
 }
 \description{
-For each factor, generate the two basic graphical representations of a chronospace: the projection of
-the sampled chronograms into the synthetic chronospace axes, and the two 'theoretical' extremes of those axes.
+For each factor, generate the two basic graphical
+representations of a chronospace: the projection of the sampled chronograms
+into the synthetic chronospace axes, and the two 'theoretical' extremes of
+those axes.
 }
 \details{
-Starting from the object returned by \code{\link[=chronospace]{chronospace()}}, this function creates the two basic types of plots
-allowing interpretation of the synthetic ordination maximizing variation in node age between the groups of each factor.
-The first of these is a graphical projection of the samples of phylogenetic trees used to generate the ordination into
-its synthetic axes, which can be either a histogram for factors with only two levels, or a bivariate scatterplot for
-factors with three or more levels. The second output consists of 'theoretical' trees representing the positive and
-negative extremes of each synthetic axis, depicting the variation in nodes ages captured by it.
+Starting from the object returned by \code{\link[=chronospace]{chronospace()}}, this function
+creates the two basic types of plots allowing interpretation of the
+synthetic ordination maximizing variation in node age between the groups of
+each factor. The first of these is a graphical projection of the samples of
+phylogenetic trees used to generate the ordination into its synthetic axes,
+which can be either a histogram for factors with only two levels, or a
+bivariate scatterplot for factors with three or more levels. The second
+output consists of 'theoretical' trees representing the positive and
+negative extremes of each synthetic axis, depicting the variation in nodes
+ages captured by it.
 }
