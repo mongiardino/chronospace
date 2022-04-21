@@ -6,10 +6,11 @@
 \usage{
 sensitive_nodes(
   obj,
-  amount_of_change,
+  amount_of_change = NA,
   chosen_clades,
   factors = 1:length(obj),
-  colors = 1:5
+  colors = 1:5,
+  timemarks = NULL
 )
 }
 \arguments{
@@ -29,6 +30,9 @@ explicited.}
 
 \item{colors}{The colors used to represent groups (i.e. levels) of each
 factor.}
+
+\item{timemarks}{Numeric; an optional vector containing ages to be marked by
+vertical lines.}
 
 \item{tree}{An object of class \code{"phylo"} containing the same fixed
 topology as the trees from the posterior.}

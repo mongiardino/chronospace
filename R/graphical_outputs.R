@@ -361,6 +361,8 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
 #'   explicited.
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
+#' @param timemarks Numeric; an optional vector containing ages to be marked by
+#'   vertical lines.
 #'
 #' @details This function identifies, for each factor, the nodes in the fixed
 #'   topology whose ages are most sensitive (i.e. variable) as a function of the
@@ -381,10 +383,10 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
 #' @references
 #'
 #' @examples
-sensitive_nodes <- function(obj, amount_of_change, chosen_clades,
-                            factors = 1:length(obj), colors = 1:5){
+sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades,
+                            factors = 1:length(obj), colors = 1:5, timemarks = NULL){
 
-  #create object for storing overall results, assign names
+ #create object for storing overall results, assign names
   results <- vector(mode = "list", length = length(obj))
   names(results) <- names(obj)
 
@@ -457,13 +459,15 @@ sensitive_nodes <- function(obj, amount_of_change, chosen_clades,
       }
 
       #make the plot
+      timemarks1.1 <- timemarks*-1
       to_plot <- data.frame(age = ages[,clade], group = groups)
       plots[[j]] <- ggplot(to_plot, aes(x = -age, color = group)) +
         geom_density(alpha = 0.3, size = 2) +
         theme_bw() + scale_color_manual(values = colors) +
-        theme(plot.title = element_text(size = 8)) +
+        theme(plot.title = element_text(size = 8), panel.grid = element_blank()) +
         scale_x_continuous(breaks = pretty(-to_plot$age), labels = abs(pretty(-to_plot$age))) +
-        xlab('Age of MRCA') + ylab('Density')
+        xlab('Age of MRCA') + ylab('Density') +
+        geom_vline(xintercept = timemarks1.1, lty = 2, col = "gray")
 
       if(length(unique(to_plot$group)) == 2) {
         plots[[j]] <- plots[[j]] +
