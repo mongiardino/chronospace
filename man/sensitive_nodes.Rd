@@ -35,7 +35,7 @@ topology as the trees from the posterior.}
 }
 \value{
 A panel showing the relative proportions distribution for the age of
-each of the most sensitive nodes #associated to each factor.
+each of the most sensitive nodes associated to each factor.
 }
 \description{
 Identify the most sensitive nodes associated to each factor, and

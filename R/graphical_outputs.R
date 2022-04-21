@@ -374,7 +374,7 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
 #'   distribution of relative proportion of ages, by level.
 #'
 #' @return A panel showing the relative proportions distribution for the age of
-#'   each of the most sensitive nodes #associated to each factor.
+#'   each of the most sensitive nodes associated to each factor.
 #'
 #' @export
 #'
