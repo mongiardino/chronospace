@@ -113,7 +113,7 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
 #' @description Compute the ordination maximizing variation in node ages using
 #'   between-group PCA (one for each factor).
 #'
-#' @param data_ages A matrix created using [extract_ages()].
+#' @param data_ages A \code{"dataAges} created using [extract_ages()].
 #' @param vartype Character, indicating the type of variation to be retained
 #'   (\code{"total"} or \code{"non-redundant"}, see Details; not meaningful for
 #'   factors with less than three levels).

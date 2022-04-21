@@ -7,7 +7,7 @@
 chronospace2(data_ages, vartype = "non-redundant")
 }
 \arguments{
-\item{data_ages}{A matrix created using \code{\link[=extract_ages]{extract_ages()}}.}
+\item{data_ages}{A \code{"dataAges} created using \code{\link[=extract_ages]{extract_ages()}}.}
 
 \item{vartype}{Character, indicating the type of variation to be retained
 (\code{"total"} or \code{"non-redundant"}, see Details; not meaningful for
