@@ -10,10 +10,10 @@
 #'   into the synthetic chronospace axes, and the two 'theoretical' extremes of
 #'   those axes.
 #'
-#' @param obj An object containing one or more ordinations created using
-#'   [chronospace()].
-#' @param tree An object of class "phylo" containing the same fixed topology as
-#'   the trees sampled from the posterior.
+#' @param obj An object of class \code{"chronospace"} containing one or more
+#'   ordinations.
+#' @param tree An object of class \code{"phylo"} containing the same fixed
+#'   topology as the trees sampled from the posterior.
 #' @param sdev Numeric, indicating at how many standard deviations should the
 #'   extremes of the chronospace axes be depicted.
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
@@ -58,7 +58,10 @@
 #'
 #' @return A list containing the histogram/scatterplot and axes' extremes for
 #'   each factor included.
+#'
 #' @export
+#'
+#' @references
 #'
 #' @examples
 plot.chronospace<-function(obj, tree = NA, sdev = 1, timemarks = NULL,
@@ -343,10 +346,10 @@ plot.chronospace<-function(obj, tree = NA, sdev = 1, timemarks = NULL,
 #' @description Identify the most sensitive nodes associated to each factor, and
 #'   plot their ages proportion distributions.
 #'
-#' @param obj An object containing one or more ordinations created using
-#'   [chronospace()].
-#' @param tree An object of class "phylo" containing the same fixed topology as
-#'   the trees from the posterior.
+#' @param obj An object of class \code{"chronospace"} containing one or more
+#'   ordinations.
+#' @param tree An object of class \code{"phylo"} containing the same fixed
+#'   topology as the trees from the posterior.
 #' @param amount_of_change Numeric, specyfing the desired amount of variation in
 #'   age (expressed in million of years) above which the nodes are retained and
 #'   depicted.
@@ -371,7 +374,10 @@ plot.chronospace<-function(obj, tree = NA, sdev = 1, timemarks = NULL,
 #'
 #' @return A panel showing the relative proportions distribution for the age of
 #'   each of the most sensitive nodes #associated to each factor.
+#'
 #' @export
+#'
+#' @references
 #'
 #' @examples
 sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades,

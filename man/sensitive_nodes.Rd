@@ -14,11 +14,10 @@ sensitive_nodes(
 )
 }
 \arguments{
-\item{obj}{An object containing one or more ordinations created using
-\code{\link[=chronospace]{chronospace()}}.}
+\item{obj}{An object of class \code{"chronospace"}.}
 
-\item{tree}{An object of class "phylo" containing the same fixed topology as
-the trees from the posterior.}
+\item{tree}{An object of class \code{"phylo"} containing the same fixed
+topology as the trees from the posterior.}
 
 \item{amount_of_change}{Numeric, specyfing the desired amount of variation in
 age (expressed in million of years) above which the nodes are retained and

@@ -30,7 +30,10 @@
 #'   the first n clumns reprresents a node in the fixed topology. The last g
 #'   columns indicate classification of each tree to each of the methodological
 #'   groups.
+#'
 #' @export
+#'
+#' @seealso \code{\link{chronospace}}
 #'
 #' @examples
 extract_ages <- function(path = NA, type, sample) {

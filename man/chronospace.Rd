@@ -15,7 +15,7 @@ factors with less than three levels).}
 }
 \value{
 The total and non-redundant percentages of variation accounted for
-each factor are informed. Also an object of class \code{"chronospace"} is
+each factor are informed. An object of class \code{"chronospace"} is
 returned invisibly, with a list containing the ordination computed for each
 factor.
 }
@@ -31,4 +31,8 @@ obtained through different methodological approaches. By default
 using the variation left after removing the portion associated to all the
 other factors. If \code{vartype = "total"} (or if there is only one factor
 being assessed), bgPCA is performed over the raw variation in node ages.
+}
+\seealso{
+\code{\link{plot.chronospace}}, \code{\link{sensitive_nodes}},
+\code{\link{ltt_sensitivity}}
 }

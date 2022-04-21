@@ -39,3 +39,6 @@ employed to subsample genes) and be stored in an exclusive folder. The
 topology is assumed constrained, such that chronograms differ only in the
 branch lengths (and therefore, in their inferred node ages).
 }
+\seealso{
+\code{\link{chronospace}}
+}

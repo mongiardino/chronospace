@@ -25,6 +25,11 @@
 #'
 #' @export
 #'
+#' @seealso \code{\link{plot.chronospace}}, \code{\link{sensitive_nodes}},
+#'   \code{\link{ltt_sensitivity}}.
+#'
+#' @references
+#'
 #' @examples
 chronospace <- function(data_ages, vartype = "non-redundant")  {
 

@@ -23,11 +23,10 @@
 )
 }
 \arguments{
-\item{obj}{An object containing one or more ordinations created using
-\code{\link[=chronospace]{chronospace()}}.}
+\item{obj}{An object of class \code{"chronospace"}.}
 
-\item{tree}{An object of class "phylo" containing the same fixed topology as
-the trees sampled from the posterior.}
+\item{tree}{An object of class \code{"phylo"} containing the same fixed
+topology as the trees sampled from the posterior.}
 
 \item{sdev}{Numeric, indicating at how many standard deviations should the
 extremes of the chronospace axes be depicted.}
