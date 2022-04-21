@@ -1,18 +1,19 @@
 Package: chronospace
-Title: Statistical Assessment of the Impact of Methodological Decisions on Time-Calibrated Phylogenies
+Title: Statistical Assessment of the Impact of Methodological Decisions on
+    Time-Calibrated Phylogenies
 Version: 0.0.0.9000
 Authors@R: c(
-    person("Nicolas", "Mongiardino Koch", "mongiar@hotmail.com ", role = c("aut", "cre"),
+    person("Nicolas", "Mongiardino Koch", "mongiar@hotmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-6317-5869")),
     person("Pablo", "Milla Carmona", "pablomillac@gmail.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-0396-6244")))
-Description: 'chronospace' provides a way for exploring, visualizing and interpreting variation in time-calibrated 
-    topologies obtained through Bayesian dating methods, relying on between-group PCA and other tools to estimate the 
-    impact of different methodological decisions on inferred ages.
+           comment = c(ORCID = "0000-0002-0396-6244"))
+  )
+Description: 'chronospace' provides a way for exploring, visualizing and
+    interpreting variation in time-calibrated topologies obtained through
+    Bayesian dating methods, relying on between-group PCA and other tools
+    to estimate the impact of different methodological decisions on
+    inferred ages.
 License: MIT + file LICENSE
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
 URL: https://github.com/mongiardino/chronospace
 BugReports: https://github.com/mongiardino/chronospace/issues
 Imports: 
@@ -25,5 +26,8 @@ Imports:
     patchwork,
     phangorn,
     phytools
-Remotes:  
+Remotes: 
     bioc::https://bioconductor.org/packages/release/bioc/html/ggtree.html
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2

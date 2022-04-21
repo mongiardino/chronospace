@@ -6,7 +6,6 @@
 \usage{
 sensitive_nodes(
   obj,
-  tree,
   amount_of_change,
   chosen_clades,
   factors = 1:length(obj),
@@ -16,9 +15,6 @@ sensitive_nodes(
 \arguments{
 \item{obj}{An object of class \code{"chronospace"} containing one or more
 ordinations.}
-
-\item{tree}{An object of class \code{"phylo"} containing the same fixed
-topology as the trees from the posterior.}
 
 \item{amount_of_change}{Numeric, specyfing the desired amount of variation in
 age (expressed in million of years) above which the nodes are retained and
@@ -33,6 +29,9 @@ explicited.}
 
 \item{colors}{The colors used to represent groups (i.e. levels) of each
 factor.}
+
+\item{tree}{An object of class \code{"phylo"} containing the same fixed
+topology as the trees from the posterior.}
 }
 \value{
 A panel showing the relative proportions distribution for the age of
