@@ -64,11 +64,11 @@
 #' @references
 #'
 #' @examples
-plot.chronospace<-function(obj, tree = NA, sdev = 1, timemarks = NULL,
-                           ellipses=TRUE, centroids=FALSE, distances = FALSE,
-                           colors = 1:5, factors = 1:length(obj), axes = c(1, 2),
-                           pt.alpha = 0.5, pt.size = 1.5, ell.width = 1.2,
-                           dist.width = 1, ct.size = 5) {
+plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
+                             ellipses=TRUE, centroids=FALSE, distances = FALSE,
+                             colors = 1:5, factors = 1:length(obj), axes = c(1, 2),
+                             pt.alpha = 0.5, pt.size = 1.5, ell.width = 1.2,
+                             dist.width = 1, ct.size = 5) {
 
   if(length(axes) != 2) axes <- c(1, 2)
 
@@ -88,6 +88,7 @@ plot.chronospace<-function(obj, tree = NA, sdev = 1, timemarks = NULL,
     groups <- bgPCA$groups
     totvar <- bgPCA$totvar
     ages <- bgPCA$ages
+    tree <- bgPCA$tree
 
     #set axes to either 1 (univariate plot) if the variable contains only two
     #groups, or 2 (bivariate plot) if it includes more groups
@@ -380,7 +381,7 @@ plot.chronospace<-function(obj, tree = NA, sdev = 1, timemarks = NULL,
 #' @references
 #'
 #' @examples
-sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades,
+sensitive_nodes <- function(obj, amount_of_change, chosen_clades,
                             factors = 1:length(obj), colors = 1:5){
 
   #create object for storing overall results, assign names
@@ -394,6 +395,7 @@ sensitive_nodes <- function(obj, tree, amount_of_change, chosen_clades,
     bgPCA <- obj[[i]]
     groups <- bgPCA$groups
     ages <- bgPCA$ages
+    tree <- bgPCA$tree
 
     #plot the posterior distribution of nodes with the strongest differences
     #between runs

@@ -14,7 +14,8 @@ sensitive_nodes(
 )
 }
 \arguments{
-\item{obj}{An object of class \code{"chronospace"}.}
+\item{obj}{An object of class \code{"chronospace"} containing one or more
+ordinations.}
 
 \item{tree}{An object of class \code{"phylo"} containing the same fixed
 topology as the trees from the posterior.}
@@ -52,4 +53,7 @@ subclades defined by each node.
 
 For each of these most sensitive nodes, the function will plot the
 distribution of relative proportion of ages, by level.
+}
+\references{
+
 }

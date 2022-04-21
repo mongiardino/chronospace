@@ -6,7 +6,6 @@
 \usage{
 \method{plot}{chronospace}(
   obj,
-  tree = NA,
   sdev = 1,
   timemarks = NULL,
   ellipses = TRUE,
@@ -23,10 +22,8 @@
 )
 }
 \arguments{
-\item{obj}{An object of class \code{"chronospace"}.}
-
-\item{tree}{An object of class \code{"phylo"} containing the same fixed
-topology as the trees sampled from the posterior.}
+\item{obj}{An object of class \code{"chronospace"} containing one or more
+ordinations.}
 
 \item{sdev}{Numeric, indicating at how many standard deviations should the
 extremes of the chronospace axes be depicted.}
@@ -70,6 +67,9 @@ factors with less than three levels).}
 
 \item{ct.size}{Numeric, indicating the size of the points marking groups'
 centroids (not meaningful for factors with less than three levels).}
+
+\item{tree}{An object of class \code{"phylo"} containing the same fixed
+topology as the trees sampled from the posterior.}
 }
 \value{
 A list containing the histogram/scatterplot and axes' extremes for
@@ -92,4 +92,7 @@ bivariate scatterplot for factors with three or more levels. The second
 output consists of 'theoretical' trees representing the positive and
 negative extremes of each synthetic axis, depicting the variation in nodes
 ages captured by it.
+}
+\references{
+
 }
