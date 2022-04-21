@@ -503,25 +503,32 @@ sensitive_nodes <- function(obj, amount_of_change, chosen_clades,
 #' @description For each factor, plot the LTT curve of each level averaged
 #'   across the corresponding  subsample of chronograms.
 #'
-#' @param data_ages A matrix created using [extract_ages()].
+#' @param data_ages A \code{"dataAges} created using [extract_ages()].
 #' @param average Character, indicating whether the 'mean' or 'median' is to be
 #'   used in computations.
+#' @param colors The colors used to represent groups (i.e. levels) of each
+#'   factor.
+#' @param timemarks Numeric; an optional vector containing ages to be marked by
+#'   vertical lines in LTT plots.
 #'
 #' @export
 #'
 #' @examples
-ltt_sensitivity <- function(data_ages, average = 'median') {
+ltt_sensitivity <- function(data_ages, average = 'median', colors=1:5, timemarks=NULL) {
 
-  ages <- data_ages[,which(grepl('clade', colnames(data_ages)))]
-  groups <- data_ages[,which(grepl('factor', colnames(data_ages)))]
-  plots <- vector(mode = "list", length = ncol(groups))
+  ages <- data_ages$ages
+  factors <- data_ages$factors
 
-  for(i in 1:ncol(groups)) {
-    sample <- nrow(groups)/length(unique(groups[,i]))
+  ltts <- vector(mode = "list", length = ncol(factors))
+  names(ltts)<-colnames(factors)
+
+  for(i in 1:ncol(factors)) {
+
+    sample <- nrow(factors)/length(unique(factors[,i]))
     num_nodes <- ncol(ages)
 
     this_ages <- apply(ages, 1, sort)
-    this_groups <- groups[,i]
+    this_groups <- factors[,i]
     this_order <- order(this_groups)
 
     this_ages <- this_ages[,this_order]
@@ -546,14 +553,16 @@ ltt_sensitivity <- function(data_ages, average = 'median') {
     to_add <- ages_average %>% dplyr::mutate(num_lineages = num_lineages - 1)
     ages_average <- rbind(ages_average, to_add) %>% dplyr::arrange(type, num_lineages)
 
-    plots[[i]] <- ggplot(ages_average, aes(x = av_value, y = num_lineages, color = type)) +
-      geom_line(alpha = 0.3, size = 2) + scale_y_log10() + scale_x_reverse() +
-      theme_bw() + xlab('Age (Ma)') + ylab('Number of lineages')
+    ltts[[i]] <- ggplot(ages_average, aes(x = av_value, y = num_lineages, color = type)) +
+      scale_color_manual(values = colors) +
+      geom_line(alpha = 0.5, size = 2) + scale_y_log10() + scale_x_reverse() +
+      theme_bw() + xlab('Age (Ma)') + ylab('Number of lineages') +
+      theme(panel.grid = element_blank()) +
+      geom_vline(xintercept = timemarks, lty = 2, col = "gray") +
+      guides(colour = guide_legend(override.aes = list(alpha = 1, shape = 21,
+                                                       fill = colors[1:nlevels(this_groups)],
+                                                       size = 3.5)))
   }
-
-  ltts <- ggpubr::annotate_figure(ggpubr::ggarrange(plotlist = plots,
-                                                    common.legend = F, legend = 'bottom',
-                                                    ncol = ncol(groups), nrow = 1))
 
   return(ltts)
 

@@ -4,13 +4,19 @@
 \alias{ltt_sensitivity}
 \title{Plot average Lineage Through Time (LTT) curves}
 \usage{
-ltt_sensitivity(data_ages, average = "median")
+ltt_sensitivity(data_ages, average = "median", colors = 1:5, timemarks = NULL)
 }
 \arguments{
-\item{data_ages}{A matrix created using \code{\link[=extract_ages]{extract_ages()}}.}
+\item{data_ages}{A \code{"dataAges} created using \code{\link[=extract_ages]{extract_ages()}}.}
 
 \item{average}{Character, indicating whether the 'mean' or 'median' is to be
 used in computations.}
+
+\item{colors}{The colors used to represent groups (i.e. levels) of each
+factor.}
+
+\item{timemarks}{Numeric; an optional vector containing ages to be marked by
+vertical lines in LTT plots.}
 }
 \description{
 For each factor, plot the LTT curve of each level averaged
