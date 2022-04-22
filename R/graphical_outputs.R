@@ -96,7 +96,8 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
     if(ncol(bgPCA$x) >= 2) num_functions = 2
 
     #gather data for plotting
-    to_plot <- data.frame(coordinates = bgPCA$x, groups = groups)
+    colnames(bgPCA$x)<-NULL
+    to_plot <- data.frame(coordinates = bgPCA$x[,axes], groups = groups)
 
     #plot chronospace
     if(num_functions == 1) { #univariate
@@ -111,8 +112,8 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
     } else { #bivariate
       #compute groups centroids from bgPCA scores
       cents <- apply(X = bgPCA$x, MARGIN = 2, FUN = tapply, groups, mean)
-      cents_df <- data.frame(coordinates.1 = cents[,1],
-                             coordinates.2 = cents[,2],
+      cents_df <- data.frame(coordinates.1 = cents[,axes[1]],
+                             coordinates.2 = cents[,axes[2]],
                              groups = rownames(cents))
 
       #compute groups centroids from original variables;
@@ -130,9 +131,9 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
         theme_bw() + scale_color_manual(values = colors) +
         theme(legend.title = element_blank(), panel.grid = element_blank()) +
         xlab(paste0('bgPCA axis ', axes[1],  ' (',
-                    round((100 * apply(bgPCA$x,2,var)[1] / totvar), 2), '% of variance)')) +
+                    round((100 * apply(bgPCA$x,2,var)[axes[1]] / totvar), 2), '% of variance)')) +
         ylab(paste0('bgPCA axis ', axes[2],  ' (',
-                    round((100 * apply(bgPCA$x,2,var)[2] / totvar), 2), '% of variance)'))
+                    round((100 * apply(bgPCA$x,2,var)[axes[2]] / totvar), 2), '% of variance)'))
 
       if(ellipses){
         chronospace <- chronospace +
@@ -304,14 +305,14 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
         negative <- tree_minus_gg + aes(color=delta) +
           scale_color_gradient2(limits = range(c(changes_minus, changes_plus)),
                                 high = "red", low = "blue", mid = "gray", midpoint = 0) +
-          ggtitle(paste0(facnames[i], " - bgPC", j, ", negative extreme")) +
+          ggtitle(paste0(facnames[i], " - bgPC", axes[j], ", negative extreme")) +
           theme(plot.title = element_text(hjust = 0.5)) +
           geom_vline(xintercept = timemarks1.2, lty = 2, col = "gray")
 
         positive <- tree_plus_gg + aes(color = delta) +
           scale_color_gradient2(limits = range(c(changes_minus, changes_plus)),
                                 high = "red", low = "blue", mid = "gray", midpoint = 0) +
-          ggtitle(paste0(facnames[i], " - bgPC", j, ", positive extreme")) +
+          ggtitle(paste0(facnames[i], " - bgPC", axes[j], ", positive extreme")) +
           theme(plot.title = element_text(hjust = 0.5)) +
           geom_vline(xintercept = timemarks2.2, lty = 2, col = "gray")
 
@@ -322,7 +323,7 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
       }
 
       #assign list names and save
-      names(PCextremes) <- paste0("bgPC", 1:j)
+      names(PCextremes) <- paste0("bgPC", axes[1:j])
       results_i$PC_extremes <- PCextremes
 
     }

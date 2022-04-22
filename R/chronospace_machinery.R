@@ -71,7 +71,7 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
 
     if(ncol(groups) > 1){
       #use bgPCA to compute an ordination that is residual to all factors but factor i
-      bgPCA2.1 <- bgprcomp(x = ages, groups = groups[,-i])
+      bgPCA2.1 <- bgprcomp(x = ages, groups = interaction(groups[,-i]))
       resids2.1 <- bgPCA2.1$residuals
 
       #perform bgPCA between groups defined by factor i over residual variation
@@ -179,7 +179,7 @@ chronospace2 <- function(data_ages, vartype = "non-redundant")  {
 
     if(ncol(factors) > 1){
       #use bgPCA to compute an ordination that is residual to all factors but factor i
-      bgPCA2.1 <- bgprcomp(x = ages, groups = factors[,-i])
+      bgPCA2.1 <- bgprcomp(x = ages, groups = interaction(factors[,-i]))
       resids2.1 <- bgPCA2.1$residuals
 
       #perform bgPCA between groups defined by factor i over residual variation
