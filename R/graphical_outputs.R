@@ -64,6 +64,26 @@
 #' @references
 #'
 #' @examples
+#' #Load ages data
+#' data("data_ages")
+#'
+#' #Create chronospace
+#' cspace <- chronospace(data_ages)
+#'
+#' #Plot chronospace
+#' plot(cspace)
+#'
+#' #Show (bivariate) ordination for factor A
+#' cspace$factor_A$ordination
+#'
+#' #Show extremes of the first bgPC axis for factor A
+#' cspace$factor_A$PC_extremes
+#'
+#' #' #Show (univariate) ordination for factor B
+#' cspace$factor_B$ordination
+#'
+#' #Show extremes of the bgPC axis for factor B
+#' cspace$factor_B$PC_extremes
 plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
                              ellipses=TRUE, centroids=FALSE, distances = FALSE,
                              colors = 1:5, factors = 1:length(obj), axes = c(1, 2),
@@ -97,7 +117,11 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
 
     #gather data for plotting
     colnames(bgPCA$x)<-NULL
-    to_plot <- data.frame(coordinates = bgPCA$x[,axes], groups = groups)
+    if(num_functions == 1) {
+      to_plot <- data.frame(coordinates = bgPCA$x, groups = groups)
+    } else {
+      to_plot <- data.frame(coordinates = bgPCA$x[,axes], groups = groups)
+    }
 
     #plot chronospace
     if(num_functions == 1) { #univariate
@@ -384,6 +408,17 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
 #' @references
 #'
 #' @examples
+#' #Load ages data
+#' data("data_ages")
+#'
+#' #Create chronospace
+#' cspace <- chronospace(data_ages)
+#'
+#' #Get the 5 most sensitive nodes
+#' sensinodes5 <- sensitive_nodes(obj = cspace, chosen_clades = 5)
+#'
+#' #Show ages distribution for the 5 most sensitive nodes associated to factor A
+#' sensinodes5$factor_A
 sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades,
                             factors = 1:length(obj), colors = 1:5, timemarks = NULL){
 
@@ -519,6 +554,14 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades,
 #' @export
 #'
 #' @examples
+#' #Load ages data
+#' data("data_ages")
+#'
+#' #Create LTT plots
+#' sensiltt <- ltt_sensitivity(data_ages = data, average = "mean")
+#'
+#' #Show LTT plot for factor A
+#' sensiltt$factor_A
 ltt_sensitivity <- function(data_ages, average = 'median', colors=1:5, timemarks=NULL) {
 
   ages <- data_ages$ages

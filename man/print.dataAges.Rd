@@ -2,16 +2,21 @@
 % Please edit documentation in R/extract_ages.R
 \name{print.dataAges}
 \alias{print.dataAges}
-\title{Print dataAges objects}
+\title{Print \code{"dataAges"} objects}
 \usage{
 \method{print}{dataAges}(x)
 }
 \arguments{
-\item{x}{a dataAges object.}
+\item{x}{a \code{"dataAges"} object.}
 }
 \value{
-
+Information on the number of trees, factors, and general structure of
+the object.
 }
 \description{
-Print dataAges objects
+Print \code{"dataAges"} objects
+}
+\examples{
+data("data_ages")
+print(data_ages)
 }

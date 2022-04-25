@@ -7,7 +7,7 @@
 chronospace(data_ages, vartype = "non-redundant")
 }
 \arguments{
-\item{data_ages}{A matrix created using \code{\link[=extract_ages]{extract_ages()}}.}
+\item{data_ages}{A \code{"dataAges"} object created using \code{\link[=extract_ages]{extract_ages()}}.}
 
 \item{vartype}{Character, indicating the type of variation to be retained
 (\code{"total"} or \code{"non-redundant"}, see Details; not meaningful for
@@ -31,6 +31,16 @@ obtained through different methodological approaches. By default
 using the variation left after removing the portion associated to all the
 other factors. If \code{vartype = "total"} (or if there is only one factor
 being assessed), bgPCA is performed over the raw variation in node ages.
+}
+\examples{
+#Load ages data
+data("data_ages")
+
+#Create chronospace
+cspace <- chronospace(data_ages)
+
+#Inspect object
+cspace
 }
 \references{
 

@@ -17,10 +17,10 @@ assigned to.}
 \item{sample}{The fixed number of trees to retain from each file.}
 }
 \value{
-A \code{t x (n + f)} matrix in which each row is one of \code{t}
-trees, and each of the first \code{n} clumns represents a node in the fixed
-topology. The last \code{f} columns indicate classification of each tree to
-each factor.
+An object of class \code{"dataAges"} with a list containing 1) the
+\code{t x n} ages matrix (where each row is one of \code{t} trees and each
+column one of \code{n} nodes), 2) the \code{f} associated factors, and 3)
+the fixed phylogenetic topology.
 }
 \description{
 Extract and organize ages from files containing the posterior
@@ -38,6 +38,32 @@ effects are of interest (e.g. the model of evolution used and/or the method
 employed to subsample genes) and be stored in an exclusive folder. The
 topology is assumed constrained, such that chronograms differ only in the
 branch lengths (and therefore, in their inferred node ages).
+}
+\examples{
+#Create temporal directory for datedist files
+temp <- dir.create(paste(tempdir(), "files", sep="\\\\"))
+
+#Declare and download datedist files from the internet (this might take a minute)
+url <- "https://raw.githubusercontent.com/mongiardino/chronospace/main/example_files/"
+files <- c("clockCATGTR_ln_sample.datedist",
+           "clockGTR_ln_sample.datedist",
+           "randomCATGTR_ln_sample.datedist",
+           "randomGTR_ln_sample.datedist",
+           "signalCATGTR_ln_sample.datedist",
+           "signalGTR_ln_sample.datedist")
+for(i in 1:length(files)) download.file(paste0(url, files[i]), paste(temp, files[i], sep="\\\\"))
+
+#Check files names, compare against type order below
+list.files(temp)
+
+#Set type of runs and number of chronograms to be retaiend
+type <- list(c('clock', 'clock', 'random', 'random', 'signal', 'signal'),
+             c('CATGTR', 'GTR', 'CATGTR', 'GTR', 'CATGTR', 'GTR'))
+sample <- 500
+
+#Import data to R (this might take a minute)
+data <- extract_ages(path = temp, type = type, sample = sample)
+data
 }
 \seealso{
 \code{\link{chronospace}}

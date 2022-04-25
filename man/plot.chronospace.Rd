@@ -93,6 +93,28 @@ output consists of 'theoretical' trees representing the positive and
 negative extremes of each synthetic axis, depicting the variation in nodes
 ages captured by it.
 }
+\examples{
+#Load ages data
+data("data_ages")
+
+#Create chronospace
+cspace <- chronospace(data_ages)
+
+#Plot chronospace
+plot(cspace)
+
+#Show (bivariate) ordination for factor A
+cspace$factor_A$ordination
+
+#Show extremes of the first bgPC axis for factor A
+cspace$factor_A$PC_extremes
+
+#' #Show (univariate) ordination for factor B
+cspace$factor_B$ordination
+
+#Show extremes of the bgPC axis for factor B
+cspace$factor_B$PC_extremes
+}
 \references{
 
 }

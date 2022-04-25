@@ -57,6 +57,19 @@ subclades defined by each node.
 For each of these most sensitive nodes, the function will plot the
 distribution of relative proportion of ages, by level.
 }
+\examples{
+#Load ages data
+data("data_ages")
+
+#Create chronospace
+cspace <- chronospace(data_ages)
+
+#Get the 5 most sensitive nodes
+sensinodes5 <- sensitive_nodes(obj = cspace, chosen_clades = 5)
+
+#Show ages distribution for the 5 most sensitive nodes associated to factor A
+sensinodes5$factor_A
+}
 \references{
 
 }

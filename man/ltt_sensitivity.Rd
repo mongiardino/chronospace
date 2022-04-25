@@ -22,3 +22,13 @@ vertical lines in LTT plots.}
 For each factor, plot the LTT curve of each level averaged
 across the corresponding  subsample of chronograms.
 }
+\examples{
+#Load ages data
+data("data_ages")
+
+#Create LTT plots
+sensiltt <- ltt_sensitivity(data_ages = data, average = "mean")
+
+#Show LTT plot for factor A
+sensiltt$factor_A
+}

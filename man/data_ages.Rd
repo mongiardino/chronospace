@@ -8,7 +8,7 @@
 a \code{"dataAges"} object with a list containing
 \describe{
 \item{$ages}{a \code{t x n} data.frame with ages data (where each row is
-one of \code{t} trees and each column one of \code{n} nodes}
+one of \code{t} trees and each column one of \code{n} nodes.}
 \item{$factors}{a \code{t x f} data.frame specifying the classification
 of each of the \code{t} trees into \code{f} factors.}
 \item{$topology}{the fixed phylogenetic topology.}
@@ -19,7 +19,7 @@ data_ages
 }
 \description{
 Ages data of 3000 chronograms extracted from six posterior
-distributions of time-calibrated trees, created using \code{\link[=extract_ages]{extract_ages()}}
+distributions of time-calibrated trees, created using \code{\link[=extract_ages]{extract_ages()}}.
 }
 \details{
 A sample of chronograms extracted from six posterior distributions
