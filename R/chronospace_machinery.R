@@ -54,6 +54,14 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
   results <- vector(mode = "list", length = ncol(factors))
   names(results) <- facnames
 
+  #compute total variation
+  totvar <- sum(apply(ages, 2, var))
+
+  #perform bgPCA for the crossing of all factors
+  bgPCA0 <- bgprcomp(x = ages, groups = interaction(factors))
+  totexpvar <- sum(apply(bgPCA0$x, 2, var))
+  acc_tot <- 100 * (totexpvar / totvar)
+
   #perform bgPCA using each factor separately
   for(i in 1:ncol(factors)) {
 
@@ -61,7 +69,6 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
     bgPCA1 <- bgprcomp(x = ages, groups = factors[,i])
 
     #compute percentage of variation explained
-    totvar <- sum(apply(ages, 2, var))
     expvar <- sum(apply(bgPCA1$x, 2, var))
     perc_tot <- 100 * (expvar / totvar)
 
@@ -100,11 +107,28 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
     }
 
     #select which bgPCA results are going to be used
-    if(vartype == "total" | ncol(factors) == 1) bgPCA <- bgPCA1
-    if(vartype == "non-redundant" & ncol(factors) > 1) bgPCA <- bgPCA2.2
+    if(vartype == "total" | ncol(factors) == 1) {
+      bgPCA <- bgPCA1
+      perc <- perc_tot
+    }
+
+    if(vartype == "non-redundant" & ncol(factors) > 1) {
+      bgPCA <- bgPCA2.2
+      perc <- perc_nonred
+    }
+
+
+    #create table with percentages of variation explained by each axis
+    vars <- apply(bgPCA$x, 2, var) / totvar
+    tab <- round(cbind(variance=vars, cummulative=cumsum(vars)), 5)
 
     #store bgPCA results, along with total variation and groups of factor i
     bgPCA$totvar <- totvar
+    bgPCA$acc_tot <- acc_tot
+    bgPCA$perc <- perc
+    bgPCA$tab <- tab
+    bgPCA$vartype <- vartype
+
     bgPCA$groups <- factors[,i]
     bgPCA$ages <- ages
     bgPCA$tree <- data_ages$topology
@@ -115,6 +139,40 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
 
   return(invisible(results))
 }
+
+# print chronospace object -------------------------------------------------------
+
+#' Print \code{"dataAges"} objects
+#'
+#' @param x A \code{"chronospace"} object
+#'
+#' @return Information on percentages of age variation explained by the included
+#'   factors
+#'
+#' @export
+#'
+#' @examples
+#' #Load ages data
+#' data("data_ages")
+#'
+#' #Create chronospace
+#' cspace <- chronospace(data_ages)
+#'
+#' #Inspect object
+#' print(cspace)
+print.chronospace <- function(x) {
+  cat(paste0("Percentage of variation accounted by all factors (including interactions): ",
+             round(x[[1]]$acc_tot, 3), "%", "\n"))
+  for(i in 1:length(x)) {
+    cat(paste0("Percentage of ", x[[i]]$vartype, " variation accounted by ", names(x)[i], " : ",
+               round(x[[i]]$perc, 3), "%", "\n"))
+    tab <- as.data.frame(x[[i]]$tab)
+    rownames(tab) <- paste0("bgPC",1:nrow(tab))
+    print(tab)
+  }
+
+}
+
 
 
 # internal between-group PCA function ---------------------------------------------
