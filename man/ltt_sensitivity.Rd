@@ -7,7 +7,7 @@
 ltt_sensitivity(data_ages, average = "median", colors = 1:5, timemarks = NULL)
 }
 \arguments{
-\item{data_ages}{A \code{"dataAges} created using \code{\link[=extract_ages]{extract_ages()}}.}
+\item{data_ages}{A \code{"dataAges"} object created using \code{\link[=extract_ages]{extract_ages()}}.}
 
 \item{average}{Character, indicating whether the 'mean' or 'median' is to be
 used in computations.}

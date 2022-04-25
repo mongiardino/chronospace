@@ -508,7 +508,7 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades,
 #' @description For each factor, plot the LTT curve of each level averaged
 #'   across the corresponding  subsample of chronograms.
 #'
-#' @param data_ages A \code{"dataAges} created using [extract_ages()].
+#' @param data_ages A \code{"dataAges"} object created using [extract_ages()].
 #' @param average Character, indicating whether the 'mean' or 'median' is to be
 #'   used in computations.
 #' @param colors The colors used to represent groups (i.e. levels) of each
