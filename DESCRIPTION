@@ -3,9 +3,9 @@ Title: Statistical Assessment of the Impact of Methodological Decisions on
     Time-Calibrated Phylogenies
 Version: 0.0.0.9000
 Authors@R: c(
-    person("Nicolas", "Mongiardino Koch", "mongiar@hotmail.com", role = c("aut", "cre"),
+    person(given = "Nicolas", family = "Mongiardino Koch", email = "mongiar@hotmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-6317-5869")),
-    person("Pablo", "Milla Carmona", "pablomillac@gmail.com", role = c("aut", "cre"),
+    person(given = "Pablo", family = "Milla Carmona", email = "pablomillac@gmail.com", role = c("aut"),
            comment = c(ORCID = "0000-0002-0396-6244"))
   )
 Description: 'chronospace' provides a way for exploring, visualizing and
@@ -25,7 +25,9 @@ Imports:
     magrittr,
     patchwork,
     phangorn,
-    phytools
+    phytools,
+    tibble,
+    tidyr
 Remotes: 
     bioc::https://bioconductor.org/packages/release/bioc/html/ggtree.html
 Encoding: UTF-8

@@ -37,7 +37,9 @@
 #'
 #' @examples
 #' #Create temporal directory for datedist files
-#' temp <- dir.create(paste(tempdir(), "files", sep="\\"))
+#' temp0 <- tempdir()
+#' dir.create(paste(temp0, "files", sep="\\"))
+#' temp <- paste(temp0, "files", sep="\\")
 #'
 #' #Declare and download datedist files from the internet (this might take a minute)
 #' url <- "https://raw.githubusercontent.com/mongiardino/chronospace/main/example_files/"

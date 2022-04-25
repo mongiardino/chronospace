@@ -67,9 +67,6 @@ factors with less than three levels).}
 
 \item{ct.size}{Numeric, indicating the size of the points marking groups'
 centroids (not meaningful for factors with less than three levels).}
-
-\item{tree}{An object of class \code{"phylo"} containing the same fixed
-topology as the trees sampled from the posterior.}
 }
 \value{
 A list containing the histogram/scatterplot and axes' extremes for

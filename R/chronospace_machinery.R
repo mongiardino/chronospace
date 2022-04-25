@@ -55,11 +55,11 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
   names(results) <- facnames
 
   #compute total variation
-  totvar <- sum(apply(ages, 2, var))
+  totvar <- sum(apply(ages, 2, stats::var))
 
   #perform bgPCA for the crossing of all factors
   bgPCA0 <- bgprcomp(x = ages, groups = interaction(factors))
-  totexpvar <- sum(apply(bgPCA0$x, 2, var))
+  totexpvar <- sum(apply(bgPCA0$x, 2, stats::var))
   acc_tot <- 100 * (totexpvar / totvar)
 
   #perform bgPCA using each factor separately
@@ -69,7 +69,7 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
     bgPCA1 <- bgprcomp(x = ages, groups = factors[,i])
 
     #compute percentage of variation explained
-    expvar <- sum(apply(bgPCA1$x, 2, var))
+    expvar <- sum(apply(bgPCA1$x, 2, stats::var))
     perc_tot <- 100 * (expvar / totvar)
 
     #report proportion of total variation explained
@@ -92,7 +92,7 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
 
       #perform bgPCA between groups defined by factor i over residual variation
       bgPCA2.2 <- bgprcomp(x = resids2.1, groups = factors[,i])
-      expvar2.2 <- sum(apply(bgPCA2.2$x, 2, var))
+      expvar2.2 <- sum(apply(bgPCA2.2$x, 2, stats::var))
 
       #compute percentage of non-redundant variation explained
       perc_nonred <- 100 * (expvar2.2 / totvar)
@@ -119,7 +119,7 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
 
 
     #create table with percentages of variation explained by each axis
-    vars <- apply(bgPCA$x, 2, var) / totvar
+    vars <- apply(bgPCA$x, 2, stats::var) / totvar
     tab <- round(cbind(variance=vars, cummulative=cumsum(vars)), 5)
 
     #store bgPCA results, along with total variation and groups of factor i

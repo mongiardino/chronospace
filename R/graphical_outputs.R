@@ -12,8 +12,6 @@
 #'
 #' @param obj An object of class \code{"chronospace"} containing one or more
 #'   ordinations.
-#' @param tree An object of class \code{"phylo"} containing the same fixed
-#'   topology as the trees sampled from the posterior.
 #' @param sdev Numeric, indicating at how many standard deviations should the
 #'   extremes of the chronospace axes be depicted.
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
@@ -131,7 +129,7 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
         scale_fill_manual(values = colors) + ylab('Count') +
         theme(legend.title = element_blank(), panel.grid = element_blank()) +
         xlab(paste0('bgPCA axis 1 (',
-                    round((100 * apply(bgPCA$x,2,var)[1] / totvar), 2), '% of variance)'))
+                    round((100 * apply(bgPCA$x, 2, stats::var)[1] / totvar), 2), '% of variance)'))
 
     } else { #bivariate
       #compute groups centroids from bgPCA scores
@@ -155,9 +153,9 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
         theme_bw() + scale_color_manual(values = colors) +
         theme(legend.title = element_blank(), panel.grid = element_blank()) +
         xlab(paste0('bgPCA axis ', axes[1],  ' (',
-                    round((100 * apply(bgPCA$x,2,var)[axes[1]] / totvar), 2), '% of variance)')) +
+                    round((100 * apply(bgPCA$x,2, stats::var)[axes[1]] / totvar), 2), '% of variance)')) +
         ylab(paste0('bgPCA axis ', axes[2],  ' (',
-                    round((100 * apply(bgPCA$x,2,var)[axes[2]] / totvar), 2), '% of variance)'))
+                    round((100 * apply(bgPCA$x,2, stats::var)[axes[2]] / totvar), 2), '% of variance)'))
 
       if(ellipses){
         chronospace <- chronospace +
@@ -374,8 +372,6 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
 #'
 #' @param obj An object of class \code{"chronospace"} containing one or more
 #'   ordinations.
-#' @param tree An object of class \code{"phylo"} containing the same fixed
-#'   topology as the trees from the posterior.
 #' @param amount_of_change Numeric, specyfing the desired amount of variation in
 #'   age (expressed in million of years) above which the nodes are retained and
 #'   depicted.
@@ -558,7 +554,7 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades,
 #' data("data_ages")
 #'
 #' #Create LTT plots
-#' sensiltt <- ltt_sensitivity(data_ages = data, average = "mean")
+#' sensiltt <- ltt_sensitivity(data_ages = data_ages, average = "mean")
 #'
 #' #Show LTT plot for factor A
 #' sensiltt$factor_A

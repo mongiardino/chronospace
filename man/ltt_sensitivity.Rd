@@ -27,7 +27,7 @@ across the corresponding  subsample of chronograms.
 data("data_ages")
 
 #Create LTT plots
-sensiltt <- ltt_sensitivity(data_ages = data, average = "mean")
+sensiltt <- ltt_sensitivity(data_ages = data_ages, average = "mean")
 
 #Show LTT plot for factor A
 sensiltt$factor_A

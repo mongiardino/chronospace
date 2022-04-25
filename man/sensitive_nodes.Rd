@@ -33,9 +33,6 @@ factor.}
 
 \item{timemarks}{Numeric; an optional vector containing ages to be marked by
 vertical lines.}
-
-\item{tree}{An object of class \code{"phylo"} containing the same fixed
-topology as the trees from the posterior.}
 }
 \value{
 A panel showing the relative proportions distribution for the age of
