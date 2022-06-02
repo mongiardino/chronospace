@@ -4,7 +4,13 @@
 \alias{ltt_sensitivity}
 \title{Plot average Lineage Through Time (LTT) curves}
 \usage{
-ltt_sensitivity(data_ages, average = "median", colors = 1:5, timemarks = NULL)
+ltt_sensitivity(
+  data_ages,
+  average = "median",
+  colors = 1:5,
+  timemarks = NULL,
+  gscale = TRUE
+)
 }
 \arguments{
 \item{data_ages}{A \code{"dataAges"} object created using \code{\link[=extract_ages]{extract_ages()}}.}
@@ -17,6 +23,9 @@ factor.}
 
 \item{timemarks}{Numeric; an optional vector containing ages to be marked by
 vertical lines in LTT plots.}
+
+\item{gscale}{Logical; whether to add chronostratigraphic scale to trees
+(via \code{deeptime}).}
 }
 \description{
 For each factor, plot the LTT curve of each level averaged

@@ -8,6 +8,7 @@
   obj,
   sdev = 1,
   timemarks = NULL,
+  gscale = TRUE,
   ellipses = TRUE,
   centroids = FALSE,
   distances = FALSE,
@@ -30,6 +31,9 @@ extremes of the chronospace axes be depicted.}
 
 \item{timemarks}{Numeric; an optional vector containing ages to be marked by
 vertical lines in chronospace representations.}
+
+\item{gscale}{Logical; whether to add chronostratigraphic scale to trees
+(via \code{deeptime}).}
 
 \item{ellipses}{Logical, indicating whether to plot data ellipses for each
 group (not meaningful for factors with less than three levels).}

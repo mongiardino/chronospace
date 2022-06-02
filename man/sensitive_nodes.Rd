@@ -10,7 +10,8 @@ sensitive_nodes(
   chosen_clades,
   factors = 1:length(obj),
   colors = 1:5,
-  timemarks = NULL
+  timemarks = NULL,
+  gscale = TRUE
 )
 }
 \arguments{
@@ -33,6 +34,9 @@ factor.}
 
 \item{timemarks}{Numeric; an optional vector containing ages to be marked by
 vertical lines.}
+
+\item{gscale}{Logical; whether to add chronostratigraphic scale to trees
+(via \code{deeptime}).}
 }
 \value{
 A panel showing the relative proportions distribution for the age of

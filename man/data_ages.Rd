@@ -32,6 +32,9 @@ models of molecular evolution, the site-homogeneous GTR+G and the
 site-heterogeneous CAT+GTR+G (Lartillot & Philippe 2004).
 }
 \references{
-
+Mongiardino Koch, N., Thompson, J. R., Hiley, A. S., McCowin, M. F., Armstrong,
+A. F., Coppard, S. E., Aguilera, F., Bronstein, O., Kroh, A., Mooi, R., & Rouse,
+G. W. (2022). \emph{Phylogenomic analyses of echinoid diversification prompt a
+re-evaluation of their fossil record}. Elife, 11.
 }
 \keyword{datasets}

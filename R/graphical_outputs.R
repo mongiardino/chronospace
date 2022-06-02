@@ -14,8 +14,6 @@
 #'   ordinations.
 #' @param sdev Numeric, indicating at how many standard deviations should the
 #'   extremes of the chronospace axes be depicted.
-#' @param timemarks Numeric; an optional vector containing ages to be marked by
-#'   vertical lines in chronospace representations.
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
 #' @param factors Numeric; the factor or factors whose results are to be
@@ -42,6 +40,10 @@
 #'   factors with less than three levels).
 #' @param ct.size Numeric, indicating the size of the points marking groups'
 #'   centroids (not meaningful for factors with less than three levels).
+#' @param timemarks Numeric; an optional vector containing ages to be marked by
+#'   vertical lines in chronospace representations.
+#' @param gscale Logical; whether to add chronostratigraphic scale to trees
+#'   (via \code{deeptime}).
 #'
 #' @details Starting from the object returned by [chronospace()], this function
 #'   creates the two basic types of plots allowing interpretation of the
@@ -82,7 +84,7 @@
 #'
 #' #Show extremes of the bgPC axis for factor B
 #' cspace$factor_B$PC_extremes
-plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
+plot.chronospace <- function(obj, sdev = 1, timemarks = NULL, gscale = TRUE,
                              ellipses=TRUE, centroids=FALSE, distances = FALSE,
                              colors = 1:5, factors = 1:length(obj), axes = c(1, 2),
                              pt.alpha = 0.5, pt.size = 1.5, ell.width = 1.2,
@@ -306,15 +308,13 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
 
         #if time marks have been specified, use them to  draw vertical lines in the corresponding tree
         if(!is.null(timemarks)){
-          t.max <- max(phytools::nodeHeights(tree_minus))
-          timemarks1.1 <- timemarks[which(timemarks <= t.max)]
-          timemarks1.2 <- t.max - timemarks1.1
+          t.range <- range(phytools::nodeHeights(tree_minus))
+          timemarks1.1 <- timemarks[timemarks <= t.range[2] & timemarks >= t.range[1]]
 
-          t.max <- max(phytools::nodeHeights(tree_plus))
-          timemarks2.1 <- timemarks[which(timemarks <= t.max)]
-          timemarks2.2 <- t.max-timemarks2.1
+          t.range <- range(phytools::nodeHeights(tree_plus))
+          timemarks2.1 <- timemarks[timemarks <= t.range[2] & timemarks >= t.range[1]]
         } else {
-          timemarks1.2 <- timemarks2.2 <- NULL
+          timemarks1.1 <- timemarks2.1 <- NULL
         }
 
         #convert phylo trees into ggtrees, adding delta in branch length to the metadata
@@ -324,19 +324,32 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
           data.frame(node = tree_minus$edge[,2], delta = changes_minus)
 
         #create graphics for each extreme of the bgPC j
+        tree_minus_gg$data$x <- max(tree_minus_gg$data$x) - tree_minus_gg$data$x
         negative <- tree_minus_gg + aes(color=delta) +
           scale_color_gradient2(limits = range(c(changes_minus, changes_plus)),
                                 high = "red", low = "blue", mid = "gray", midpoint = 0) +
-          ggtitle(paste0(facnames[i], " - bgPC", axes[j], ", negative extreme")) +
+          ggtitle(paste0(facnames[i], " - bgPC", axes[j], ", \nnegative extreme")) +
           theme(plot.title = element_text(hjust = 0.5)) +
-          geom_vline(xintercept = timemarks1.2, lty = 2, col = "gray")
+          geom_vline(xintercept = timemarks1.1, lty = 2, col = "gray")
 
+        tree_plus_gg$data$x <- max(tree_plus_gg$data$x) - tree_plus_gg$data$x
         positive <- tree_plus_gg + aes(color = delta) +
           scale_color_gradient2(limits = range(c(changes_minus, changes_plus)),
                                 high = "red", low = "blue", mid = "gray", midpoint = 0) +
-          ggtitle(paste0(facnames[i], " - bgPC", axes[j], ", positive extreme")) +
+          ggtitle(paste0(facnames[i], " - bgPC", axes[j], ", \npositive extreme")) +
           theme(plot.title = element_text(hjust = 0.5)) +
-          geom_vline(xintercept = timemarks2.2, lty = 2, col = "gray")
+          geom_vline(xintercept = timemarks2.1, lty = 2, col = "gray")
+
+        #add chronostratigraphic scale
+        if(gscale == TRUE) {
+          negative <- negative +
+            scale_x_reverse() +
+            coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE)
+
+          positive <- positive +
+            scale_x_reverse() +
+            coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE)
+        }
 
         #combine both into a single graphic and store
         PCextremes[[j]] <- negative + positive + patchwork::plot_layout(guides = "collect") &
@@ -363,6 +376,7 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
 
 #get senstive nodes ----------------------------------------------------
 
+
 #' Obtain the most sensitive nodes and depict their age distribution
 #'
 #' @import ggplot2
@@ -384,6 +398,8 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
 #'   factor.
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
 #'   vertical lines.
+#' @param gscale Logical; whether to add chronostratigraphic scale to trees
+#'   (via \code{deeptime}).
 #'
 #' @details This function identifies, for each factor, the nodes in the fixed
 #'   topology whose ages are most sensitive (i.e. variable) as a function of the
@@ -415,10 +431,10 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL,
 #'
 #' #Show ages distribution for the 5 most sensitive nodes associated to factor A
 #' sensinodes5$factor_A
-sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades,
-                            factors = 1:length(obj), colors = 1:5, timemarks = NULL){
+sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades, factors = 1:length(obj),
+                            colors = 1:5, timemarks = NULL, gscale = TRUE){
 
- #create object for storing overall results, assign names
+  #create object for storing overall results, assign names
   results <- vector(mode = "list", length = length(obj))
   names(results) <- names(obj)
 
@@ -491,15 +507,21 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades,
       }
 
       #make the plot
-      timemarks1.1 <- timemarks*-1
-      to_plot <- data.frame(age = ages[,clade], group = groups)
-      plots[[j]] <- ggplot(to_plot, aes(x = -age, color = group)) +
+      ages_clade_scaled <- (max(ages[,clade]) - ages[,clade]) + min(ages[,clade])
+      timemarks1.1 <- timemarks[timemarks <= max(ages_clade_scaled) & timemarks >= min(ages_clade_scaled)]
+      to_plot <- data.frame(age = ages_clade_scaled, group = groups)
+      plots[[j]] <- ggplot(to_plot, aes(x = age, color = group)) +
         geom_density(alpha = 0.3, size = 2) +
         theme_bw() + scale_color_manual(values = colors) +
         theme(plot.title = element_text(size = 8), panel.grid = element_blank()) +
-        scale_x_continuous(breaks = pretty(-to_plot$age), labels = abs(pretty(-to_plot$age))) +
+        scale_x_continuous(breaks = pretty(to_plot$age), labels = abs(pretty(to_plot$age))) +
         xlab('Age of MRCA') + ylab('Density') +
         geom_vline(xintercept = timemarks1.1, lty = 2, col = "gray")
+
+      if(gscale == TRUE) {
+        plots[[j]] <- plots[[j]] +
+          coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE, pos = "bottom")
+      }
 
       if(length(unique(to_plot$group)) == 2) {
         plots[[j]] <- plots[[j]] +
@@ -529,6 +551,7 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades,
 }
 
 
+
 #LTT by group-------------------------------------------------------------------
 
 #' Plot average Lineage Through Time (LTT) curves
@@ -546,7 +569,8 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades,
 #'   factor.
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
 #'   vertical lines in LTT plots.
-#'
+#' @param gscale Logical; whether to add chronostratigraphic scale to trees
+#'   (via \code{deeptime}).
 #' @export
 #'
 #' @examples
@@ -558,7 +582,7 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades,
 #'
 #' #Show LTT plot for factor A
 #' sensiltt$factor_A
-ltt_sensitivity <- function(data_ages, average = 'median', colors=1:5, timemarks=NULL) {
+ltt_sensitivity <- function(data_ages, average = 'median', colors=1:5, timemarks=NULL, gscale = TRUE) {
 
   ages <- data_ages$ages
   factors <- data_ages$factors
@@ -596,16 +620,24 @@ ltt_sensitivity <- function(data_ages, average = 'median', colors=1:5, timemarks
 
     to_add <- ages_average %>% dplyr::mutate(num_lineages = num_lineages - 1)
     ages_average <- rbind(ages_average, to_add) %>% dplyr::arrange(type, num_lineages)
+    timemarks1.1 <- timemarks[timemarks <= max(ages_average$av_value) &
+                                timemarks >= min(ages_average$av_value)]
 
     ltts[[i]] <- ggplot(ages_average, aes(x = av_value, y = num_lineages, color = type)) +
       scale_color_manual(values = colors) +
       geom_line(alpha = 0.5, size = 2) + scale_y_log10() + scale_x_reverse() +
       theme_bw() + xlab('Age (Ma)') + ylab('Number of lineages') +
       theme(panel.grid = element_blank()) +
-      geom_vline(xintercept = timemarks, lty = 2, col = "gray") +
+      geom_vline(xintercept = timemarks1.1, lty = 2, col = "gray") +
       guides(colour = guide_legend(override.aes = list(alpha = 1, shape = 21,
                                                        fill = colors[1:nlevels(this_groups)],
                                                        size = 3.5)))
+
+    if(gscale == TRUE) {
+      ltts[[i]] <- ltts[[i]] +
+        coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE, pos = "bottom")
+    }
+
   }
 
   return(ltts)
