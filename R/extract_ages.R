@@ -62,7 +62,7 @@
 #' #Import data to R (this might take a minute)
 #' data <- extract_ages(path = temp, type = type, sample = sample)
 #' data
-extract_ages <- function(path = NA, type, sample) {
+extract_ages <- function(type, sample, path = NA) {
 
   #Obtain the names of all files in the specified directory (or the working
   #directory otherwise). These should all be newick tree files corresponding to

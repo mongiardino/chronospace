@@ -344,11 +344,11 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL, gscale = TRUE,
         if(gscale == TRUE) {
           negative <- negative +
             scale_x_reverse() +
-            coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE)
+            deeptime::coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE)
 
           positive <- positive +
             scale_x_reverse() +
-            coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE)
+            deeptime::coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE)
         }
 
         #combine both into a single graphic and store
@@ -432,7 +432,7 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL, gscale = TRUE,
 #' #Show ages distribution for the 5 most sensitive nodes associated to factor A
 #' sensinodes5$factor_A
 sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades, factors = 1:length(obj),
-                            colors = 1:5, timemarks = NULL, gscale = TRUE){
+                            colors = 1:5, timemarks = NULL, gscale = FALSE){
 
   #create object for storing overall results, assign names
   results <- vector(mode = "list", length = length(obj))
@@ -520,7 +520,7 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades, factors =
 
       if(gscale == TRUE) {
         plots[[j]] <- plots[[j]] +
-          coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE, pos = "bottom")
+          deeptime::coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE, pos = "bottom")
       }
 
       if(length(unique(to_plot$group)) == 2) {
@@ -635,7 +635,7 @@ ltt_sensitivity <- function(data_ages, average = 'median', colors=1:5, timemarks
 
     if(gscale == TRUE) {
       ltts[[i]] <- ltts[[i]] +
-        coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE, pos = "bottom")
+        deeptime::coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE, pos = "bottom")
     }
 
   }
