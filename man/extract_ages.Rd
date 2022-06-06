@@ -4,17 +4,17 @@
 \alias{extract_ages}
 \title{Extract and organize ages data}
 \usage{
-extract_ages(path = NA, type, sample)
+extract_ages(type, sample, path = NA)
 }
 \arguments{
-\item{path}{A character string specifying the path to the folder containing
-(only) the input files.}
-
 \item{type}{A list of \code{f} vectors (one for each factor being tested)
 specifying the group to which the chronograms from each file will be
 assigned to.}
 
 \item{sample}{The fixed number of trees to retain from each file.}
+
+\item{path}{A character string specifying the path to the folder containing
+(only) the input files.}
 }
 \value{
 An object of class \code{"dataAges"} with a list containing 1) the

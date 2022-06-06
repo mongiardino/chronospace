@@ -6,7 +6,7 @@
 \usage{
 \method{plot}{chronospace}(
   obj,
-  sdev = 1,
+  sdev = NULL,
   timemarks = NULL,
   gscale = TRUE,
   ellipses = TRUE,
@@ -27,7 +27,9 @@
 ordinations.}
 
 \item{sdev}{Numeric, indicating at how many standard deviations should the
-extremes of the chronospace axes be depicted.}
+extremes of the chronospace axes be depicted. If NULL (the default),
+extremes will be depicted at the highest standard deviation avoiding
+negative branch lengths.}
 
 \item{timemarks}{Numeric; an optional vector containing ages to be marked by
 vertical lines in chronospace representations.}
@@ -85,12 +87,12 @@ those axes.
 \details{
 Starting from the object returned by \code{\link[=chronospace]{chronospace()}}, this function
 creates the two basic types of plots allowing interpretation of the
-synthetic ordination maximizing variation in node age between the groups of
-each factor. The first of these is a graphical projection of the samples of
-phylogenetic trees used to generate the ordination into its synthetic axes,
-which can be either a histogram for factors with only two levels, or a
+ordination maximizing variation in node age between the groups (of
+each factor). The first of these is a projection of the phylogenetic trees
+(whose ages were used to generate the ordination) into the synthetic axes,
+and can be either a histogram for two-level factors, or a
 bivariate scatterplot for factors with three or more levels. The second
-output consists of 'theoretical' trees representing the positive and
+output contains 'theoretical' trees representing the positive and
 negative extremes of each synthetic axis, depicting the variation in nodes
 ages captured by it.
 }

@@ -185,18 +185,13 @@ extract_ages <- function(type, sample, path = NA) {
 print.dataAges<-function(x) {
 
   ages<-x$ages
-  facs<-x$factors
+  npathw <- sum(apply(x$factors,2,\(x){length(unique(x))}))
 
   infoages<-paste0("Data from ", nrow(ages),
                    " trees with ", ncol(ages),
                    " internal nodes (see $ages and $topology),")
 
-  if(ncol(facs)==1) {
-    infofacs<-paste0("Obtained using 1 methodological pathway (see $factors).")
-  } else {
-    infofacs<-paste0("Obtained using ", ncol(facs), " methodological pathways (see $factors).")
-  }
-
+  infofacs<-paste0("Obtained using ", npathw, " methodological pathways (see $factors).")
   cat(infoages, infofacs, sep="\n")
 
 }

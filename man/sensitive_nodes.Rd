@@ -11,7 +11,7 @@ sensitive_nodes(
   factors = 1:length(obj),
   colors = 1:5,
   timemarks = NULL,
-  gscale = TRUE
+  gscale = FALSE
 )
 }
 \arguments{

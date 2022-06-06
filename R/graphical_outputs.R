@@ -13,7 +13,9 @@
 #' @param obj An object of class \code{"chronospace"} containing one or more
 #'   ordinations.
 #' @param sdev Numeric, indicating at how many standard deviations should the
-#'   extremes of the chronospace axes be depicted.
+#'   extremes of the chronospace axes be depicted. If NULL (the default),
+#'   extremes will be depicted at the highest standard deviation avoiding
+#'   negative branch lengths.
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
 #' @param factors Numeric; the factor or factors whose results are to be
@@ -47,12 +49,12 @@
 #'
 #' @details Starting from the object returned by [chronospace()], this function
 #'   creates the two basic types of plots allowing interpretation of the
-#'   synthetic ordination maximizing variation in node age between the groups of
-#'   each factor. The first of these is a graphical projection of the samples of
-#'   phylogenetic trees used to generate the ordination into its synthetic axes,
-#'   which can be either a histogram for factors with only two levels, or a
+#'   ordination maximizing variation in node age between the groups (of
+#'   each factor). The first of these is a projection of the phylogenetic trees
+#'   (whose ages were used to generate the ordination) into the synthetic axes,
+#'   and can be either a histogram for two-level factors, or a
 #'   bivariate scatterplot for factors with three or more levels. The second
-#'   output consists of 'theoretical' trees representing the positive and
+#'   output contains 'theoretical' trees representing the positive and
 #'   negative extremes of each synthetic axis, depicting the variation in nodes
 #'   ages captured by it.
 #'
@@ -84,7 +86,7 @@
 #'
 #' #Show extremes of the bgPC axis for factor B
 #' cspace$factor_B$PC_extremes
-plot.chronospace <- function(obj, sdev = 1, timemarks = NULL, gscale = TRUE,
+plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
                              ellipses=TRUE, centroids=FALSE, distances = FALSE,
                              colors = 1:5, factors = 1:length(obj), axes = c(1, 2),
                              pt.alpha = 0.5, pt.size = 1.5, ell.width = 1.2,
@@ -223,81 +225,61 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL, gscale = TRUE,
         #create a tree that contains topology but no branch lengths
         tree$edge.length <- rep(0, length(tree$edge.length))
 
-        #ages implied by moving along this bgPCA axis 'sdev' number of standard
-        #deviations to both sides
-        assign(paste0('plus_sd_', j), revPCA(sdev*stats::sd(bgPCA$x[,ax[j]]),
-                                             bgPCA$rotation[,ax[j]], mean))
-        assign(paste0('minus_sd_', j), revPCA(-sdev*stats::sd(bgPCA$x[,ax[j]]),
-                                              bgPCA$rotation[,ax[j]], mean))
+        #if sdev has been specified, use them to obtain extremes; otherwise, constrain
+        #bgPC extremes to have positive branch lenghts only
+        if(!is.null(sdev)) {
+          xrange <- c(sdev * stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)),
+                      -sdev * stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)))
+          assign(paste0('plus_sd_', j),  revPCA(xrange[1], bgPCA$rotation[,ax[j]], mean))
+          assign(paste0('minus_sd_', j), revPCA(xrange[2], bgPCA$rotation[,ax[j]], mean))
 
-        #check number of descendants stemming from each node
-        clade_size <- unlist(lapply(clades, length))
+          #retrieve trees with branch lenghts corresponding to ages at the extremes of bgPC j
+          extrees <- reconstruct_blen(clades = clades,
+                                      tree = tree,
+                                      plus = get(paste0('plus_sd_', j)),
+                                      mean = mean,
+                                      minus = get(paste0('minus_sd_', j)))
 
-        #setup trees that will have mean branch lengths, mean+sdev and mean-sdev
-        #trees
-        tree_mean <- tree_plus <- tree_minus <- tree
+          tree_plus <- extrees$tree_plus
+          tree_mean <- extrees$tree_mean
+          tree_minus <- extrees$tree_minus
 
-        #loop through clades from smallest to biggest (i.e., up the tree)
-        for(k in 2:max(clade_size)) {
-          #which nodes have the number of descendants
-          which_clades <- which(clade_size == k)
-          if(length(which_clades) > 0) {
-            for(l in 1:length(which_clades)) {
-              #which node are we talking about
-              node_to_change <- ape::getMRCA(tree, unlist(clades[which_clades[l]]))
+          used_sdev <- sdev
 
-              #get node ages for this node
-              dif_minus <- get(paste0('minus_sd_', j))[,which_clades[l]]
-              dif_mean <- mean[which_clades[l],]
-              dif_plus <- get(paste0('plus_sd_', j))[,which_clades[l]]
+        } else {
+          adj <- 1
+          blen1 <- -1
+          blen2 <- -1
+          while(any(blen1 < 0) | any(blen2 < 0)) {
 
-              #if the clade is a cherry (i.e., 2 descendants)
-              if(k == 2) {
-                #get branches descending to both tips and assign them their
-                #correct branches (which is == to the node age)
-                branches_to_descendants <- which(tree$edge[,1] == node_to_change)
-                tree_minus$edge.length[branches_to_descendants] <- dif_minus
-                tree_mean$edge.length[branches_to_descendants] <- dif_mean
-                tree_plus$edge.length[branches_to_descendants] <- dif_plus
+            #adjust bgPC range
+            xrange <- c(stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)),
+                        -stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)))
+            newmax <- xrange[1] + (diff(xrange) * (1 - adj) / 2)
+            newmin <- xrange[2] - (diff(xrange) * (1 - adj) / 2)
 
-                #if it is not a cherry
-              } else {
-                #get nodes of direct descendant
-                nodes_of_descendants <- tree$edge[,2][which(tree$edge[,1] ==
-                                                              node_to_change)]
+            #backwards PCA towards ages
+            assign(paste0('plus_sd_', j), revPCA(newmax, bgPCA$rotation[,ax[j]], mean))
+            assign(paste0('minus_sd_', j), revPCA(newmin, bgPCA$rotation[,ax[j]], mean))
 
-                #if any descendant is a tip do as above, assign branch length ==
-                #node age
-                if(any(nodes_of_descendants %in% 1:length(tree$tip.label))) {
-                  singletons <- nodes_of_descendants[which(nodes_of_descendants %in%
-                                                             1:length(tree$tip.label))]
-                  branches_to_singletons <- which(tree$edge[,2] == singletons)
-                  tree_minus$edge.length[branches_to_singletons] <- dif_minus
-                  tree_mean$edge.length[branches_to_singletons] <- dif_mean
-                  tree_plus$edge.length[branches_to_singletons] <- dif_plus
-                  #remove it from descendants as its branch length is already
-                  #set
-                  nodes_of_descendants <- nodes_of_descendants[-which(nodes_of_descendants ==
-                                                                        singletons)]
-                }
+            #get % of sd used to get only positive branch lenghts
+            used_sdev <- round(newmax / stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)), 3)
 
-                #for descendant clades do the following
-                for(m in 1:length(nodes_of_descendants)) {
-                  #obtain all descendants
-                  tips <- unlist(phangorn::Descendants(tree, nodes_of_descendants[m],
-                                                       type = 'tips'))
+            #retrieve trees with branch lenghts corresponding to ages at the extremes of bgPC j
+            extrees <- reconstruct_blen(clades = clades,
+                                        tree = tree,
+                                        plus = get(paste0('plus_sd_', j)),
+                                        minus = get(paste0('minus_sd_', j)),
+                                        mean = mean)
 
-                  #remove from the age the age of the descendant node, which is
-                  #already set up correctly as the loop goes from smaller to
-                  #larger clades
-                  tree_minus$edge.length[which(tree_minus$edge[,2] == nodes_of_descendants[m])] <-
-                    dif_minus - ape::dist.nodes(tree_minus)[tips[1], nodes_of_descendants[m]]
-                  tree_mean$edge.length[which(tree_mean$edge[,2] == nodes_of_descendants[m])] <-
-                    dif_mean - ape::dist.nodes(tree_mean)[tips[1], nodes_of_descendants[m]]
-                  tree_plus$edge.length[which(tree_plus$edge[,2] == nodes_of_descendants[m])] <-
-                    dif_plus - ape::dist.nodes(tree_plus)[tips[1], nodes_of_descendants[m]]
-                }
-              }
+            tree_plus <- extrees$tree_plus
+            tree_mean <- extrees$tree_mean
+            tree_minus <- extrees$tree_minus
+
+            blen1 <- tree_plus$edge.length
+            blen2 <- tree_minus$edge.length
+            if(any(blen1 < 0) | any(blen2 < 0)) {
+              adj <- adj - 0.05
             }
           }
         }
@@ -305,6 +287,7 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL, gscale = TRUE,
         #compute delta in branch lengths between the mean tree and the positive and negative extremes
         changes_plus <- tree_plus$edge.length - tree_mean$edge.length
         changes_minus <- tree_minus$edge.length - tree_mean$edge.length
+
 
         #if time marks have been specified, use them to  draw vertical lines in the corresponding tree
         if(!is.null(timemarks)){
@@ -317,6 +300,7 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL, gscale = TRUE,
           timemarks1.1 <- timemarks2.1 <- NULL
         }
 
+
         #convert phylo trees into ggtrees, adding delta in branch length to the metadata
         tree_plus_gg <- ggtree::ggtree(tree_plus, size = 1.5) %<+%
           data.frame(node = tree_plus$edge[,2], delta = changes_plus)
@@ -328,7 +312,7 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL, gscale = TRUE,
         negative <- tree_minus_gg + aes(color=delta) +
           scale_color_gradient2(limits = range(c(changes_minus, changes_plus)),
                                 high = "red", low = "blue", mid = "gray", midpoint = 0) +
-          ggtitle(paste0(facnames[i], " - bgPC", axes[j], ", \nnegative extreme")) +
+          ggtitle(paste0(facnames[i], " - bgPC", axes[j], ", \nnegative extreme (sd = ", -used_sdev,")")) +
           theme(plot.title = element_text(hjust = 0.5)) +
           geom_vline(xintercept = timemarks1.1, lty = 2, col = "gray")
 
@@ -336,7 +320,7 @@ plot.chronospace <- function(obj, sdev = 1, timemarks = NULL, gscale = TRUE,
         positive <- tree_plus_gg + aes(color = delta) +
           scale_color_gradient2(limits = range(c(changes_minus, changes_plus)),
                                 high = "red", low = "blue", mid = "gray", midpoint = 0) +
-          ggtitle(paste0(facnames[i], " - bgPC", axes[j], ", \npositive extreme")) +
+          ggtitle(paste0(facnames[i], " - bgPC", axes[j], ", \npositive extreme (sd = ", used_sdev,")")) +
           theme(plot.title = element_text(hjust = 0.5)) +
           geom_vline(xintercept = timemarks2.1, lty = 2, col = "gray")
 
@@ -643,3 +627,4 @@ ltt_sensitivity <- function(data_ages, average = 'median', colors=1:5, timemarks
   return(ltts)
 
 }
+

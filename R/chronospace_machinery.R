@@ -59,7 +59,9 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
 
   #perform bgPCA for the crossing of all factors
   bgPCA0 <- bgprcomp(x = ages, groups = interaction(factors))
-  totexpvar <- sum(apply(bgPCA0$x, 2, stats::var))
+  fitted0 <- cbind(lm(bgPCA0$x ~ interaction(factors))$fitted)
+
+  totexpvar <- sum(apply(fitted0, 2, stats::var))
   acc_tot <- 100 * (totexpvar / totvar)
 
   #perform bgPCA using each factor separately
@@ -67,9 +69,10 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
 
     #perform bgPCA between groups defined by factor i over original variation
     bgPCA1 <- bgprcomp(x = ages, groups = factors[,i])
+    fitted1 <- cbind(lm(bgPCA1$x ~ factors[,i])$fitted)
 
     #compute percentage of variation explained
-    expvar <- sum(apply(bgPCA1$x, 2, stats::var))
+    expvar <- sum(apply(fitted1, 2, stats::var))
     perc_tot <- 100 * (expvar / totvar)
 
     #report proportion of total variation explained
@@ -92,7 +95,8 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
 
       #perform bgPCA between groups defined by factor i over residual variation
       bgPCA2.2 <- bgprcomp(x = resids2.1, groups = factors[,i])
-      expvar2.2 <- sum(apply(bgPCA2.2$x, 2, stats::var))
+      fitted2.2 <- cbind(lm(bgPCA2.2$x ~ factors[,i])$fitted)
+      expvar2.2 <- sum(apply(fitted2.2, 2, stats::var))
 
       #compute percentage of non-redundant variation explained
       perc_nonred <- 100 * (expvar2.2 / totvar)
@@ -200,3 +204,82 @@ bgprcomp <- function(x, groups) {
 # internal reverse PCA function -----------------------------------------------------
 revPCA <- function(scores, vectors, center) { t(t(scores %*% t(vectors)) + center) }
 
+
+#translate ages into trees-------------------------------------------------------------------
+
+reconstruct_blen <- function(clades, tree, plus, mean, minus) {
+
+  #check number of descendants stemming from each node
+  clade_size <- unlist(lapply(clades, length))
+
+  #setup trees that will have mean branch lengths, mean+sdev and mean-sdev
+  #trees
+  tree_mean <- tree_plus <- tree_minus <- tree
+
+  #loop through clades from smallest to biggest (i.e., up the tree)
+  for(k in 2:max(clade_size)) {
+    #which nodes have the number of descendants
+    which_clades <- which(clade_size == k)
+    if(length(which_clades) > 0) {
+      for(l in 1:length(which_clades)) {
+        #which node are we talking about
+        node_to_change <- ape::getMRCA(tree, unlist(clades[which_clades[l]]))
+
+        #get node ages for this node
+        dif_minus <- minus[,which_clades[l]]
+        dif_mean <- mean[which_clades[l],]
+        dif_plus <- plus[,which_clades[l]]
+
+        #if the clade is a cherry (i.e., 2 descendants)
+        if(k == 2) {
+          #get branches descending to both tips and assign them their
+          #correct branches (which is == to the node age)
+          branches_to_descendants <- which(tree$edge[,1] == node_to_change)
+          tree_minus$edge.length[branches_to_descendants] <- dif_minus
+          tree_mean$edge.length[branches_to_descendants] <- dif_mean
+          tree_plus$edge.length[branches_to_descendants] <- dif_plus
+
+          #if it is not a cherry
+        } else {
+          #get nodes of direct descendant
+          nodes_of_descendants <- tree$edge[,2][which(tree$edge[,1] ==
+                                                        node_to_change)]
+
+          #if any descendant is a tip do as above, assign branch length ==
+          #node age
+          if(any(nodes_of_descendants %in% 1:length(tree$tip.label))) {
+            singletons <- nodes_of_descendants[which(nodes_of_descendants %in%
+                                                       1:length(tree$tip.label))]
+            branches_to_singletons <- which(tree$edge[,2] == singletons)
+            tree_minus$edge.length[branches_to_singletons] <- dif_minus
+            tree_mean$edge.length[branches_to_singletons] <- dif_mean
+            tree_plus$edge.length[branches_to_singletons] <- dif_plus
+
+            #remove it from descendants as its branch length is already
+            #set
+            nodes_of_descendants <- nodes_of_descendants[-which(nodes_of_descendants ==
+                                                                  singletons)]
+          }
+
+          #for descendant clades do the following
+          for(m in 1:length(nodes_of_descendants)) {
+            #obtain all descendants
+            tips <- unlist(phangorn::Descendants(tree, nodes_of_descendants[m],
+                                                 type = 'tips'))
+
+            #remove from the age the age of the descendant node, which is
+            #already set up correctly as the loop goes from smaller to
+            #larger clades
+            tree_minus$edge.length[which(tree_minus$edge[,2] == nodes_of_descendants[m])] <-
+              dif_minus - ape::dist.nodes(tree_minus)[tips[1], nodes_of_descendants[m]]
+            tree_mean$edge.length[which(tree_mean$edge[,2] == nodes_of_descendants[m])] <-
+              dif_mean - ape::dist.nodes(tree_mean)[tips[1], nodes_of_descendants[m]]
+            tree_plus$edge.length[which(tree_plus$edge[,2] == nodes_of_descendants[m])] <-
+              dif_plus - ape::dist.nodes(tree_plus)[tips[1], nodes_of_descendants[m]]
+          }
+        }
+      }
+    }
+  }
+  return(list(tree_plus = tree_plus, tree_mean = tree_mean, tree_minus = tree_minus))
+}
