@@ -185,7 +185,7 @@ extract_ages <- function(type, sample, path = NA) {
 print.dataAges<-function(x) {
 
   ages<-x$ages
-  npathw <- sum(apply(x$factors,2,\(x){length(unique(x))}))
+  npathw <- prod(apply(x$factors,2,\(x){length(unique(x))}))
 
   infoages<-paste0("Data from ", nrow(ages),
                    " trees with ", ncol(ages),
