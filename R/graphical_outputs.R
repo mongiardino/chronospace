@@ -415,7 +415,7 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
 #'
 #' #Show ages distribution for the 5 most sensitive nodes associated to factor A
 #' sensinodes5$factor_A
-sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades, factors = 1:length(obj),
+sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades = 5, factors = 1:length(obj),
                             colors = 1:5, timemarks = NULL, gscale = FALSE){
 
   #create object for storing overall results, assign names
