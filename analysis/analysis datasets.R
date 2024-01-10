@@ -1,58 +1,110 @@
 library(devtools)
 load_all()
+#devtools::install_github("YuLab-SMU/ggtree")
 
+#names0 <- list.files("C:/Users/pablo/Desktop/Trabajo/Investigacion/Proyectos/chronospace_local/data/curcu")
+names0 <- list.files("C:/Users/pablo/OneDrive/Escritorio/chrospace data/curcu")
+
+names1 <- gsub(names0, pattern = ".tre", replacement = "")
+type0 <- sapply(strsplit(names1, split = "_"), function(x) {x[2:5]})
+type <- list(type0[1,], type0[2,], type0[3,], type0[4,])
+sample <- 500
+
+curcu_data <- extract_ages(path="C:/Users/pablo/OneDrive/Escritorio/chrospace data/curcu",
+                           type, sample, facnames = c("clock", "prior", "model", "genes"))
+#save(curcu_data, file="C:/Users/pablo/Desktop/Trabajo/Investigacion/Proyectos/chronospace_local/data/curcu data")
+
+
+#names0 <- list.files("C:/Users/pablo/Desktop/Trabajo/Investigacion/Proyectos/chronospace_local/data/deca")
+names0 <- list.files("C:/Users/pablo/OneDrive/Escritorio/chrospace data/deca")
+
+names1 <- gsub(names0, pattern = ".tre", replacement = "")
+type0 <- sapply(strsplit(names1, split = "_"), function(x) {x[2:5]})
+type <- list(type0[1,], type0[2,], type0[3,], type0[4,])
+sample <- 500
+
+deca_data <- extract_ages(path="C:/Users/pablo/OneDrive/Escritorio/chrospace data/deca",
+                          type, sample, facnames = c("clock", "prior", "model", "genes"))
+#save(deca_data, file="C:/Users/pablo/Desktop/Trabajo/Investigacion/Proyectos/chronospace_local/data/deca data")
+
+
+#names0 <- list.files("C:/Users/pablo/Desktop/Trabajo/Investigacion/Proyectos/chronospace_local/data/euka")
+names0 <- list.files("C:/Users/pablo/OneDrive/Escritorio/chrospace data/euka")
+
+names1 <- gsub(names0, pattern = ".tre", replacement = "")
+type0 <- sapply(strsplit(names1, split = "_"), function(x) {x[2:5]})
+type <- list(type0[1,], type0[2,], type0[3,], type0[4,])
+sample <- 500
+
+euka_data <- extract_ages(path="C:/Users/pablo/OneDrive/Escritorio/chrospace data/euka",
+                          type, sample, facnames = c("clock", "prior", "model", "genes"))
+#save(euka_data, file="C:/Users/pablo/Desktop/Trabajo/Investigacion/Proyectos/chronospace_local/data/euka data")
+
+
+#########################################################
+
+document()
+load_all()
 # Curculioidea #################
 
 #load data
-load("curcu data")
+load("C:/Users/pablo/OneDrive/Escritorio/Software/chronospace/analysis/curcu data")
 
 #general overview of the dataset
 print(curcu_data)
-
+head(curcu_data$factors)
+load_all()
 #generate chronospace
-cspace_curcu <- chronospace(data_ages = curcu_data, vartype = "non-redundant")
-
-ordin <- plot(cspace_curcu, axes = )
-ordin2 <- plot(cspace_curcu, axes = c(3,4))
-ordin$factor_A$ordination
-ordin$factor_B$ordination
-ordin$factor_C$ordination
-ordin$factor_D$ordination
-
+cspace_curcu <- chronospace(data_ages = curcu_data)
 cspace_curcu
 
-#Factor C explains 1% of total variation
-ordin$factor_C$PC_extremes$bgPC1
+#plot chronopace
+ordin <- plot(cspace_curcu)
+ordin <- plot(cspace_curcu, sdev = 2)
 
-#Factor D explains 60% of total variation, almost 30% of non-redundant variaiton
+ordin$clock$ordination
+ordin$clock$PC_extremes
+
+ordin$prior$ordination
+ordin$prior$PC_extremes
+
+
+#Factor A explains ~6% of total variation, ~2% of non-redundant variation
+ordin$factor_A$PC_extremes$bgPC1
+
+#Factor D explains ~40% of total variation, ~13% of non-redundant variation
 ordin$factor_D$PC_extremes$bgPC1
 ordin$factor_D$PC_extremes$bgPC2
 ordin2$factor_D$PC_extremes$bgPC3
 ordin2$factor_D$PC_extremes$bgPC4
 
-#get first 5 sensitive nodes for each factor, plot for C and D
+#Neither Factor B or C accounts for more than 1% of total variation
+
+#get first 5 sensitive nodes for each factor, plot for A and D
 sn_curcu <- sensitive_nodes(obj = cspace_curcu)
-sn_curcu$factor_C
+sn_curcu$factor_A
 sn_curcu$factor_D
 
-#get LTT plots for each factor, plot for C and D
+#get LTT plots for each factor, plot for A and D
 ltt_curcu <- ltt_sensitivity(curcu_data)
-ltt_curcu$factor_C
+ltt_curcu$factor_A
 ltt_curcu$factor_D
 
 
 # Decapoda #################
 
 #load data
-load("deca data")
+load("C:/Users/pablo/OneDrive/Escritorio/Software/chronospace/analysis/deca data")
 
 #general overview of the dataset
 print(deca_data)
 
 #generate chronospace
 cspace_deca <- chronospace(data_ages = deca_data, vartype = "non-redundant")
+cspace_deca <- chronospace2(data_ages = deca_data, facnames = c("clock", "prior", "model", "genes"))
 
-ordin <- plot(cspace_deca, axes = )
+
+ordin <- plot(cspace_deca)
 ordin2 <- plot(cspace_deca, axes = c(3,4))
 ordin$factor_A$ordination
 ordin$factor_B$ordination
@@ -85,15 +137,17 @@ ltt_deca$factor_D
 # Eukariota #################
 
 #load data
-load("euka data")
+load("C:/Users/pablo/OneDrive/Escritorio/Software/chronospace/analysis/euka data")
+
 
 #general overview of the dataset
 print(euka_data)
 
 #generate chronospace
 cspace_euka <- chronospace(data_ages = euka_data, vartype = "non-redundant")
+cspace_euka <- chronospace2(data_ages = euka_data, facnames = c("clock", "prior", "model", "genes"))
 
-ordin <- plot(cspace_euka, axes = )
+ordin <- plot(cspace_euka)
 ordin2 <- plot(cspace_euka, axes = c(3,4))
 ordin$factor_A$ordination
 ordin$factor_B$ordination

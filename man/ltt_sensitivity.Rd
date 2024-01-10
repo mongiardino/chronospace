@@ -13,7 +13,7 @@ ltt_sensitivity(
 )
 }
 \arguments{
-\item{data_ages}{A \code{"dataAges"} object created using \code{\link[=extract_ages]{extract_ages()}}.}
+\item{data_ages}{A \code{"nodeAges"} object created using \code{\link[=extract_ages]{extract_ages()}}.}
 
 \item{average}{Character, indicating whether the 'mean' or 'median' is to be
 used in computations.}
@@ -29,7 +29,7 @@ vertical lines in LTT plots.}
 }
 \description{
 For each factor, plot the LTT curve of each level averaged
-across the corresponding  subsample of chronograms.
+across the corresponding subsample of chronograms.
 }
 \examples{
 #Load ages data

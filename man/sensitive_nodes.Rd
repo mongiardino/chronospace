@@ -2,32 +2,31 @@
 % Please edit documentation in R/graphical_outputs.R
 \name{sensitive_nodes}
 \alias{sensitive_nodes}
-\title{Obtain the most sensitive nodes and depict their age distribution}
+\title{Identify the most sensitive nodes and depict their age distribution}
 \usage{
 sensitive_nodes(
   obj,
-  amount_of_change = NA,
-  chosen_clades,
-  factors = 1:length(obj),
+  amount_of_change = NULL,
+  chosen_clades = 5,
+  factors = 1:ncol(obj$factors),
   colors = 1:5,
   timemarks = NULL,
   gscale = FALSE
 )
 }
 \arguments{
-\item{obj}{An object of class \code{"chronospace"} containing one or more
-ordinations.}
+\item{obj}{An object of class \code{"nodeAges"}.}
 
-\item{amount_of_change}{Numeric, specyfing the desired amount of variation in
-age (expressed in million of years) above which the nodes are retained and
-depicted.}
+\item{amount_of_change}{Numeric, specifying the desired amount of variation
+in node age (expressed in million of years) above which the nodes are
+retained and depicted.}
 
 \item{chosen_clades}{Numeric, indicating the desired number of most sensitive
 nodes to be retained and depicted.}
 
 \item{factors}{Numeric; the factor or factors whose results are to be
 retained (by default, the first two axes). Ignored if amount_of_change is
-explicited.}
+specified.}
 
 \item{colors}{The colors used to represent groups (i.e. levels) of each
 factor.}
@@ -43,8 +42,8 @@ A panel showing the relative proportions distribution for the age of
 each of the most sensitive nodes associated to each factor.
 }
 \description{
-Identify the most sensitive nodes associated to each factor, and
-plot their ages proportion distributions.
+For each node, identify the most variables nodes (in terms of
+age), and plot their age proportion distributions.
 }
 \details{
 This function identifies, for each factor, the nodes in the fixed
@@ -70,7 +69,4 @@ sensinodes5 <- sensitive_nodes(obj = cspace, chosen_clades = 5)
 
 #Show ages distribution for the 5 most sensitive nodes associated to factor A
 sensinodes5$factor_A
-}
-\references{
-
 }

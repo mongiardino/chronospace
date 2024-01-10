@@ -2,35 +2,32 @@
 % Please edit documentation in R/chronospace_machinery.R
 \name{chronospace}
 \alias{chronospace}
-\title{Create chronospace}
+\title{Summarize chronospace}
 \usage{
-chronospace(data_ages, vartype = "non-redundant")
+chronospace(data_ages)
 }
 \arguments{
-\item{data_ages}{A \code{"dataAges"} object created using \code{\link[=extract_ages]{extract_ages()}}.}
-
-\item{vartype}{Character, indicating the type of variation to be retained
-(\code{"total"} or \code{"non-redundant"}, see Details; not meaningful for
-factors with less than three levels).}
+\item{data_ages}{A \code{"nodeAges"} object created using \code{\link[=extract_ages]{extract_ages()}}.}
 }
 \value{
-The total and non-redundant percentages of variation accounted for
-each factor are informed. An object of class \code{"chronospace"} is
-returned invisibly, with a list containing the ordination computed for each
-factor.
+Percentages of variation in node ages accounted by the factors
+considered, both in total and individually, are printed. An object of
+class \code{"chronospace"} is returned invisibly, with a list containing
+the ordination computed for each factor.
 }
 \description{
-Compute the ordination maximizing variation in node ages using
-between-group PCA (one for each factor).
+Compute percentages of variation in node ages accounted by each
+factor, and extract axes of variation maximizing separation between factor
+levels using between-group PCA.
 }
 \details{
-This function uses between-group PCA to find the set of axes
-maximizing variation in ages data between the groups of chronograms
-obtained through different methodological approaches. By default
-\code{vartype = "non-redundant"}, meaning bgPCA of each factor is performed
-using the variation left after removing the portion associated to all the
-other factors. If \code{vartype = "total"} (or if there is only one factor
-being assessed), bgPCA is performed over the raw variation in node ages.
+This function summarizes variation in node ages in two ways. First,
+a between-groups PCA is performed for each individual factor, extracting
+ordination axes that maximize separation between the levels of that factor,
+which can be visualized using \code{\link{plot.chronospace}}. Second, a Sum
+of squares approaches is used to quantify variation accounted by each
+factor, both from the raw total variation and from the bgPC axes computed
+for each individual factor.
 }
 \examples{
 #Load ages data
@@ -42,10 +39,6 @@ cspace <- chronospace(data_ages)
 #Inspect object
 cspace
 }
-\references{
-
-}
 \seealso{
-\code{\link{plot.chronospace}}, \code{\link{sensitive_nodes}},
-\code{\link{ltt_sensitivity}}.
+\code{\link{plot.chronospace}}
 }

@@ -2,63 +2,68 @@
 % Please edit documentation in R/extract_ages.R
 \name{extract_ages}
 \alias{extract_ages}
-\title{Extract and organize ages data}
+\title{Import and format node ages data}
 \usage{
-extract_ages(type, sample, path = NA)
+extract_ages(path = NULL, type, sample, facnames = NULL)
 }
 \arguments{
+\item{path}{An optional character string specifying the path to the folder
+containing (only) the input files. If \code{NULL}, the current working
+directory is used instead.}
+
 \item{type}{A list of \code{f} vectors (one for each factor being tested)
 specifying the group to which the chronograms from each file will be
 assigned to.}
 
-\item{sample}{The fixed number of trees to retain from each file.}
+\item{sample}{Numeric; the fixed number of trees to retain from each file.}
 
-\item{path}{A character string specifying the path to the folder containing
-(only) the input files.}
+\item{facnames}{An optional character vector indicating the names of the
+factors.}
 }
 \value{
-An object of class \code{"dataAges"} with a list containing 1) the
+An object of class \code{"nodeAges"} with a list containing 1) the
 \code{t x n} ages matrix (where each row is one of \code{t} trees and each
 column one of \code{n} nodes), 2) the \code{f} associated factors, and 3)
 the fixed phylogenetic topology.
 }
 \description{
 Extract and organize ages from files containing the posterior
-distributions of time-calibrated phylogenetic trees (i.e. chronograms)
-obtained through different methodological decisions.
+distributions of time-calibrated phylogenetic trees (chronograms) obtained
+through different methodological decisions.
 }
 \details{
 This function imports and prepare the ages data such that they are
-suitable for analysis using chronospace. The input files are a series of
-files in Newick format containing time-calibrated trees taken from the
-posterior distributions of separate Bayesian inferences of the same dataset
-(can be either different runs of the same analysis or separate analyses).
-These should differ in specific aspects of their initial setting whose
-effects are of interest (e.g. the model of evolution used and/or the method
-employed to subsample genes) and be stored in an exclusive folder. The
-topology is assumed constrained, such that chronograms differ only in the
-branch lengths (and therefore, in their inferred node ages).
+suitable for analysis using the chronospace suite of functions. The input
+files are a series of files in Newick format containing time-calibrated
+trees taken from the posterior distributions of separate Bayesian
+inferences of the same data set (can be either different runs of the same
+analysis or separate analyses). These should differ in specific aspects of
+their initial setting whose effects are of interest (e.g. the model of
+evolution used and/or the method employed to subsample genes), and be
+stored in an exclusive folder. The topology is assumed to be constrained
+such that chronograms differ only in branch length (and therefore in their
+inferred node ages).
 }
 \examples{
-#Create temporal directory for datedist files
+#Create temporal directory for the files
 temp0 <- tempdir()
-dir.create(paste(temp0, "files", sep="\\\\"))
-temp <- paste(temp0, "files", sep="\\\\")
+dir.create(paste(temp0, "files", sep = "/"))
+temp <- paste(temp0, "files", sep = "/")
 
-#Declare and download datedist files from the internet (this might take a minute)
-url <- "https://raw.githubusercontent.com/mongiardino/chronospace/main/example_files/"
+#Declare and download files from the internet (this might take a minute)
+url <- "https://raw.githubusercontent.com/mongiardino/chronospaces_eLife/main/example_files/"
 files <- c("clockCATGTR_ln_sample.datedist",
            "clockGTR_ln_sample.datedist",
            "randomCATGTR_ln_sample.datedist",
            "randomGTR_ln_sample.datedist",
            "signalCATGTR_ln_sample.datedist",
            "signalGTR_ln_sample.datedist")
-for(i in 1:length(files)) download.file(paste0(url, files[i]), paste(temp, files[i], sep="\\\\"))
+for(i in 1:length(files)) download.file(paste0(url, files[i]), paste(temp, files[i], sep = "/"))
 
 #Check files names, compare against type order below
 list.files(temp)
 
-#Set type of runs and number of chronograms to be retaiend
+#Set type of runs and number of chronograms to be retained
 type <- list(c('clock', 'clock', 'random', 'random', 'signal', 'signal'),
              c('CATGTR', 'GTR', 'CATGTR', 'GTR', 'CATGTR', 'GTR'))
 sample <- 500
@@ -68,5 +73,6 @@ data <- extract_ages(path = temp, type = type, sample = sample)
 data
 }
 \seealso{
-\code{\link{chronospace}}
+\code{\link{chronospace}}, \code{\link{sensitive_nodes}},
+\code{\link{ltt_sensitivity}}
 }

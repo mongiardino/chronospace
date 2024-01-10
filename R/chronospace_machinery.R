@@ -1,33 +1,30 @@
 
-#create chronospace-------------------------------------------------------------------
+#summarize chronospace----------------------------------------------------------
 
-#' Create chronospace
+#' Summarize chronospace
 #'
-#' @description Compute the ordination maximizing variation in node ages using
-#'   between-group PCA (one for each factor).
+#' @description Compute percentages of variation in node ages accounted by each
+#'   factor, and extract axes of variation maximizing separation between factor
+#'   levels using between-group PCA.
 #'
-#' @param data_ages A \code{"dataAges"} object created using [extract_ages()].
-#' @param vartype Character, indicating the type of variation to be retained
-#'   (\code{"total"} or \code{"non-redundant"}, see Details; not meaningful for
-#'   factors with less than three levels).
+#' @param data_ages A \code{"nodeAges"} object created using [extract_ages()].
 #'
-#' @details This function uses between-group PCA to find the set of axes
-#'   maximizing variation in ages data between the groups of chronograms
-#'   obtained through different methodological approaches. By default
-#'   \code{vartype = "non-redundant"}, meaning bgPCA of each factor is performed
-#'   using the variation left after removing the portion associated to all the
-#'   other factors. If \code{vartype = "total"} (or if there is only one factor
-#'   being assessed), bgPCA is performed over the raw variation in node ages.
+#' @details This function summarizes variation in node ages in two ways. First,
+#'   a between-groups PCA is performed for each individual factor, extracting
+#'   ordination axes that maximize separation between the levels of that factor,
+#'   which can be visualized using \code{\link{plot.chronospace}}. Second, a Sum
+#'   of squares approaches is used to quantify variation accounted by each
+#'   factor, both from the raw total variation and from the bgPC axes computed
+#'   for each individual factor.
 #'
-#' @return The total and non-redundant percentages of variation accounted for
-#'   each factor are informed. An object of class \code{"chronospace"} is
-#'   returned invisibly, with a list containing the ordination computed for each
-#'   factor.
+#' @return Percentages of variation in node ages accounted by the factors
+#'   considered, both in total and individually, are printed. An object of
+#'   class \code{"chronospace"} is returned invisibly, with a list containing
+#'   the ordination computed for each factor.
 #'
 #' @export
 #'
-#' @seealso \code{\link{plot.chronospace}}, \code{\link{sensitive_nodes}},
-#'   \code{\link{ltt_sensitivity}}.
+#' @seealso \code{\link{plot.chronospace}}
 #'
 #' @references
 #'
@@ -40,40 +37,68 @@
 #'
 #' #Inspect object
 #' cspace
-chronospace <- function(data_ages, vartype = "non-redundant")  {
+chronospace <- function(data_ages) {
 
   #split data.frame 'data_ages' into ages and factors
   ages <- data_ages$ages
   factors <- data_ages$factors
 
-  #factors names
-  if(is.null(dim(factors))) factors <- data.frame(factors)
-  facnames <- paste0("factor_", LETTERS[1:ncol(factors)])
+  #extract factors names
+  facnames <- colnames(factors)
 
   #create object for storing overall results, assign names
   results <- vector(mode = "list", length = ncol(factors))
   names(results) <- facnames
 
-  #compute total variation
+  #compute total variation (sum trace of covariance matrix)
   totvar <- sum(apply(ages, 2, stats::var))
 
-  #perform bgPCA for the crossing of all factors
-  bgPCA0 <- bgprcomp(x = ages, groups = interaction(factors))
-  fitted0 <- cbind(lm(bgPCA0$x ~ interaction(factors))$fitted)
 
-  totexpvar <- sum(apply(fitted0, 2, stats::var))
-  acc_tot <- 100 * (totexpvar / totvar)
+  #decompose total variation in node ages. For simplification, interactions are
+  #assumed to be absent.
+  form <- formula(paste0("as.matrix(ages)[,i] ~", paste(facnames, collapse = " + ")))
+  n <- nrow(ages)
+
+  SS <- NULL
+  for(i in 1:ncol(ages)) {
+    model <- lm(form, data = data.frame(factors, ages))
+    ss <- anova(model)$`Sum Sq`/ (n - 1)
+    SS <- rbind(SS, ss)
+  }
+  colnames(SS) <- paste0(row.names(anova(model)), sep = " (%)")
+  colnames(SS)[colnames(SS) == "Residuals (%)"] <- "Unaccounted (%)"
+  SS_perc <- rbind(round(100 * colSums(SS)/totvar, 5))
+  rownames(SS_perc) <- "Total variation"
+
+  print(SS_perc)
+  cat("_________________________________________________________________________________\n")
+
+  vartable <- data.frame("All", SS_perc)
+  colnames(vartable) <- c("Grouping_factor", colnames(SS))
 
   #perform bgPCA using each factor separately
   for(i in 1:ncol(factors)) {
 
     #perform bgPCA between groups defined by factor i over original variation
-    bgPCA1 <- bgprcomp(x = ages, groups = factors[,i])
-    fitted1 <- cbind(lm(bgPCA1$x ~ factors[,i])$fitted)
+    bgPCA <- bgprcomp(x = ages, groups = factors[,i])
 
-    #compute percentage of variation explained
-    expvar <- sum(apply(fitted1, 2, stats::var))
-    perc_tot <- 100 * (expvar / totvar)
+    subtotvar <- sum(apply(bgPCA$x, 2, var))
+    form <- formula(paste0("bgPCA$x[,j] ~", paste(facnames, collapse = " + ")))
+
+    subSS <- NULL
+    for(j in 1:ncol(bgPCA$x)) {
+      model <- lm(form, data = data.frame(factors))
+      ss <- anova(model)$`Sum Sq`/ (n - 1)
+      subSS <- rbind(subSS, ss)
+    }
+
+    colnames(subSS) <- paste0(row.names(anova(model)), sep = " (%)")
+    colnames(subSS)[colnames(subSS) == "Residuals (%)"] <- "Unaccounted (%)"
+    subSS_perc <- round(100 * subSS / totvar, 5)
+    rownames(subSS_perc) <- paste0("bgPC", 1:ncol(bgPCA$x), "(",
+                                   round(
+                                     100 * apply(bgPCA$x, 2, var) /
+                                       totvar, 2), "%)")
 
     #report proportion of total variation explained
     if(ncol(factors) > 1) {
@@ -83,61 +108,39 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
       cat('Results:\n')
     }
 
-    cat(paste0('Proportion of total variation in node ages explained by ',
-               facnames[i], ' = ',
-               round(perc_tot, digits = 3),
-               '%', '\n'))
+    #print
+    print(subSS_perc)
+    cat("---------------------------------------------------------------------------------\n")
 
-    if(ncol(factors) > 1){
-      #use bgPCA to compute an ordination that is residual to all factors but factor i
-      bgPCA2.1 <- bgprcomp(x = ages, groups = interaction(factors[,-i]))
-      resids2.1 <- bgPCA2.1$residuals
+    subvartable <- data.frame(facnames[i], subSS_perc)
+    colnames(subvartable) <- c("Grouping_factor", colnames(subSS))
 
-      #perform bgPCA between groups defined by factor i over residual variation
-      bgPCA2.2 <- bgprcomp(x = resids2.1, groups = factors[,i])
-      fitted2.2 <- cbind(lm(bgPCA2.2$x ~ factors[,i])$fitted)
-      expvar2.2 <- sum(apply(fitted2.2, 2, stats::var))
-
-      #compute percentage of non-redundant variation explained
-      perc_nonred <- 100 * (expvar2.2 / totvar)
-
-      #report proportion of non-redundant variation explained
-      cat(paste0('Proportion of non-redundant variation in node ages explained by ',
-                 facnames[i], ' = ',
-                 round(perc_nonred, digits = 3),
-                 '%', '\n\n'))
-    } else {
-      cat('(There is only one factor, non-redundant variation omitted)\n\n')
-    }
-
-    #select which bgPCA results are going to be used
-    if(vartype == "total" | ncol(factors) == 1) {
-      bgPCA <- bgPCA1
-      perc <- perc_tot
-    }
-
-    if(vartype == "non-redundant" & ncol(factors) > 1) {
-      bgPCA <- bgPCA2.2
-      perc <- perc_nonred
-    }
-
-
-    #create table with percentages of variation explained by each axis
-    vars <- apply(bgPCA$x, 2, stats::var) / totvar
-    tab <- round(cbind(variance=vars, cummulative=cumsum(vars)), 5)
 
     #store bgPCA results, along with total variation and groups of factor i
-    bgPCA$totvar <- totvar
-    bgPCA$acc_tot <- acc_tot
-    bgPCA$perc <- perc
-    bgPCA$tab <- tab
-    bgPCA$vartype <- vartype
 
-    bgPCA$groups <- factors[,i]
-    bgPCA$ages <- ages
-    bgPCA$tree <- data_ages$topology
-    results[[i]] <- bgPCA
+    result <- list()
+    result$ordination <- bgPCA
+    result$ssq <- list(totvar = totvar, vartable = subvartable)
+    result$data <- list(ages = ages, groups = factors[,i],
+                        tree = data_ages$topology)
+
+    results[[i]] <- result
+
+    ##########################################
+    # bgPCA$totvar <- totvar
+    # bgPCA$vartable <- subvartable
+    # bgPCA$groups <- factors[,i]
+    # bgPCA$ages <- ages
+    # bgPCA$tree <- data_ages$topology
+    #
+    # results[[i]] <- bgPCA
+    ###########################################
   }
+
+  # results$Total <- vartable ##################
+  results$Total_vartable <- vartable
+
+  cat(" * All percentages are relative to the total amount of variation in node ages\n")
 
   class(results) <- "chronospace"
 
@@ -146,12 +149,12 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
 
 # print chronospace object -------------------------------------------------------
 
-#' Print \code{"dataAges"} objects
+#' Print \code{"chronospace"} objects
 #'
-#' @param x A \code{"chronospace"} object
+#' @param x A \code{"chronospace"} object.
 #'
-#' @return Information on percentages of age variation explained by the included
-#'   factors
+#' @return Reports percentages in node ages variation explained by the factors
+#'   included.
 #'
 #' @export
 #'
@@ -165,25 +168,26 @@ chronospace <- function(data_ages, vartype = "non-redundant")  {
 #' #Inspect object
 #' print(cspace)
 print.chronospace <- function(x) {
-  cat(paste0("Percentage of variation accounted by all factors (including interactions): ",
-             round(x[[1]]$acc_tot, 3), "%", "\n"))
-  for(i in 1:length(x)) {
-    cat(paste0("Percentage of ", x[[i]]$vartype, " variation accounted by ", names(x)[i], " : ",
-               round(x[[i]]$perc, 3), "%", "\n"))
-    tab <- as.data.frame(x[[i]]$tab)
-    rownames(tab) <- paste0("bgPC",1:nrow(tab))
-    print(tab)
+  cat("_____________________________________________________________________________________\n")
+  #print(x$Total) ###################
+  print(x$Total_vartable)
+  cat("_____________________________________________________________________________________\n")
+  #x <- x[names(x) != "Total"] #########
+  x <- x[names(x) != "Total_vartable"]
+  for(i in seq_len(length(x))) {
+    #print(x[[i]]$vartable) #################
+    print(x[[i]]$ssq$vartable)
+    cat("-------------------------------------------------------------------------------------\n")
   }
-
+  cat(" * All percentages are relative to the total amount of variation in node ages\n")
 }
-
 
 
 # internal between-group PCA function ---------------------------------------------
 bgprcomp <- function(x, groups) {
 
   grandmean <- colMeans(x)
-  x_centered <- scale(x, scale = F, center = T)
+  x_centered <- scale(x, scale = FALSE, center = TRUE)
   x_gmeans <- apply(X = x_centered, MARGIN = 2, FUN = tapply, groups, mean)
 
   V_g <- stats::cov(x_gmeans)
@@ -206,7 +210,6 @@ revPCA <- function(scores, vectors, center) { t(t(scores %*% t(vectors)) + cente
 
 
 #translate ages into trees-------------------------------------------------------------------
-
 reconstruct_blen <- function(clades, tree, plus, mean, minus) {
 
   #check number of descendants stemming from each node

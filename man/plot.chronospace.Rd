@@ -81,20 +81,19 @@ each factor included.
 \description{
 For each factor, generate the two basic graphical
 representations of a chronospace: the projection of the sampled chronograms
-into the synthetic chronospace axes, and the two 'theoretical' extremes of
-those axes.
+into the ordination axes, and the two 'theoretical' extremes of those axes.
 }
 \details{
 Starting from the object returned by \code{\link[=chronospace]{chronospace()}}, this function
 creates the two basic types of plots allowing interpretation of the
 ordination maximizing variation in node age between the groups (of
 each factor). The first of these is a projection of the phylogenetic trees
-(whose ages were used to generate the ordination) into the synthetic axes,
-and can be either a histogram for two-level factors, or a
-bivariate scatterplot for factors with three or more levels. The second
-output contains 'theoretical' trees representing the positive and
-negative extremes of each synthetic axis, depicting the variation in nodes
-ages captured by it.
+(whose ages were used to generate the ordination) into the ordination axes,
+and can be either a histogram for two-level factors, or a bivariate
+scatterplot for factors with three or more levels. The second output
+contains 'theoretical' trees representing the positive and negative
+extremes of each ordination axis, depicting the variation in nodes ages
+it captures.
 }
 \examples{
 #Load ages data
@@ -117,7 +116,4 @@ cspace$factor_B$ordination
 
 #Show extremes of the bgPC axis for factor B
 cspace$factor_B$PC_extremes
-}
-\references{
-
 }

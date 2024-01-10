@@ -2,7 +2,7 @@
 
 S3method(plot,chronospace)
 S3method(print,chronospace)
-S3method(print,dataAges)
+S3method(print,nodeAges)
 export(chronospace)
 export(extract_ages)
 export(ltt_sensitivity)

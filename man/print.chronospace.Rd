@@ -2,19 +2,19 @@
 % Please edit documentation in R/chronospace_machinery.R
 \name{print.chronospace}
 \alias{print.chronospace}
-\title{Print \code{"dataAges"} objects}
+\title{Print \code{"chronospace"} objects}
 \usage{
 \method{print}{chronospace}(x)
 }
 \arguments{
-\item{x}{A \code{"chronospace"} object}
+\item{x}{A \code{"chronospace"} object.}
 }
 \value{
-Information on percentages of age variation explained by the included
-factors
+Reports percentages in node ages variation explained by the factors
+included.
 }
 \description{
-Print \code{"dataAges"} objects
+Print \code{"chronospace"} objects
 }
 \examples{
 #Load ages data

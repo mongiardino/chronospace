@@ -7,8 +7,7 @@
 #'
 #' @description For each factor, generate the two basic graphical
 #'   representations of a chronospace: the projection of the sampled chronograms
-#'   into the synthetic chronospace axes, and the two 'theoretical' extremes of
-#'   those axes.
+#'   into the ordination axes, and the two 'theoretical' extremes of those axes.
 #'
 #' @param obj An object of class \code{"chronospace"} containing one or more
 #'   ordinations.
@@ -51,12 +50,12 @@
 #'   creates the two basic types of plots allowing interpretation of the
 #'   ordination maximizing variation in node age between the groups (of
 #'   each factor). The first of these is a projection of the phylogenetic trees
-#'   (whose ages were used to generate the ordination) into the synthetic axes,
-#'   and can be either a histogram for two-level factors, or a
-#'   bivariate scatterplot for factors with three or more levels. The second
-#'   output contains 'theoretical' trees representing the positive and
-#'   negative extremes of each synthetic axis, depicting the variation in nodes
-#'   ages captured by it.
+#'   (whose ages were used to generate the ordination) into the ordination axes,
+#'   and can be either a histogram for two-level factors, or a bivariate
+#'   scatterplot for factors with three or more levels. The second output
+#'   contains 'theoretical' trees representing the positive and negative
+#'   extremes of each ordination axis, depicting the variation in nodes ages
+#'   it captures.
 #'
 #' @return A list containing the histogram/scatterplot and axes' extremes for
 #'   each factor included.
@@ -92,37 +91,54 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
                              pt.alpha = 0.5, pt.size = 1.5, ell.width = 1.2,
                              dist.width = 1, ct.size = 5) {
 
+
+  #obj <- obj[names(obj) != "Total"] #########################
+  obj <- obj[names(obj) != "Total_vartable"]
+
   if(length(axes) != 2) axes <- c(1, 2)
 
   #create object for storing overall results, assign names
   results <- vector(mode = "list", length = length(obj))
   names(results) <- facnames <- names(obj)
 
+  warns <- NULL
+
   #get ordinations and PC extremes for factor i
   for(i in 1:length(obj)){
 
-    #create object for storing results of factor i, assing names
+    #create object for storing results of factor i, assign names
     results_i <- vector(mode = "list", length = 2)
     names(results_i) <- c("ordination", "PC_extremes")
 
     #extract information for factor i
-    bgPCA <- obj[[i]]
-    groups <- bgPCA$groups
-    totvar <- bgPCA$totvar
-    ages <- bgPCA$ages
-    tree <- bgPCA$tree
+    #######################################
+    # bgPCA <- obj[[i]]
+    # groups <- bgPCA$groups
+    # totvar <- bgPCA$totvar
+    # ages <- bgPCA$ages
+    # tree <- bgPCA$tree
+    #######################################
+    ordination <- obj[[i]]$ordination
+    groups <- obj[[i]]$data$groups
+    ages <- obj[[i]]$data$ages
+    tree <- obj[[i]]$data$tree
+    totvar <- obj[[i]]$ssq$totvar
 
     #set axes to either 1 (univariate plot) if the variable contains only two
     #groups, or 2 (bivariate plot) if it includes more groups
     num_functions <- 1
-    if(ncol(bgPCA$x) >= 2) num_functions = 2
+    #if(ncol(bgPCA$x) >= 2) num_functions = 2  ##############
+    if(ncol(ordination$x) >= 2) num_functions = 2
 
     #gather data for plotting
-    colnames(bgPCA$x)<-NULL
+    #colnames(bgPCA$x) <- NULL ##########
+    colnames(ordination$x) <- NULL
     if(num_functions == 1) {
-      to_plot <- data.frame(coordinates = bgPCA$x, groups = groups)
+      #to_plot <- data.frame(coordinates = bgPCA$x, groups = groups) ############
+      to_plot <- data.frame(coordinates = ordination$x, groups = groups)
     } else {
-      to_plot <- data.frame(coordinates = bgPCA$x[,axes], groups = groups)
+      #to_plot <- data.frame(coordinates = bgPCA$x[,axes], groups = groups) ##########
+      to_plot <- data.frame(coordinates = ordination$x[,axes], groups = groups)
     }
 
     #plot chronospace
@@ -133,11 +149,12 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
         scale_fill_manual(values = colors) + ylab('Count') +
         theme(legend.title = element_blank(), panel.grid = element_blank()) +
         xlab(paste0('bgPCA axis 1 (',
-                    round((100 * apply(bgPCA$x, 2, stats::var)[1] / totvar), 2), '% of variance)'))
-
+                    #round((100 * apply(bgPCA$x, 2, stats::var)[1] / totvar), 2), '% of variance)')) #########
+                    round((100 * apply(ordination$x, 2, stats::var)[1] / totvar), 2), '% of variance)'))
     } else { #bivariate
       #compute groups centroids from bgPCA scores
-      cents <- apply(X = bgPCA$x, MARGIN = 2, FUN = tapply, groups, mean)
+      #cents <- apply(X = bgPCA$x, MARGIN = 2, FUN = tapply, groups, mean) #########
+      cents <- apply(X = ordination$x, MARGIN = 2, FUN = tapply, groups, mean)
       cents_df <- data.frame(coordinates.1 = cents[,axes[1]],
                              coordinates.2 = cents[,axes[2]],
                              groups = rownames(cents))
@@ -157,9 +174,11 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
         theme_bw() + scale_color_manual(values = colors) +
         theme(legend.title = element_blank(), panel.grid = element_blank()) +
         xlab(paste0('bgPCA axis ', axes[1],  ' (',
-                    round((100 * apply(bgPCA$x,2, stats::var)[axes[1]] / totvar), 2), '% of variance)')) +
+                    #round((100 * apply(bgPCA$x,2, stats::var)[axes[1]] / totvar), 2), '% of variance)')) + ########
+                    round((100 * apply(ordination$x,2, stats::var)[axes[1]] / totvar), 2), '% of variance)')) +
         ylab(paste0('bgPCA axis ', axes[2],  ' (',
-                    round((100 * apply(bgPCA$x,2, stats::var)[axes[2]] / totvar), 2), '% of variance)'))
+                    #round((100 * apply(bgPCA$x,2, stats::var)[axes[2]] / totvar), 2), '% of variance)')) #######
+                    round((100 * apply(ordination$x,2, stats::var)[axes[2]] / totvar), 2), '% of variance)'))
 
       if(ellipses){
         chronospace <- chronospace +
@@ -192,6 +211,7 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
     }
 
     #save chronospace
+    print(chronospace + ggtitle(paste0("Factor : ", facnames[i])) + theme(plot.title = element_text(hjust = 0.5)))
     results_i$ordination <- chronospace
 
     #Finally, compute changes in each branch captured by the bgPCA axes (needs a
@@ -228,10 +248,18 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
         #if sdev has been specified, use them to obtain extremes; otherwise, constrain
         #bgPC extremes to have positive branch lenghts only
         if(!is.null(sdev)) {
-          xrange <- c(sdev * stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)),
-                      -sdev * stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)))
-          assign(paste0('plus_sd_', j),  revPCA(xrange[1], bgPCA$rotation[,ax[j]], mean))
-          assign(paste0('minus_sd_', j), revPCA(xrange[2], bgPCA$rotation[,ax[j]], mean))
+          ######################################################################################
+          # xrange <- c(sdev * stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)),
+          #             -sdev * stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)))
+          # assign(paste0('plus_sd_', j),  revPCA(xrange[1], bgPCA$rotation[,ax[j]], mean))
+          # assign(paste0('minus_sd_', j), revPCA(xrange[2], bgPCA$rotation[,ax[j]], mean))
+          ######################################################################################
+
+          xrange <- c(sdev * stats::sd(tapply(ordination$x[,ax[j]], groups, mean)),
+                      -sdev * stats::sd(tapply(ordination$x[,ax[j]], groups, mean)))
+          assign(paste0('plus_sd_', j),  revPCA(xrange[1], ordination$rotation[,ax[j]], mean))
+          assign(paste0('minus_sd_', j), revPCA(xrange[2], ordination$rotation[,ax[j]], mean))
+
 
           #retrieve trees with branch lenghts corresponding to ages at the extremes of bgPC j
           extrees <- reconstruct_blen(clades = clades,
@@ -253,17 +281,27 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
           while(any(blen1 < 0) | any(blen2 < 0)) {
 
             #adjust bgPC range
-            xrange <- c(stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)),
-                        -stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)))
+            ########################################################################
+            # xrange <- c(stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)),
+            #             -stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)))
+            ########################################################################
+            xrange <- c(stats::sd(tapply(ordination$x[,ax[j]], groups, mean)),
+                        -stats::sd(tapply(ordination$x[,ax[j]], groups, mean)))
+
             newmax <- xrange[1] + (diff(xrange) * (1 - adj) / 2)
             newmin <- xrange[2] - (diff(xrange) * (1 - adj) / 2)
 
             #backwards PCA towards ages
-            assign(paste0('plus_sd_', j), revPCA(newmax, bgPCA$rotation[,ax[j]], mean))
-            assign(paste0('minus_sd_', j), revPCA(newmin, bgPCA$rotation[,ax[j]], mean))
+            ########################################################################
+            # assign(paste0('plus_sd_', j), revPCA(newmax, bgPCA$rotation[,ax[j]], mean))
+            # assign(paste0('minus_sd_', j), revPCA(newmin, bgPCA$rotation[,ax[j]], mean))
+            ########################################################################
+            assign(paste0('plus_sd_', j), revPCA(newmax, ordination$rotation[,ax[j]], mean))
+            assign(paste0('minus_sd_', j), revPCA(newmin, ordination$rotation[,ax[j]], mean))
 
             #get % of sd used to get only positive branch lenghts
-            used_sdev <- round(newmax / stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)), 3)
+            # used_sdev <- round(newmax / stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)), 3) ######
+            used_sdev <- round(newmax / stats::sd(tapply(ordination$x[,ax[j]], groups, mean)), 3)
 
             #retrieve trees with branch lenghts corresponding to ages at the extremes of bgPC j
             extrees <- reconstruct_blen(clades = clades,
@@ -302,10 +340,15 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
 
 
         #convert phylo trees into ggtrees, adding delta in branch length to the metadata
-        tree_plus_gg <- ggtree::ggtree(tree_plus, size = 1.5) %<+%
-          data.frame(node = tree_plus$edge[,2], delta = changes_plus)
-        tree_minus_gg <- ggtree::ggtree(tree_minus, size = 1.5) %<+%
-          data.frame(node = tree_minus$edge[,2], delta = changes_minus)
+        tree_plus_gg <- suppressMessages(ggtree::ggtree(tree_plus, size = 1.5) %<+%
+                                           data.frame(node = tree_plus$edge[,2], delta = changes_plus))
+        tree_minus_gg <- suppressMessages(ggtree::ggtree(tree_minus, size = 1.5) %<+%
+                                            data.frame(node = tree_minus$edge[,2], delta = changes_minus))
+
+        warn <- if(any(na.omit(tree_minus_gg$data$branch.length / abs(tree_minus_gg$data$branch.length)) == -1)) TRUE else FALSE
+        warns <- c(warns, warn)
+
+
 
         #create graphics for each extreme of the bgPC j
         tree_minus_gg$data$x <- max(tree_minus_gg$data$x) - tree_minus_gg$data$x
@@ -352,32 +395,33 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
 
   }
 
+  if(any(warns)) warning(paste("sdev =", sdev, "generates negative branch lengths"))
+
   factors <- factors[!factors > length(results)]
-  return(results[factors])
+   return(results[factors])
 
 }
 
 
-#get senstive nodes ----------------------------------------------------
+#get sensitive nodes ----------------------------------------------------
 
 
-#' Obtain the most sensitive nodes and depict their age distribution
+#' Identify the most sensitive nodes and depict their age distribution
 #'
 #' @import ggplot2
 #'
-#' @description Identify the most sensitive nodes associated to each factor, and
-#'   plot their ages proportion distributions.
+#' @description For each node, identify the most variables nodes (in terms of
+#'   age), and plot their age proportion distributions.
 #'
-#' @param obj An object of class \code{"chronospace"} containing one or more
-#'   ordinations.
-#' @param amount_of_change Numeric, specyfing the desired amount of variation in
-#'   age (expressed in million of years) above which the nodes are retained and
-#'   depicted.
+#' @param obj An object of class \code{"nodeAges"}.
+#' @param amount_of_change Numeric, specifying the desired amount of variation
+#'   in node age (expressed in million of years) above which the nodes are
+#'   retained and depicted.
 #' @param chosen_clades Numeric, indicating the desired number of most sensitive
 #'   nodes to be retained and depicted.
 #' @param factors Numeric; the factor or factors whose results are to be
 #'   retained (by default, the first two axes). Ignored if amount_of_change is
-#'   explicited.
+#'   specified.
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
@@ -415,30 +459,34 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
 #'
 #' #Show ages distribution for the 5 most sensitive nodes associated to factor A
 #' sensinodes5$factor_A
-sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades = 5, factors = 1:length(obj),
-                            colors = 1:5, timemarks = NULL, gscale = FALSE){
+sensitive_nodes <- function(obj, amount_of_change = NULL, chosen_clades = 5, factors = 1:ncol(obj$factors),
+                            colors = 1:5, timemarks = NULL, gscale = FALSE) {
+
 
   #create object for storing overall results, assign names
-  results <- vector(mode = "list", length = length(obj))
-  names(results) <- names(obj)
+  results <- vector(mode = "list", length = ncol(obj$factors))
+  names(results) <- colnames(obj$factors)
 
-  #perform bgPCA on each variable
-  for(i in 1:length(obj)) {
+
+  #for each factor:
+  for(i in 1:ncol(obj$factors)) {
 
     #extract information for factor i
-    bgPCA <- obj[[i]]
-    groups <- bgPCA$groups
-    ages <- bgPCA$ages
-    tree <- bgPCA$tree
+    groups <- obj$factors[,i]
+    ages <- obj$ages
+    tree <- obj$topology
+
+    #compute mean age of each level
+    gmeans <- apply(ages, 2, tapply, INDEX = groups, mean)
 
     #plot the posterior distribution of nodes with the strongest differences
     #between runs
 
     #first decide how many nodes will be plotted
     #if an minimum amount of change is specified, go with it
-    if(!is.na(amount_of_change)) {
-      num_nodes <- length(which((apply(bgPCA$gmeans, 2, max) -
-                                   apply(bgPCA$gmeans, 2, min)) > amount_of_change))
+    if(!is.null(amount_of_change)) {
+      num_nodes <- length(which((apply(gmeans, 2, max) -
+                                   apply(gmeans, 2, min)) > amount_of_change))
 
       #reduce to a max of 20,or plot 5 if none changes by the specified amount
       if(num_nodes > 20) num_nodes <- 20
@@ -446,7 +494,7 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades = 5, facto
 
     } else { #if a minimum amount is not specified
       #if a number of clades is not specified, do 5
-      if(is.na(chosen_clades)) {
+      if(is.null(chosen_clades)) {
         num_nodes <- 5
       } else {
         #else go with what the user chose, although cap at 20
@@ -458,7 +506,7 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades = 5, facto
     #obtain clades from tree
     clades = list()
     for(j in 1:tree$Nnode) {
-      clades[j] <- list(tree$tip.label[unlist(phangorn::Descendants(tree, length(tree$tip.label)+j,
+      clades[j] <- list(tree$tip.label[unlist(phangorn::Descendants(tree, length(tree$tip.label) + j,
                                                                     type = 'tips'))])
     }
 
@@ -470,8 +518,8 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades = 5, facto
 
       #sort clades starting by those that vary the most between analyses and
       #choose clade j
-      clade <- which(sort((apply(bgPCA$gmeans, 2, max) - apply(bgPCA$gmeans, 2, min)), decreasing = T)[j] ==
-                       (apply(bgPCA$gmeans, 2, max) - apply(bgPCA$gmeans, 2, min)))
+      clade <- which(sort((apply(gmeans, 2, max) - apply(gmeans, 2, min)), decreasing = TRUE)[j] ==
+                       (apply(gmeans, 2, max) - apply(gmeans, 2, min)))
 
 
       #obtain corresponding node number and the descendant taxa
@@ -490,7 +538,7 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades = 5, facto
         }
       }
 
-      #make the plot
+      #plot
       ages_clade_scaled <- (max(ages[,clade]) - ages[,clade]) + min(ages[,clade])
       timemarks1.1 <- timemarks[timemarks <= max(ages_clade_scaled) & timemarks >= min(ages_clade_scaled)]
       to_plot <- data.frame(age = ages_clade_scaled, group = groups)
@@ -511,13 +559,13 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades = 5, facto
         plots[[j]] <- plots[[j]] +
           ggtitle(paste0('MRCA of ', desc[1], ' and ',
                          desc[2], ' (difference = ',
-                         round((max(bgPCA$gmeans[,clade]) - min(bgPCA$gmeans[,clade])), 1),
+                         round((max(gmeans[,clade]) - min(gmeans[,clade])), 1),
                          ' Ma)'))
       } else {
         plots[[j]] <- plots[[j]] +
           ggtitle(paste0('MRCA of ', desc[1], ' and ',
                          desc[2], ' (max difference = ',
-                         round((max(bgPCA$gmeans[,clade])-min(bgPCA$gmeans[,clade])), 1),
+                         round((max(gmeans[,clade]) - min(gmeans[,clade])), 1),
                          ' Ma)'))
       }
     }
@@ -526,7 +574,7 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades = 5, facto
     #nodes plotted
     most_affected <- ggpubr::annotate_figure(ggpubr::ggarrange(plotlist = plots,
                                                                common.legend = T, legend = 'bottom',
-                                                               ncol = ceiling(num_nodes/5), nrow = 5))
+                                                               ncol = ceiling(num_nodes / 5), nrow = 5))
     results[[i]] <- most_affected
   }
 
@@ -544,9 +592,9 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades = 5, facto
 #' @import ggplot2
 #'
 #' @description For each factor, plot the LTT curve of each level averaged
-#'   across the corresponding  subsample of chronograms.
+#'   across the corresponding subsample of chronograms.
 #'
-#' @param data_ages A \code{"dataAges"} object created using [extract_ages()].
+#' @param data_ages A \code{"nodeAges"} object created using [extract_ages()].
 #' @param average Character, indicating whether the 'mean' or 'median' is to be
 #'   used in computations.
 #' @param colors The colors used to represent groups (i.e. levels) of each
@@ -566,7 +614,8 @@ sensitive_nodes <- function(obj, amount_of_change = NA, chosen_clades = 5, facto
 #'
 #' #Show LTT plot for factor A
 #' sensiltt$factor_A
-ltt_sensitivity <- function(data_ages, average = 'median', colors=1:5, timemarks=NULL, gscale = TRUE) {
+ltt_sensitivity <- function(data_ages, average = 'median', colors = 1:5,
+                            timemarks = NULL, gscale = TRUE) {
 
   ages <- data_ages$ages
   factors <- data_ages$factors
