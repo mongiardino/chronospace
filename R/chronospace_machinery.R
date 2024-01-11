@@ -126,18 +126,8 @@ chronospace <- function(data_ages) {
 
     results[[i]] <- result
 
-    ##########################################
-    # bgPCA$totvar <- totvar
-    # bgPCA$vartable <- subvartable
-    # bgPCA$groups <- factors[,i]
-    # bgPCA$ages <- ages
-    # bgPCA$tree <- data_ages$topology
-    #
-    # results[[i]] <- bgPCA
-    ###########################################
   }
 
-  # results$Total <- vartable ##################
   results$Total_vartable <- vartable
 
   cat(" * All percentages are relative to the total amount of variation in node ages\n")
@@ -169,13 +159,10 @@ chronospace <- function(data_ages) {
 #' print(cspace)
 print.chronospace <- function(x) {
   cat("_____________________________________________________________________________________\n")
-  #print(x$Total) ###################
   print(x$Total_vartable)
   cat("_____________________________________________________________________________________\n")
-  #x <- x[names(x) != "Total"] #########
   x <- x[names(x) != "Total_vartable"]
   for(i in seq_len(length(x))) {
-    #print(x[[i]]$vartable) #################
     print(x[[i]]$ssq$vartable)
     cat("-------------------------------------------------------------------------------------\n")
   }

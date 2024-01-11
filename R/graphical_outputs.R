@@ -92,9 +92,7 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
                              dist.width = 1, ct.size = 5) {
 
 
-  #obj <- obj[names(obj) != "Total"] #########################
   obj <- obj[names(obj) != "Total_vartable"]
-
   if(length(axes) != 2) axes <- c(1, 2)
 
   #create object for storing overall results, assign names
@@ -111,13 +109,6 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
     names(results_i) <- c("ordination", "PC_extremes")
 
     #extract information for factor i
-    #######################################
-    # bgPCA <- obj[[i]]
-    # groups <- bgPCA$groups
-    # totvar <- bgPCA$totvar
-    # ages <- bgPCA$ages
-    # tree <- bgPCA$tree
-    #######################################
     ordination <- obj[[i]]$ordination
     groups <- obj[[i]]$data$groups
     ages <- obj[[i]]$data$ages
@@ -127,17 +118,13 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
     #set axes to either 1 (univariate plot) if the variable contains only two
     #groups, or 2 (bivariate plot) if it includes more groups
     num_functions <- 1
-    #if(ncol(bgPCA$x) >= 2) num_functions = 2  ##############
     if(ncol(ordination$x) >= 2) num_functions = 2
 
     #gather data for plotting
-    #colnames(bgPCA$x) <- NULL ##########
     colnames(ordination$x) <- NULL
     if(num_functions == 1) {
-      #to_plot <- data.frame(coordinates = bgPCA$x, groups = groups) ############
       to_plot <- data.frame(coordinates = ordination$x, groups = groups)
     } else {
-      #to_plot <- data.frame(coordinates = bgPCA$x[,axes], groups = groups) ##########
       to_plot <- data.frame(coordinates = ordination$x[,axes], groups = groups)
     }
 
@@ -149,11 +136,9 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
         scale_fill_manual(values = colors) + ylab('Count') +
         theme(legend.title = element_blank(), panel.grid = element_blank()) +
         xlab(paste0('bgPCA axis 1 (',
-                    #round((100 * apply(bgPCA$x, 2, stats::var)[1] / totvar), 2), '% of variance)')) #########
                     round((100 * apply(ordination$x, 2, stats::var)[1] / totvar), 2), '% of variance)'))
     } else { #bivariate
       #compute groups centroids from bgPCA scores
-      #cents <- apply(X = bgPCA$x, MARGIN = 2, FUN = tapply, groups, mean) #########
       cents <- apply(X = ordination$x, MARGIN = 2, FUN = tapply, groups, mean)
       cents_df <- data.frame(coordinates.1 = cents[,axes[1]],
                              coordinates.2 = cents[,axes[2]],
@@ -174,10 +159,8 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
         theme_bw() + scale_color_manual(values = colors) +
         theme(legend.title = element_blank(), panel.grid = element_blank()) +
         xlab(paste0('bgPCA axis ', axes[1],  ' (',
-                    #round((100 * apply(bgPCA$x,2, stats::var)[axes[1]] / totvar), 2), '% of variance)')) + ########
                     round((100 * apply(ordination$x,2, stats::var)[axes[1]] / totvar), 2), '% of variance)')) +
         ylab(paste0('bgPCA axis ', axes[2],  ' (',
-                    #round((100 * apply(bgPCA$x,2, stats::var)[axes[2]] / totvar), 2), '% of variance)')) #######
                     round((100 * apply(ordination$x,2, stats::var)[axes[2]] / totvar), 2), '% of variance)'))
 
       if(ellipses){
@@ -248,12 +231,6 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
         #if sdev has been specified, use them to obtain extremes; otherwise, constrain
         #bgPC extremes to have positive branch lenghts only
         if(!is.null(sdev)) {
-          ######################################################################################
-          # xrange <- c(sdev * stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)),
-          #             -sdev * stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)))
-          # assign(paste0('plus_sd_', j),  revPCA(xrange[1], bgPCA$rotation[,ax[j]], mean))
-          # assign(paste0('minus_sd_', j), revPCA(xrange[2], bgPCA$rotation[,ax[j]], mean))
-          ######################################################################################
 
           xrange <- c(sdev * stats::sd(tapply(ordination$x[,ax[j]], groups, mean)),
                       -sdev * stats::sd(tapply(ordination$x[,ax[j]], groups, mean)))
@@ -281,10 +258,6 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
           while(any(blen1 < 0) | any(blen2 < 0)) {
 
             #adjust bgPC range
-            ########################################################################
-            # xrange <- c(stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)),
-            #             -stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)))
-            ########################################################################
             xrange <- c(stats::sd(tapply(ordination$x[,ax[j]], groups, mean)),
                         -stats::sd(tapply(ordination$x[,ax[j]], groups, mean)))
 
@@ -292,15 +265,10 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
             newmin <- xrange[2] - (diff(xrange) * (1 - adj) / 2)
 
             #backwards PCA towards ages
-            ########################################################################
-            # assign(paste0('plus_sd_', j), revPCA(newmax, bgPCA$rotation[,ax[j]], mean))
-            # assign(paste0('minus_sd_', j), revPCA(newmin, bgPCA$rotation[,ax[j]], mean))
-            ########################################################################
             assign(paste0('plus_sd_', j), revPCA(newmax, ordination$rotation[,ax[j]], mean))
             assign(paste0('minus_sd_', j), revPCA(newmin, ordination$rotation[,ax[j]], mean))
 
             #get % of sd used to get only positive branch lenghts
-            # used_sdev <- round(newmax / stats::sd(tapply(bgPCA$x[,ax[j]], groups, mean)), 3) ######
             used_sdev <- round(newmax / stats::sd(tapply(ordination$x[,ax[j]], groups, mean)), 3)
 
             #retrieve trees with branch lenghts corresponding to ages at the extremes of bgPC j
