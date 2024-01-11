@@ -72,19 +72,19 @@
 #' cspace <- chronospace(data_ages)
 #'
 #' #Plot chronospace
-#' plot(cspace)
+#' csp.ord <- plot(cspace)
 #'
 #' #Show (bivariate) ordination for factor A
-#' cspace$factor_A$ordination
+#' csp.ord$factor_A$ordination
 #'
 #' #Show extremes of the first bgPC axis for factor A
-#' cspace$factor_A$PC_extremes
+#' csp.ord$factor_A$PC_extremes$bgPC1
 #'
 #' #' #Show (univariate) ordination for factor B
-#' cspace$factor_B$ordination
+#' csp.ord$factor_B$ordination
 #'
-#' #Show extremes of the bgPC axis for factor B
-#' cspace$factor_B$PC_extremes
+#' #Show extremes of the (only) bgPC axis for factor B
+#' csp.ord$factor_B$PC_extremes$bgPC1
 plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
                              ellipses=TRUE, centroids=FALSE, distances = FALSE,
                              colors = 1:5, factors = 1:length(obj), axes = c(1, 2),
@@ -419,11 +419,8 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
 #' #Load ages data
 #' data("data_ages")
 #'
-#' #Create chronospace
-#' cspace <- chronospace(data_ages)
-#'
 #' #Get the 5 most sensitive nodes
-#' sensinodes5 <- sensitive_nodes(obj = cspace, chosen_clades = 5)
+#' sensinodes5 <- sensitive_nodes(obj = data_ages, chosen_clades = 5)
 #'
 #' #Show ages distribution for the 5 most sensitive nodes associated to factor A
 #' sensinodes5$factor_A

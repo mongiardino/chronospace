@@ -69,7 +69,7 @@ type <- list(c('clock', 'clock', 'random', 'random', 'signal', 'signal'),
 sample <- 500
 
 #Import data to R (this might take a minute)
-data <- extract_ages(path = temp, type = type, sample = sample)
+data <- extract_ages(path = temp, type = type, sample = sample, facnames = c("loci", "model"))
 data
 }
 \seealso{

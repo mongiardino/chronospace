@@ -48,25 +48,28 @@ load_all()
 # Curculioidea #################
 
 #load data
-load("C:/Users/pablo/OneDrive/Escritorio/Software/chronospace/analysis/curcu data")
+#load("C:/Users/pablo/OneDrive/Escritorio/Software/chronospace/analysis/curcu data")
 
 #general overview of the dataset
 print(curcu_data)
 head(curcu_data$factors)
-load_all()
+
 #generate chronospace
 cspace_curcu <- chronospace(data_ages = curcu_data)
 cspace_curcu
 
 #plot chronopace
-ordin <- plot(cspace_curcu)
-ordin <- plot(cspace_curcu, sdev = 2)
+ordin <- plot(cspace_curcu, sdev = .85)
+#ordin <- plot(cspace_curcu, sdev = 2)
 
 ordin$clock$ordination
 ordin$clock$PC_extremes
 
 ordin$prior$ordination
 ordin$prior$PC_extremes
+
+ordin$genes$ordination
+ordin$genes$PC_extremes$bgPC1
 
 
 #Factor A explains ~6% of total variation, ~2% of non-redundant variation
@@ -81,15 +84,15 @@ ordin2$factor_D$PC_extremes$bgPC4
 #Neither Factor B or C accounts for more than 1% of total variation
 
 #get first 5 sensitive nodes for each factor, plot for A and D
-sn_curcu <- sensitive_nodes(obj = cspace_curcu)
-sn_curcu$factor_A
+sn_curcu <- sensitive_nodes(obj = curcu_data)
+sn_curcu$clock
 sn_curcu$factor_D
 
 #get LTT plots for each factor, plot for A and D
 ltt_curcu <- ltt_sensitivity(curcu_data)
 ltt_curcu$factor_A
 ltt_curcu$factor_D
-
+curcu_data$factors
 
 # Decapoda #################
 
@@ -100,12 +103,15 @@ load("C:/Users/pablo/OneDrive/Escritorio/Software/chronospace/analysis/deca data
 print(deca_data)
 
 #generate chronospace
-cspace_deca <- chronospace(data_ages = deca_data, vartype = "non-redundant")
-cspace_deca <- chronospace2(data_ages = deca_data, facnames = c("clock", "prior", "model", "genes"))
+cspace_deca <- chronospace(data_ages = deca_data)
+#cspace_deca <- chronospace2(data_ages = deca_data, facnames = c("clock", "prior", "model", "genes"))
 
 
-ordin <- plot(cspace_deca)
-ordin2 <- plot(cspace_deca, axes = c(3,4))
+ordin <- plot(cspace_deca, sdev = .8)
+
+ordin$genes$PC_extremes$bgPC1
+
+
 ordin$factor_A$ordination
 ordin$factor_B$ordination
 ordin$factor_C$ordination
@@ -144,16 +150,13 @@ load("C:/Users/pablo/OneDrive/Escritorio/Software/chronospace/analysis/euka data
 print(euka_data)
 
 #generate chronospace
-cspace_euka <- chronospace(data_ages = euka_data, vartype = "non-redundant")
-cspace_euka <- chronospace2(data_ages = euka_data, facnames = c("clock", "prior", "model", "genes"))
+cspace_euka <- chronospace(data_ages = euka_data)
+#cspace_euka <- chronospace2(data_ages = euka_data, facnames = c("clock", "prior", "model", "genes"))
 
 ordin <- plot(cspace_euka)
-ordin2 <- plot(cspace_euka, axes = c(3,4))
-ordin$factor_A$ordination
-ordin$factor_B$ordination
-ordin$factor_C$ordination
-ordin$factor_D$ordination
+ordin$genes$PC_extremes$bgPC1
 
+chronospace
 cspace_euka
 
 #Factor C explains ~3% of total variation

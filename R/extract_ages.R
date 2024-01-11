@@ -65,7 +65,7 @@
 #' sample <- 500
 #'
 #' #Import data to R (this might take a minute)
-#' data <- extract_ages(path = temp, type = type, sample = sample)
+#' data <- extract_ages(path = temp, type = type, sample = sample, facnames = c("loci", "model"))
 #' data
 extract_ages <- function(path = NULL, type, sample, facnames = NULL) {
 

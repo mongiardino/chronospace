@@ -61,11 +61,8 @@ distribution of relative proportion of ages, by level.
 #Load ages data
 data("data_ages")
 
-#Create chronospace
-cspace <- chronospace(data_ages)
-
 #Get the 5 most sensitive nodes
-sensinodes5 <- sensitive_nodes(obj = cspace, chosen_clades = 5)
+sensinodes5 <- sensitive_nodes(obj = data_ages, chosen_clades = 5)
 
 #Show ages distribution for the 5 most sensitive nodes associated to factor A
 sensinodes5$factor_A
