@@ -137,6 +137,7 @@ chronospace <- function(data_ages) {
   return(invisible(results))
 }
 
+
 # print chronospace object -------------------------------------------------------
 
 #' Print \code{"chronospace"} objects

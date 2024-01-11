@@ -6,14 +6,15 @@
 \usage{
 \method{plot}{chronospace}(
   obj,
+  output = "all",
   sdev = NULL,
   timemarks = NULL,
   gscale = TRUE,
-  ellipses = TRUE,
+  ellipses = FALSE,
   centroids = FALSE,
   distances = FALSE,
   colors = 1:5,
-  factors = 1:length(obj),
+  factor = 1:(length(obj)),
   axes = c(1, 2),
   pt.alpha = 0.5,
   pt.size = 1.5,
@@ -25,6 +26,11 @@
 \arguments{
 \item{obj}{An object of class \code{"chronospace"} containing one or more
 ordinations.}
+
+\item{output}{Character, specifying which output should be plotted. Options
+are \code{"ordination"} for histograms / scatter plots of bgPC axes,
+\code{"extremes"} for trees showing node variation captured by bgPC axes,
+\code{"all"} for plotting both outputs, and \code{"none"}.}
 
 \item{sdev}{Numeric, indicating at how many standard deviations should the
 extremes of the chronospace axes be depicted. If NULL (the default),
@@ -44,15 +50,15 @@ group (not meaningful for factors with less than three levels).}
 meaningful for factors with less than three levels).}
 
 \item{distances}{Logical, indicating whether to plot lines between groups'
-centroids whose width is proportional to the distances between them in the
-original variable space (not meaningful for factors with less than three
-levels).}
+centroids. The width of the former is inversely proportional to the
+distances between the latter in the original variable space (not meaningful
+for factors with less than three levels).}
 
 \item{colors}{The colors used to represent groups (i.e. levels) of each
 factor.}
 
-\item{factors}{Numeric; the factor or factors whose results are to be
-retained (by default, the first two axes).}
+\item{factor}{Numeric; the factor or factors whose results are to be
+plotted and retained. If \code{NULL}, all the factors are retained.}
 
 \item{axes}{Numeric of length two, specifying the axes to be depicted (not
 meaningful for factors with less than three levels).}

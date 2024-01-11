@@ -59,7 +59,16 @@ cspace_curcu <- chronospace(data_ages = curcu_data)
 cspace_curcu
 
 #plot chronopace
-ordin <- plot(cspace_curcu, sdev = .85)
+plot(cspace, sdev = .85, output = "ordination", centroids = TRUE, distances = TRUE, ellipses = FALSE)
+xxx <- plot(cspace_curcu, sdev = .85, output = "ordination", factor = 4, axes = 1, centroids = TRUE, ellipses = FALSE, distances = TRUE, pt.alpha = 0, dist.width = 1)
+xxx$genes$ordination
+
+xxx <- plot(cspace_curcu, output = "ordination", factor = c(4), distances = TRUE, pt.alpha = 1)
+
+
+
+
+
 #ordin <- plot(cspace_curcu, sdev = 2)
 
 ordin$clock$ordination
@@ -84,15 +93,15 @@ ordin2$factor_D$PC_extremes$bgPC4
 #Neither Factor B or C accounts for more than 1% of total variation
 
 #get first 5 sensitive nodes for each factor, plot for A and D
-sn_curcu <- sensitive_nodes(obj = curcu_data)
-sn_curcu$clock
+load_all()
+sn_curcu2 <- sensitive_nodes(curcu_data)
+sn_curcu2$genes
+sn_curcu2
 sn_curcu$factor_D
 
 #get LTT plots for each factor, plot for A and D
-ltt_curcu <- ltt_sensitivity(curcu_data)
-ltt_curcu$factor_A
-ltt_curcu$factor_D
-curcu_data$factors
+ltt_curcu <- ltt_sensitivity(curcu_data, factor = c(4))
+ltt_curcu$genes
 
 # Decapoda #################
 

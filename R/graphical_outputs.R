@@ -11,14 +11,18 @@
 #'
 #' @param obj An object of class \code{"chronospace"} containing one or more
 #'   ordinations.
+#' @param output Character, specifying which output should be plotted. Options
+#'   are \code{"ordination"} for histograms / scatter plots of bgPC axes,
+#'   \code{"extremes"} for trees showing node variation captured by bgPC axes,
+#'   \code{"all"} for plotting both outputs, and \code{"none"}.
 #' @param sdev Numeric, indicating at how many standard deviations should the
 #'   extremes of the chronospace axes be depicted. If NULL (the default),
 #'   extremes will be depicted at the highest standard deviation avoiding
 #'   negative branch lengths.
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
-#' @param factors Numeric; the factor or factors whose results are to be
-#'   retained (by default, the first two axes).
+#' @param factor Numeric; the factor or factors whose results are to be
+#'   plotted and retained. If \code{NULL}, all the factors are retained.
 #' @param axes Numeric of length two, specifying the axes to be depicted (not
 #'   meaningful for factors with less than three levels).
 #' @param ellipses Logical, indicating whether to plot data ellipses for each
@@ -26,9 +30,9 @@
 #' @param centroids Logical, indicating whether to plot groups' centroids (not
 #'   meaningful for factors with less than three levels).
 #' @param distances Logical, indicating whether to plot lines between groups'
-#'   centroids whose width is proportional to the distances between them in the
-#'   original variable space (not meaningful for factors with less than three
-#'   levels).
+#'   centroids. The width of the former is inversely proportional to the
+#'   distances between the latter in the original variable space (not meaningful
+#'   for factors with less than three levels).
 #' @param pt.alpha Numeric, indicating the transparency level of individual
 #'   points in the scatter (not meaningful for factors with less than three
 #'   levels).
@@ -85,35 +89,38 @@
 #'
 #' #Show extremes of the (only) bgPC axis for factor B
 #' csp.ord$factor_B$PC_extremes$bgPC1
-plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
-                             ellipses=TRUE, centroids=FALSE, distances = FALSE,
-                             colors = 1:5, factors = 1:length(obj), axes = c(1, 2),
+plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL, gscale = TRUE,
+                             ellipses = FALSE, centroids = FALSE, distances = FALSE,
+                             colors = 1:5, factor = 1:(length(obj)), axes = c(1, 2),
                              pt.alpha = 0.5, pt.size = 1.5, ell.width = 1.2,
                              dist.width = 1, ct.size = 5) {
 
+
+  if(all(output != c("all", "ordination", "extremes", "none")))
+    stop("output must be one of 'all', 'ordination', 'extremes', or 'none'")
 
   obj <- obj[names(obj) != "Total_vartable"]
   if(length(axes) != 2) axes <- c(1, 2)
 
   #create object for storing overall results, assign names
-  results <- vector(mode = "list", length = length(obj))
-  names(results) <- facnames <- names(obj)
+  results <- vector(mode = "list", length = length(factor))
+  names(results) <- facnames <- names(obj)[factor]
 
   warns <- NULL
 
   #get ordinations and PC extremes for factor i
-  for(i in 1:length(obj)){
+  for(i in 1:length(factor)) {
 
     #create object for storing results of factor i, assign names
     results_i <- vector(mode = "list", length = 2)
     names(results_i) <- c("ordination", "PC_extremes")
 
     #extract information for factor i
-    ordination <- obj[[i]]$ordination
-    groups <- obj[[i]]$data$groups
-    ages <- obj[[i]]$data$ages
-    tree <- obj[[i]]$data$tree
-    totvar <- obj[[i]]$ssq$totvar
+    ordination <- obj[[factor[i]]]$ordination
+    groups <- obj[[factor[i]]]$data$groups
+    ages <- obj[[factor[i]]]$data$ages
+    tree <- obj[[factor[i]]]$data$tree
+    totvar <- obj[[factor[i]]]$ssq$totvar
 
     #set axes to either 1 (univariate plot) if the variable contains only two
     #groups, or 2 (bivariate plot) if it includes more groups
@@ -148,10 +155,13 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
       #calculate and standardize distances between centroids
       cents_original <- apply(X = ages, MARGIN = 2, FUN = tapply, groups, mean)
       dists <- as.matrix(stats::dist(cents_original))
-      dists_std <- dists / max(dists)
+      dists_std <- (1 / dists) / min(1 / dists)
+
+
 
       #generate combinations
       combins <- utils::combn(x = levels(groups), m = 2)
+
 
       #plot chronospace
       chronospace <- ggplot(to_plot, aes(x = coordinates.1, y = coordinates.2, color = groups)) +
@@ -163,22 +173,22 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
         ylab(paste0('bgPCA axis ', axes[2],  ' (',
                     round((100 * apply(ordination$x,2, stats::var)[axes[2]] / totvar), 2), '% of variance)'))
 
-      if(ellipses){
+      if(ellipses) {
         chronospace <- chronospace +
           stat_ellipse(lwd = ell.width, key_glyph = "point")
       }
 
-      if(distances){
-        for(h in 1:ncol(combins)){
+      if(distances) {
+        for(h in 1:ncol(combins)) {
           rdf <- cents_df[combins[,h],]
-          width <- (5 * dists_std[combins[1,h], combins[2,h]]) - 2
+          width <- dists_std[combins[1,h], combins[2,h]]
           chronospace <- chronospace +
             geom_line(data = rdf, aes(x = coordinates.1, y = coordinates.2),
-                      color = grDevices::gray.colors(n = 10)[1], size = width * dist.width)
+                      color = grDevices::gray.colors(n = 10)[1], linewidth = width * dist.width)
         }
       }
 
-      if(centroids | distances){
+      if(centroids | distances) {
         chronospace <- chronospace +
           geom_point(data = cents_df, aes(x = coordinates.1, y = coordinates.2),
                      color = "black", shape = 21,
@@ -193,8 +203,9 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
                                                          size = 3.5)))
     }
 
-    #save chronospace
-    print(chronospace + ggtitle(paste0("Factor : ", facnames[i])) + theme(plot.title = element_text(hjust = 0.5)))
+    #add title and save chronospace
+    chronospace <- chronospace + ggtitle(paste0("Factor : ", facnames[i])) + theme(plot.title = element_text(hjust = 0.5))
+    if(all(output != c("extremes", "none"))) print(chronospace)
     results_i$ordination <- chronospace
 
     #Finally, compute changes in each branch captured by the bgPCA axes (needs a
@@ -350,6 +361,8 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
         PCextremes[[j]] <- negative + positive + patchwork::plot_layout(guides = "collect") &
           theme(legend.position = "bottom")
 
+        if(all(output != c("ordination", "none"))) print(PCextremes[[j]])
+
       }
 
       #assign list names and save
@@ -363,10 +376,9 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
 
   }
 
-  if(any(warns)) warning(paste("sdev =", sdev, "generates negative branch lengths"))
+  if(any(warns)) warning(paste("sdev =", sdev, "generated negative branch lengths"))
 
-  factors <- factors[!factors > length(results)]
-   return(results[factors])
+  return(invisible(results))
 
 }
 
@@ -381,15 +393,15 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
 #' @description For each node, identify the most variables nodes (in terms of
 #'   age), and plot their age proportion distributions.
 #'
-#' @param obj An object of class \code{"nodeAges"}.
+#' @param data_ages An object of class \code{"nodeAges"}.
 #' @param amount_of_change Numeric, specifying the desired amount of variation
 #'   in node age (expressed in million of years) above which the nodes are
 #'   retained and depicted.
 #' @param chosen_clades Numeric, indicating the desired number of most sensitive
 #'   nodes to be retained and depicted.
-#' @param factors Numeric; the factor or factors whose results are to be
-#'   retained (by default, the first two axes). Ignored if amount_of_change is
-#'   specified.
+#' @param factor Numeric; the factor or factors whose results are to be
+#'   plotted and retained. If \code{NULL}, all the factors are retained. Ignored
+#'   if \code{amount_of_change} is specified.
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
@@ -420,26 +432,24 @@ plot.chronospace <- function(obj, sdev = NULL, timemarks = NULL, gscale = TRUE,
 #' data("data_ages")
 #'
 #' #Get the 5 most sensitive nodes
-#' sensinodes5 <- sensitive_nodes(obj = data_ages, chosen_clades = 5)
+#' sensinodes5 <- sensitive_nodes(data_ages, chosen_clades = 5)
 #'
 #' #Show ages distribution for the 5 most sensitive nodes associated to factor A
 #' sensinodes5$factor_A
-sensitive_nodes <- function(obj, amount_of_change = NULL, chosen_clades = 5, factors = 1:ncol(obj$factors),
+sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 5, factor = 1:ncol(data_ages$factors),
                             colors = 1:5, timemarks = NULL, gscale = FALSE) {
 
-
-  #create object for storing overall results, assign names
-  results <- vector(mode = "list", length = ncol(obj$factors))
-  names(results) <- colnames(obj$factors)
-
+  #create data_agesect for storing overall results, assign names
+  results <- vector(mode = "list", length = length(factor))
+  names(results) <- colnames(data_ages$factors)[factor]
 
   #for each factor:
-  for(i in 1:ncol(obj$factors)) {
+  for(i in 1:length(factor)) {
 
     #extract information for factor i
-    groups <- obj$factors[,i]
-    ages <- obj$ages
-    tree <- obj$topology
+    groups <- data_ages$factors[,factor[i]]
+    ages <- data_ages$ages
+    tree <- data_ages$topology
 
     #compute mean age of each level
     gmeans <- apply(ages, 2, tapply, INDEX = groups, mean)
@@ -538,15 +548,13 @@ sensitive_nodes <- function(obj, amount_of_change = NULL, chosen_clades = 5, fac
     #plot and save, accounting for a varying number of columns depending on the
     #nodes plotted
     most_affected <- ggpubr::annotate_figure(ggpubr::ggarrange(plotlist = plots,
-                                                               common.legend = T, legend = 'bottom',
+                                                               common.legend = TRUE, legend = 'bottom',
                                                                ncol = ceiling(num_nodes / 5), nrow = 5))
+    print(most_affected)
     results[[i]] <- most_affected
   }
-
-  factors <- factors[!factors > length(results)]
-  return(results[factors])
+  return(invisible(results))
 }
-
 
 
 #LTT by group-------------------------------------------------------------------
@@ -564,6 +572,8 @@ sensitive_nodes <- function(obj, amount_of_change = NULL, chosen_clades = 5, fac
 #'   used in computations.
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
+#' @param factor Numeric; the factor or factors whose results are to be
+#'   plotted and retained. If \code{NULL}, all the factors are retained.
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
 #'   vertical lines in LTT plots.
 #' @param gscale Logical; whether to add chronostratigraphic scale to trees
@@ -579,22 +589,22 @@ sensitive_nodes <- function(obj, amount_of_change = NULL, chosen_clades = 5, fac
 #'
 #' #Show LTT plot for factor A
 #' sensiltt$factor_A
-ltt_sensitivity <- function(data_ages, average = 'median', colors = 1:5,
+ltt_sensitivity <- function(data_ages, average = 'median', colors = 1:5, factor = 1:ncol(data_ages$factors),
                             timemarks = NULL, gscale = TRUE) {
 
   ages <- data_ages$ages
   factors <- data_ages$factors
 
-  ltts <- vector(mode = "list", length = ncol(factors))
-  names(ltts)<-colnames(factors)
+  ltts <- vector(mode = "list", length = length(factor))
+  names(ltts) <- colnames(factors[factor])
 
-  for(i in 1:ncol(factors)) {
+  for(i in 1:length(factor)) {
 
-    sample <- nrow(factors)/length(unique(factors[,i]))
+    sample <- nrow(factors) / length(unique(factors[,factor[i]]))
     num_nodes <- ncol(ages)
 
     this_ages <- apply(ages, 1, sort)
-    this_groups <- factors[,i]
+    this_groups <- factors[,factor[i]]
     this_order <- order(this_groups)
 
     this_ages <- this_ages[,this_order]
@@ -636,9 +646,9 @@ ltt_sensitivity <- function(data_ages, average = 'median', colors = 1:5,
         deeptime::coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE, pos = "bottom")
     }
 
+    print(ltts[[i]])
+
   }
-
-  return(ltts)
-
+  return(invisible(ltts))
 }
 

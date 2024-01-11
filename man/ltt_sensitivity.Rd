@@ -8,6 +8,7 @@ ltt_sensitivity(
   data_ages,
   average = "median",
   colors = 1:5,
+  factor = 1:ncol(data_ages$factors),
   timemarks = NULL,
   gscale = TRUE
 )
@@ -20,6 +21,9 @@ used in computations.}
 
 \item{colors}{The colors used to represent groups (i.e. levels) of each
 factor.}
+
+\item{factor}{Numeric; the factor or factors whose results are to be
+plotted and retained. If \code{NULL}, all the factors are retained.}
 
 \item{timemarks}{Numeric; an optional vector containing ages to be marked by
 vertical lines in LTT plots.}
