@@ -382,6 +382,136 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
 
 }
 
+#get user-specified nodes ----------------------------------------------------
+
+
+#' Plot the ages of user-specified nodes
+#'
+#' @import ggplot2
+#'
+#' @description Plot the distribution of a given node across conditions.
+#'
+#' @param data_ages An object of class \code{"nodeAges"}.
+#' @param tips Character vector of length 2, specifying the tip names of two
+#'   terminals bracketing the node whose age (expressed in million of years) is
+#'   to be plotted.
+#' @param factor Numeric; the factor or factors whose results are to be
+#'   plotted and retained. If \code{NULL}, all the factors are retained.
+#' @param colors The colors used to represent groups (i.e. levels) of each
+#'   factor.
+#' @param timemarks Numeric; an optional vector containing ages to be marked by
+#'   vertical lines.
+#' @param gscale Logical; whether to add chronostratigraphic scale to trees
+#'   (via \code{deeptime}).
+#'
+#' @details This function identifies, takes a single character vector containing
+#'   the tip names of two terminals, finds the node representing their
+#'   most-recent common ancestor, and plots the distribution of inferred ages
+#'   for said node across the conditions explored.
+#'
+#' @return A panel showing the distribution of ages for the target node under
+#'   each level of the requested factors.
+#'
+#' @export
+#'
+#' @references
+#'
+#' @examples
+#' #Load ages data
+#' data("data_ages")
+#'
+#' #Get the 5 most sensitive nodes
+#' MRCA_Brissus_Abatus <- specified_node(data_ages, tips = c('Brissus_obesus',
+#'    'Abatus_cordatus'))
+#'
+#' #Show age distribution for the MRCA of the two terminals associated with factor A
+#' MRCA_Brissus_Abatus$factor_A
+specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$factors),
+                            colors = 1:5, timemarks = NULL, gscale = FALSE) {
+
+  #create data_agesect for storing overall results, assign names
+  results <- vector(mode = "list", length = length(factor))
+  names(results) <- colnames(data_ages$factors)[factor]
+
+  #for each factor:
+  for(i in 1:length(factor)) {
+
+    #extract information for factor i
+    groups <- data_ages$factors[,factor[i]]
+    ages <- data_ages$ages
+    tree <- data_ages$topology
+
+    #find ages corresponding to node of interest
+    #to make sure this is consistent with how the nodeAges object was built,
+    #we'll use the same approach
+    clades <- list()
+    for(j in 1:tree$Nnode) {
+      clades[j] <- list(tree$tip.label[unlist(phangorn::Descendants(tree, length(tree$tip.label) + j, type = 'tips'))])
+    }
+
+    #which of these nodes include the two species
+    includes_targets <- c()
+    for(j in 1:length(clades)) {
+      if(all(tips %in% clades[[j]])) {
+        includes_targets <- c(includes_targets, j)
+      }
+    }
+
+    #the least inclusive node that includes both targets is their MRCA
+    target_clade_size <- min(sapply(clades, length)[includes_targets])
+    node_number <- includes_targets[which(sapply(clades, length)[includes_targets] ==
+                                           target_clade_size)]
+
+    #restrict ages to just that one node
+    ages <- ages[,colnames(ages) == paste0('clade_', node_number)]
+    gmeans <- apply(as.data.frame(ages), 2, tapply, INDEX = groups, mean)
+
+    #plot the posterior distributions of the chosen node
+
+    #make room to save the individual plots
+    plots <- vector(mode = "list", length = 1)
+
+    #plot
+    ages_clade_scaled <- (max(ages) - ages) + min(ages)
+    timemarks1.1 <- timemarks[timemarks <= max(ages_clade_scaled) & timemarks >= min(ages_clade_scaled)]
+    to_plot <- data.frame(age = ages_clade_scaled, group = groups)
+    plots <- ggplot(to_plot, aes(x = age, color = group)) +
+      geom_density(alpha = 0.3, linewidth = 2) +
+      theme_bw() + scale_color_manual(values = colors) +
+      theme(plot.title = element_text(size = 8), panel.grid = element_blank()) +
+      scale_x_continuous(breaks = pretty(to_plot$age), labels = abs(pretty(to_plot$age))) +
+      xlab('Age of MRCA') + ylab('Density') +
+      geom_vline(xintercept = timemarks1.1, lty = 2, col = "gray")
+
+    if(gscale == TRUE) {
+    plots <- plots +
+      deeptime::coord_geo(size = 3.5, height = unit(1, "line"),
+                          expand = TRUE, pos = "bottom")
+    }
+
+    if(length(unique(to_plot$group)) == 2) {
+      plots <- plots +
+        ggtitle(paste0('MRCA of ', tips[1], ' and ',
+                       tips[2], ' (difference = ',
+                       round((max(gmeans) - min(gmeans)), 1),
+                       ' Ma)'))
+    } else {
+      plots <- plots +
+        ggtitle(paste0('MRCA of ', tips[1], ' and ',
+                       tips[2], ' (max difference = ',
+                       round((max(gmeans) - min(gmeans)), 1),
+                       ' Ma)'))
+    }
+
+    #plot and save
+    print(plots)
+    results[[i]] <- plots
+
+  }
+
+  return(invisible(results))
+}
+
 
 #get sensitive nodes ----------------------------------------------------
 
@@ -398,10 +528,10 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
 #'   in node age (expressed in million of years) above which the nodes are
 #'   retained and depicted.
 #' @param chosen_clades Numeric, indicating the desired number of most sensitive
-#'   nodes to be retained and depicted.
+#'   nodes to be retained and depicted. Ignored if \code{amount_of_change} is
+#'   specified.
 #' @param factor Numeric; the factor or factors whose results are to be
-#'   plotted and retained. If \code{NULL}, all the factors are retained. Ignored
-#'   if \code{amount_of_change} is specified.
+#'   plotted and retained. If \code{NULL}, all the factors are retained.
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
