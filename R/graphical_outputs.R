@@ -382,6 +382,137 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
 
 }
 
+#get user-specified nodes ----------------------------------------------------
+
+
+#' Plot the ages of a user-specified node
+#'
+#' @import ggplot2
+#'
+#' @description Plot the distribution of a given node across conditions.
+#'
+#' @param data_ages An object of class \code{"nodeAges"}.
+#' @param tips Character vector of length 2, specifying the tip names of two
+#'   terminals bracketing the node whose age (expressed in million of years) is
+#'   to be plotted.
+#' @param factor Numeric; the factor or factors whose results are to be
+#'   plotted and retained. If \code{NULL}, all the factors are retained.
+#' @param plot whether to plot the results, or only store them (default=TRUE)
+#' @param colors The colors used to represent groups (i.e. levels) of each
+#'   factor.
+#' @param timemarks Numeric; an optional vector containing ages to be marked by
+#'   vertical lines.
+#' @param gscale Logical; whether to add chronostratigraphic scale to trees
+#'   (via \code{deeptime}).
+#'
+#' @details This function identifies, takes a single character vector containing
+#'   the tip names of two terminals, finds the node representing their
+#'   most-recent common ancestor, and plots the distribution of inferred ages
+#'   for said node across the conditions explored.
+#'
+#' @return A panel showing the distribution of ages for the target node under
+#'   each level of the requested factors.
+#'
+#' @export
+#'
+#' @references
+#'
+#' @examples
+#' #Load ages data
+#' data("data_ages")
+#'
+#' #Get the 5 most sensitive nodes
+#' MRCA_Brissus_Abatus <- specified_node(data_ages, tips = c('Brissus_obesus',
+#'    'Abatus_cordatus'), plot = F)
+#'
+#' #Show age distribution for the MRCA of the two terminals associated with
+#' factor A
+#' MRCA_Brissus_Abatus$factor_A
+
+specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$factors),
+                            plot = T, colors = 1:5, timemarks = NULL, gscale = FALSE) {
+
+  #create data_agesect for storing overall results, assign names
+  results <- vector(mode = "list", length = length(factor))
+  names(results) <- colnames(data_ages$factors)[factor]
+
+  #for each factor:
+  for(i in 1:length(factor)) {
+
+    #extract information for factor i
+    groups <- data_ages$factors[,factor[i]]
+    ages <- data_ages$ages
+    tree <- data_ages$topology
+
+    #find ages corresponding to node of interest
+    #to make sure this is consistent with how the nodeAges object was built,
+    #we'll use the same approach
+    clades <- list()
+    for(j in 1:tree$Nnode) {
+      clades[j] <- list(tree$tip.label[unlist(phangorn::Descendants(tree, length(tree$tip.label) + j, type = 'tips'))])
+    }
+
+    #which of these nodes include the two species
+    includes_targets <- c()
+    for(j in 1:length(clades)) {
+      if(all(tips %in% clades[[j]])) {
+        includes_targets <- c(includes_targets, j)
+      }
+    }
+
+    #the least inclusive node that includes both targets is their MRCA
+    target_clade_size <- min(sapply(clades, length)[includes_targets])
+    node_number <- includes_targets[which(sapply(clades, length)[includes_targets] ==
+                                           target_clade_size)]
+
+    #restrict ages to just that one node
+    ages <- ages[,colnames(ages) == paste0('clade_', node_number)]
+    gmeans <- apply(as.data.frame(ages), 2, tapply, INDEX = groups, mean)
+
+    #plot the posterior distributions of the chosen node
+
+    #make room to save the individual plots
+    plots <- vector(mode = "list", length = 1)
+
+    #plot
+    timemarks1.1 <- timemarks[timemarks <= max(ages) & timemarks >= min(ages)]
+    to_plot <- data.frame(age = ages, group = groups)
+    plots <- ggplot(to_plot, aes(x = age, color = group)) +
+      geom_density(alpha = 0.3, linewidth = 2) + scale_x_reverse() +
+      theme_bw() + scale_color_manual(values = colors) +
+      theme(plot.title = element_text(size = 8), panel.grid = element_blank()) +
+      xlab('Age of MRCA') + ylab('Density') +
+      geom_vline(xintercept = timemarks1.1, lty = 2, col = "gray")
+
+    if(gscale) {
+    plots <- plots +
+      deeptime::coord_geo(size = 3.5, height = unit(1, "line"),
+                          expand = TRUE, pos = "bottom")
+    }
+
+    if(length(unique(to_plot$group)) == 2) {
+      plots <- plots +
+        ggtitle(paste0('MRCA of ', tips[1], ' and ',
+                       tips[2], ' (difference = ',
+                       round((max(gmeans) - min(gmeans)), 1),
+                       ' Ma)'))
+    } else {
+      plots <- plots +
+        ggtitle(paste0('MRCA of ', tips[1], ' and ',
+                       tips[2], ' (max difference = ',
+                       round((max(gmeans) - min(gmeans)), 1),
+                       ' Ma)'))
+    }
+
+    #plot and save
+    if(plot) print(plots)
+
+    results[[i]] <- plots
+
+  }
+
+  return(invisible(results))
+}
 
 #get sensitive nodes ----------------------------------------------------
 
@@ -398,10 +529,11 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
 #'   in node age (expressed in million of years) above which the nodes are
 #'   retained and depicted.
 #' @param chosen_clades Numeric, indicating the desired number of most sensitive
-#'   nodes to be retained and depicted.
+#'   nodes to be retained and depicted. Ignored if \code{amount_of_change} is
+#'   specified.
 #' @param factor Numeric; the factor or factors whose results are to be
-#'   plotted and retained. If \code{NULL}, all the factors are retained. Ignored
-#'   if \code{amount_of_change} is specified.
+#'   plotted and retained. If \code{NULL}, all the factors are retained.
+#' @param plot whether to plot the results, or only store them (default=TRUE)
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
@@ -432,11 +564,13 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
 #' data("data_ages")
 #'
 #' #Get the 5 most sensitive nodes
-#' sensinodes5 <- sensitive_nodes(data_ages, chosen_clades = 5)
+#' sensinodes5 <- sensitive_nodes(data_ages, chosen_clades = 5, plot = F)
 #'
 #' #Show ages distribution for the 5 most sensitive nodes associated to factor A
 #' sensinodes5$factor_A
-sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 5, factor = 1:ncol(data_ages$factors),
+
+sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 5,
+                            factor = 1:ncol(data_ages$factors), plot = T,
                             colors = 1:5, timemarks = NULL, gscale = FALSE) {
 
   #create data_agesect for storing overall results, assign names
@@ -514,20 +648,19 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 
       }
 
       #plot
-      ages_clade_scaled <- (max(ages[,clade]) - ages[,clade]) + min(ages[,clade])
-      timemarks1.1 <- timemarks[timemarks <= max(ages_clade_scaled) & timemarks >= min(ages_clade_scaled)]
-      to_plot <- data.frame(age = ages_clade_scaled, group = groups)
+      timemarks1.1 <- timemarks[timemarks <= max(ages) & timemarks >= min(ages)]
+      to_plot <- data.frame(age = ages, group = groups)
       plots[[j]] <- ggplot(to_plot, aes(x = age, color = group)) +
-        geom_density(alpha = 0.3, size = 2) +
+        geom_density(alpha = 0.3, size = 2) + scale_x_reverse() +
         theme_bw() + scale_color_manual(values = colors) +
         theme(plot.title = element_text(size = 8), panel.grid = element_blank()) +
-        scale_x_continuous(breaks = pretty(to_plot$age), labels = abs(pretty(to_plot$age))) +
         xlab('Age of MRCA') + ylab('Density') +
         geom_vline(xintercept = timemarks1.1, lty = 2, col = "gray")
 
-      if(gscale == TRUE) {
+      if(gscale) {
         plots[[j]] <- plots[[j]] +
-          deeptime::coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE, pos = "bottom")
+          deeptime::coord_geo(size = 3.5, height = unit(1, "line"),
+                              expand = TRUE, pos = "bottom")
       }
 
       if(length(unique(to_plot$group)) == 2) {
@@ -550,14 +683,16 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 
     most_affected <- ggpubr::annotate_figure(ggpubr::ggarrange(plotlist = plots,
                                                                common.legend = TRUE, legend = 'bottom',
                                                                ncol = ceiling(num_nodes / 5), nrow = 5))
-    print(most_affected)
+    if(plot) print(most_affected)
+
     results[[i]] <- most_affected
   }
+
   return(invisible(results))
 }
 
-
 #LTT by group-------------------------------------------------------------------
+
 
 #' Plot average Lineage Through Time (LTT) curves
 #'
@@ -574,6 +709,7 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 
 #'   factor.
 #' @param factor Numeric; the factor or factors whose results are to be
 #'   plotted and retained. If \code{NULL}, all the factors are retained.
+#' @param plot whether to plot the results, or only store them (default=TRUE)
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
 #'   vertical lines in LTT plots.
 #' @param gscale Logical; whether to add chronostratigraphic scale to trees
@@ -585,11 +721,12 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 
 #' data("data_ages")
 #'
 #' #Create LTT plots
-#' sensiltt <- ltt_sensitivity(data_ages = data_ages, average = "mean")
+#' sensiltt <- ltt_sensitivity(data_ages = data_ages, average = "mean", plot = F)
 #'
-#' #Show LTT plot for factor A
+#' #Show LTT plot for factor A only
 #' sensiltt$factor_A
-ltt_sensitivity <- function(data_ages, average = 'median', colors = 1:5, factor = 1:ncol(data_ages$factors),
+ltt_sensitivity <- function(data_ages, average = 'median', colors = 1:5,
+                            factor = 1:ncol(data_ages$factors), plot = T,
                             timemarks = NULL, gscale = TRUE) {
 
   ages <- data_ages$ages
@@ -641,14 +778,14 @@ ltt_sensitivity <- function(data_ages, average = 'median', colors = 1:5, factor 
                                                        fill = colors[1:nlevels(this_groups)],
                                                        size = 3.5)))
 
-    if(gscale == TRUE) {
+    if(gscale) {
       ltts[[i]] <- ltts[[i]] +
         deeptime::coord_geo(size = 3.5, height = unit(1, "line"), expand = TRUE, pos = "bottom")
     }
 
-    print(ltts[[i]])
+    if(plot) print(ltts[[i]])
 
   }
+
   return(invisible(ltts))
 }
-
