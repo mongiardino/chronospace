@@ -531,7 +531,7 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
 #' sensinodes5$factor_A
 
 sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 5,
-                            factor = 1:ncol(data_ages$factors), plot = T,
+                            factor = 1:ncol(data_ages$factors), plot = TRUE,
                             colors = 1:5, timemarks = NULL, gscale = FALSE) {
 
   #create data_agesect for storing overall results, assign names
@@ -687,7 +687,7 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 
 #' #Show LTT plot for factor A only
 #' sensiltt$factor_A
 ltt_sensitivity <- function(data_ages, average = 'median', colors = 1:5,
-                            factor = 1:ncol(data_ages$factors), plot = T,
+                            factor = 1:ncol(data_ages$factors), plot = TRUE,
                             timemarks = NULL, gscale = TRUE) {
 
   ages <- data_ages$ages
