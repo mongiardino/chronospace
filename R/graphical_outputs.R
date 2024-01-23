@@ -89,7 +89,7 @@
 #'
 #' #Show extremes of the (only) bgPC axis for factor B
 #' csp.ord$factor_B$PC_extremes$bgPC1
-plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL, gscale = TRUE,
+plot.chronospace <- function(obj, output = "all", sdev = 1, timemarks = NULL, gscale = TRUE,
                              ellipses = FALSE, centroids = FALSE, distances = FALSE,
                              colors = 1:5, factor = 1:(length(obj)), axes = c(1, 2),
                              pt.alpha = 0.5, pt.size = 1.5, ell.width = 1.2,
@@ -106,7 +106,6 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
   results <- vector(mode = "list", length = length(factor))
   names(results) <- facnames <- names(obj)[factor]
 
-  warns <- NULL
 
   #get ordinations and PC extremes for factor i
   for(i in 1:length(factor)) {
@@ -157,11 +156,8 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
       dists <- as.matrix(stats::dist(cents_original))
       dists_std <- (1 / dists) / min(1 / dists)
 
-
-
       #generate combinations
       combins <- utils::combn(x = levels(groups), m = 2)
-
 
       #plot chronospace
       chronospace <- ggplot(to_plot, aes(x = coordinates.1, y = coordinates.2, color = groups)) +
@@ -226,11 +222,7 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
       #create object for storing the extremes of the bgPC j
       PCextremes <- vector(mode = "list", length = num_functions)
 
-      if(num_functions == 1) {
-        ax <- 1
-      } else {
-        ax <- axes
-      }
+      ax <- if(num_functions == 1) 1 else axes
 
       #loop through the bgPCA axes (depending on the number of groups in the
       #variable being tested)
@@ -239,13 +231,18 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
         #create a tree that contains topology but no branch lengths
         tree$edge.length <- rep(0, length(tree$edge.length))
 
-        #if sdev has been specified, use them to obtain extremes; otherwise, constrain
-        #bgPC extremes to have positive branch lenghts only
-        if(!is.null(sdev)) {
+        #constrain bgPC extremes to have positive branch lenghts only
+        blen1 <- -1
+        blen2 <- -1
+        used_sdev <- sdev
+        while(any(blen1 < 0) | any(blen2 < 0)) {
 
-          xrange <- c(sdev * stats::sd(tapply(ordination$x[,ax[j]], groups, mean)),
-                      -sdev * stats::sd(tapply(ordination$x[,ax[j]], groups, mean)))
-          assign(paste0('plus_sd_', j),  revPCA(xrange[1], ordination$rotation[,ax[j]], mean))
+          #adjust bgPC range
+          xrange <- c(used_sdev * stats::sd(tapply(ordination$x[,ax[j]], groups, mean)),
+                      -used_sdev * stats::sd(tapply(ordination$x[,ax[j]], groups, mean)))
+
+          #backwards PCA towards ages
+          assign(paste0('plus_sd_', j), revPCA(xrange[1], ordination$rotation[,ax[j]], mean))
           assign(paste0('minus_sd_', j), revPCA(xrange[2], ordination$rotation[,ax[j]], mean))
 
 
@@ -253,53 +250,23 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
           extrees <- reconstruct_blen(clades = clades,
                                       tree = tree,
                                       plus = get(paste0('plus_sd_', j)),
-                                      mean = mean,
-                                      minus = get(paste0('minus_sd_', j)))
+                                      minus = get(paste0('minus_sd_', j)),
+                                      mean = mean)
 
           tree_plus <- extrees$tree_plus
           tree_mean <- extrees$tree_mean
           tree_minus <- extrees$tree_minus
 
-          used_sdev <- sdev
-
-        } else {
-          adj <- 1
-          blen1 <- -1
-          blen2 <- -1
-          while(any(blen1 < 0) | any(blen2 < 0)) {
-
-            #adjust bgPC range
-            xrange <- c(stats::sd(tapply(ordination$x[,ax[j]], groups, mean)),
-                        -stats::sd(tapply(ordination$x[,ax[j]], groups, mean)))
-
-            newmax <- xrange[1] + (diff(xrange) * (1 - adj) / 2)
-            newmin <- xrange[2] - (diff(xrange) * (1 - adj) / 2)
-
-            #backwards PCA towards ages
-            assign(paste0('plus_sd_', j), revPCA(newmax, ordination$rotation[,ax[j]], mean))
-            assign(paste0('minus_sd_', j), revPCA(newmin, ordination$rotation[,ax[j]], mean))
-
-            #get % of sd used to get only positive branch lenghts
-            used_sdev <- round(newmax / stats::sd(tapply(ordination$x[,ax[j]], groups, mean)), 3)
-
-            #retrieve trees with branch lenghts corresponding to ages at the extremes of bgPC j
-            extrees <- reconstruct_blen(clades = clades,
-                                        tree = tree,
-                                        plus = get(paste0('plus_sd_', j)),
-                                        minus = get(paste0('minus_sd_', j)),
-                                        mean = mean)
-
-            tree_plus <- extrees$tree_plus
-            tree_mean <- extrees$tree_mean
-            tree_minus <- extrees$tree_minus
-
-            blen1 <- tree_plus$edge.length
-            blen2 <- tree_minus$edge.length
-            if(any(blen1 < 0) | any(blen2 < 0)) {
-              adj <- adj - 0.05
-            }
+          blen1 <- tree_plus$edge.length
+          blen2 <- tree_minus$edge.length
+          if(any(blen1 < 0) | any(blen2 < 0)) {
+            used_sdev <- round(used_sdev - 0.05, digits = 2)
           }
         }
+
+        if(sdev != used_sdev) warning(paste0(facnames[i], " : sdev = ", sdev,
+                                             " generated negative branch lengths for bgPC",
+                                             ax[j], "; sdev = ", used_sdev, " was used instead."))
 
         #compute delta in branch lengths between the mean tree and the positive and negative extremes
         changes_plus <- tree_plus$edge.length - tree_mean$edge.length
@@ -323,11 +290,6 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
                                            data.frame(node = tree_plus$edge[,2], delta = changes_plus))
         tree_minus_gg <- suppressMessages(ggtree::ggtree(tree_minus, size = 1.5) %<+%
                                             data.frame(node = tree_minus$edge[,2], delta = changes_minus))
-
-        warn <- if(any(na.omit(tree_minus_gg$data$branch.length / abs(tree_minus_gg$data$branch.length)) == -1)) TRUE else FALSE
-        warns <- c(warns, warn)
-
-
 
         #create graphics for each extreme of the bgPC j
         tree_minus_gg$data$x <- max(tree_minus_gg$data$x) - tree_minus_gg$data$x
@@ -376,11 +338,10 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
 
   }
 
-  if(any(warns)) warning(paste("sdev =", sdev, "generated negative branch lengths"))
-
   return(invisible(results))
 
 }
+
 
 #get user-specified nodes ----------------------------------------------------
 
@@ -430,7 +391,7 @@ plot.chronospace <- function(obj, output = "all", sdev = NULL, timemarks = NULL,
 #' MRCA_Brissus_Abatus$factor_A
 
 specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$factors),
-                            plot = T, colors = 1:5, timemarks = NULL, gscale = FALSE) {
+                            plot = TRUE, colors = 1:5, timemarks = NULL, gscale = FALSE) {
 
   #create data_agesect for storing overall results, assign names
   results <- vector(mode = "list", length = length(factor))

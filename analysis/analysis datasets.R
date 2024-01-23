@@ -48,7 +48,7 @@ load_all()
 # Curculioidea #################
 
 #load data
-#load("C:/Users/pablo/OneDrive/Escritorio/Software/chronospace/analysis/curcu data")
+load("C:/Users/pablo/OneDrive/Escritorio/Software/chronospace/analysis/curcu data")
 
 #general overview of the dataset
 print(curcu_data)
@@ -59,11 +59,13 @@ cspace_curcu <- chronospace(data_ages = curcu_data)
 cspace_curcu
 
 #plot chronopace
-plot(cspace, sdev = .85, output = "ordination", centroids = TRUE, distances = TRUE, ellipses = FALSE)
+plot(cspace_curcu, sdev = 1, output = "ordination", centroids = TRUE, distances = TRUE, ellipses = FALSE)
+plot.chronospace2(cspace_curcu, sdev = 1, output = "extremes")
+
 xxx <- plot(cspace_curcu, sdev = .85, output = "ordination", factor = 4, axes = 1, centroids = TRUE, ellipses = FALSE, distances = TRUE, pt.alpha = 0, dist.width = 1)
 xxx$genes$ordination
 
-xxx <- plot(cspace_curcu, output = "ordination", factor = c(4), distances = TRUE, pt.alpha = 1)
+xxx <- plot(cspace_euka, output = "ordination", factor = c(4), distances = TRUE, pt.alpha = 0)
 
 
 
