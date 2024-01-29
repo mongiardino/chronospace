@@ -9,6 +9,7 @@ ltt_sensitivity(
   average = "median",
   colors = 1:5,
   factor = 1:ncol(data_ages$factors),
+  plot = TRUE,
   timemarks = NULL,
   gscale = TRUE
 )
@@ -25,6 +26,8 @@ factor.}
 \item{factor}{Numeric; the factor or factors whose results are to be
 plotted and retained. If \code{NULL}, all the factors are retained.}
 
+\item{plot}{whether to plot the results, or only store them (default=TRUE)}
+
 \item{timemarks}{Numeric; an optional vector containing ages to be marked by
 vertical lines in LTT plots.}
 
@@ -40,8 +43,8 @@ across the corresponding subsample of chronograms.
 data("data_ages")
 
 #Create LTT plots
-sensiltt <- ltt_sensitivity(data_ages = data_ages, average = "mean")
+sensiltt <- ltt_sensitivity(data_ages = data_ages, average = "mean", plot = F)
 
-#Show LTT plot for factor A
+#Show LTT plot for factor A only
 sensiltt$factor_A
 }

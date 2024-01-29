@@ -9,6 +9,7 @@ sensitive_nodes(
   amount_of_change = NULL,
   chosen_clades = 5,
   factor = 1:ncol(data_ages$factors),
+  plot = TRUE,
   colors = 1:5,
   timemarks = NULL,
   gscale = FALSE
@@ -22,11 +23,13 @@ in node age (expressed in million of years) above which the nodes are
 retained and depicted.}
 
 \item{chosen_clades}{Numeric, indicating the desired number of most sensitive
-nodes to be retained and depicted.}
+nodes to be retained and depicted. Ignored if \code{amount_of_change} is
+specified.}
 
 \item{factor}{Numeric; the factor or factors whose results are to be
-plotted and retained. If \code{NULL}, all the factors are retained. Ignored
-if \code{amount_of_change} is specified.}
+plotted and retained. If \code{NULL}, all the factors are retained.}
+
+\item{plot}{whether to plot the results, or only store them (default=TRUE)}
 
 \item{colors}{The colors used to represent groups (i.e. levels) of each
 factor.}
@@ -62,7 +65,7 @@ distribution of relative proportion of ages, by level.
 data("data_ages")
 
 #Get the 5 most sensitive nodes
-sensinodes5 <- sensitive_nodes(data_ages, chosen_clades = 5)
+sensinodes5 <- sensitive_nodes(data_ages, chosen_clades = 5, plot = F)
 
 #Show ages distribution for the 5 most sensitive nodes associated to factor A
 sensinodes5$factor_A
