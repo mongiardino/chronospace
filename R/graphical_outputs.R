@@ -683,9 +683,14 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
 
     #plot and save, accounting for a varying number of columns depending on the
     #nodes plotted
+    if(num_clades <= 5) {
+      row_number = num_clades
+    } else {
+      row_number = 5
+    }
     most_affected <- ggpubr::annotate_figure(ggpubr::ggarrange(plotlist = plots,
                                                                common.legend = TRUE, legend = 'bottom',
-                                                               ncol = ceiling(num_nodes / 5), nrow = 5))
+                                                               ncol = ceiling(num_nodes / 5), nrow = row_number))
     if(plot) print(most_affected)
 
     results[[i]] <- most_affected
