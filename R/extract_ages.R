@@ -13,10 +13,9 @@
 #'   directory is used instead.
 #' @param type A list of \code{f} vectors (one for each factor being tested)
 #'   specifying the group to which the chronograms from each file will be
-#'   assigned to.
+#'   assigned to. The list can be optionally named, in which case the names will
+#'   be assigned to the factors.
 #' @param sample Numeric; the fixed number of trees to retain from each file.
-#' @param facnames An optional character vector indicating the names of the
-#'   factors.
 #'
 #' @details This function imports and prepare the ages data such that they are
 #'   suitable for analysis using the chronospace suite of functions. The input
@@ -60,14 +59,14 @@
 #' list.files(temp)
 #'
 #' #Set type of runs and number of chronograms to be retained
-#' type <- list(c('clock', 'clock', 'random', 'random', 'signal', 'signal'),
-#'              c('CATGTR', 'GTR', 'CATGTR', 'GTR', 'CATGTR', 'GTR'))
+#' type <- list(loci = c('clock', 'clock', 'random', 'random', 'signal', 'signal'),
+#'              model = c('CATGTR', 'GTR', 'CATGTR', 'GTR', 'CATGTR', 'GTR'))
 #' sample <- 500
 #'
 #' #Import data to R (this might take a minute)
-#' data <- extract_ages(path = temp, type = type, sample = sample, facnames = c("loci", "model"))
+#' data <- extract_ages(path = temp, type = type, sample = sample)
 #' data
-extract_ages <- function(path = NULL, type, sample, facnames = NULL) {
+extract_ages <- function(path = NULL, type, sample) {
 
 
   #Obtain the names of all files in the specified directory (or the working
@@ -160,11 +159,11 @@ extract_ages <- function(path = NULL, type, sample, facnames = NULL) {
     types_of_runs[,i] <- rep(type[[i]], each = nrow(ages) / length(type[[i]]))
   }
 
-  if(is.null(facnames)) {
+  if(is.null(names(type))) {
     colnames(types_of_runs) <- paste('factor', LETTERS[1:ncol(types_of_runs)],
                                      sep = '_')
   } else {
-    colnames(types_of_runs) <- facnames
+    colnames(types_of_runs) <- names(type)
   }
 
   types_of_runs <- types_of_runs %>% dplyr::mutate_if(sapply(types_of_runs, is.character),

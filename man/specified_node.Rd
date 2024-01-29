@@ -8,7 +8,7 @@ specified_node(
   data_ages,
   tips = NULL,
   factor = 1:ncol(data_ages$factors),
-  plot = TRUE,
+  plot = T,
   colors = 1:5,
   timemarks = NULL,
   gscale = FALSE
