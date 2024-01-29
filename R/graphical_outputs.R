@@ -528,7 +528,7 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
 #' @param amount_of_change Numeric, specifying the desired amount of variation
 #'   in node age (expressed in million of years) above which the nodes are
 #'   retained and depicted.
-#' @param chosen_clades Numeric, indicating the desired number of most sensitive
+#' @param num_clades Numeric, indicating the desired number of most sensitive
 #'   nodes to be retained and depicted. Ignored if \code{amount_of_change} is
 #'   specified.
 #' @param factor Numeric; the factor or factors whose results are to be
@@ -564,12 +564,12 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
 #' data("data_ages")
 #'
 #' #Get the 5 most sensitive nodes
-#' sensinodes5 <- sensitive_nodes(data_ages, chosen_clades = 5, plot = F)
+#' sensinodes5 <- sensitive_nodes(data_ages, num_clades = 5, plot = F)
 #'
 #' #Show ages distribution for the 5 most sensitive nodes associated to factor A
 #' sensinodes5$factor_A
 
-sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 5,
+sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
                             factor = 1:ncol(data_ages$factors), plot = T,
                             colors = 1:5, timemarks = NULL, gscale = FALSE) {
 
@@ -603,11 +603,11 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 
 
     } else { #if a minimum amount is not specified
       #if a number of clades is not specified, do 5
-      if(is.null(chosen_clades)) {
+      if(is.null(num_clades)) {
         num_nodes <- 5
       } else {
         #else go with what the user chose, although cap at 20
-        num_nodes <- chosen_clades
+        num_nodes <- num_clades
       }
       if(num_nodes > 20) num_nodes <- 20
     }
@@ -703,7 +703,7 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 
 #'   across the corresponding subsample of chronograms.
 #'
 #' @param data_ages A \code{"nodeAges"} object created using [extract_ages()].
-#' @param average Character, indicating whether the 'mean' or 'median' is to be
+#' @param summary Character, indicating whether the 'mean' or 'median' is to be
 #'   used in computations.
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
@@ -721,11 +721,11 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, chosen_clades = 
 #' data("data_ages")
 #'
 #' #Create LTT plots
-#' sensiltt <- ltt_sensitivity(data_ages = data_ages, average = "mean", plot = F)
+#' sensiltt <- ltt_sensitivity(data_ages = data_ages, summary = "mean", plot = F)
 #'
 #' #Show LTT plot for factor A only
 #' sensiltt$factor_A
-ltt_sensitivity <- function(data_ages, average = 'median', colors = 1:5,
+ltt_sensitivity <- function(data_ages, summary = 'median', colors = 1:5,
                             factor = 1:ncol(data_ages$factors), plot = T,
                             timemarks = NULL, gscale = TRUE) {
 
@@ -754,11 +754,11 @@ ltt_sensitivity <- function(data_ages, average = 'median', colors = 1:5,
                                each = sample * num_nodes),
                     num_lineages = rep(2:(num_nodes + 1), length(this_groups)))
 
-    if(average == 'mean') {
+    if(summary == 'mean') {
       ages_average <- this_ages %>% dplyr::group_by(type, num_lineages) %>%
         dplyr::summarise(av_value = mean(value), .groups = 'drop')
     }
-    if(average == 'median') {
+    if(summary == 'median') {
       ages_average <- this_ages %>% dplyr::group_by(type, num_lineages) %>%
         dplyr::summarise(av_value = stats::median(value), .groups = 'drop')
     }
