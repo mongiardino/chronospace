@@ -6,10 +6,10 @@
 \usage{
 ltt_sensitivity(
   data_ages,
-  average = "median",
+  summary = "median",
   colors = 1:5,
   factor = 1:ncol(data_ages$factors),
-  plot = TRUE,
+  plot = T,
   timemarks = NULL,
   gscale = TRUE
 )
@@ -17,7 +17,7 @@ ltt_sensitivity(
 \arguments{
 \item{data_ages}{A \code{"nodeAges"} object created using \code{\link[=extract_ages]{extract_ages()}}.}
 
-\item{average}{Character, indicating whether the 'mean' or 'median' is to be
+\item{summary}{Character, indicating whether the 'mean' or 'median' is to be
 used in computations.}
 
 \item{colors}{The colors used to represent groups (i.e. levels) of each
@@ -43,7 +43,7 @@ across the corresponding subsample of chronograms.
 data("data_ages")
 
 #Create LTT plots
-sensiltt <- ltt_sensitivity(data_ages = data_ages, average = "mean", plot = F)
+sensiltt <- ltt_sensitivity(data_ages = data_ages, summary = "mean", plot = F)
 
 #Show LTT plot for factor A only
 sensiltt$factor_A

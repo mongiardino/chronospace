@@ -7,7 +7,7 @@
 \method{plot}{chronospace}(
   obj,
   output = "all",
-  sdev = 1,
+  sdev = NULL,
   timemarks = NULL,
   gscale = TRUE,
   ellipses = FALSE,

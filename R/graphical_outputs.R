@@ -480,7 +480,8 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
     plots <- ggplot(to_plot, aes(x = age, color = group)) +
       geom_density(alpha = 0.3, linewidth = 2) + scale_x_reverse() +
       theme_bw() + scale_color_manual(values = colors) +
-      theme(plot.title = element_text(size = 8), panel.grid = element_blank()) +
+      theme(plot.title = element_text(size = 8), panel.grid = element_blank(),
+            axis.ticks.y = element_blank(), axis.text.y = element_blank()) +
       xlab('Age of MRCA') + ylab('Density') +
       geom_vline(xintercept = timemarks1.1, lty = 2, col = "gray")
 
@@ -648,12 +649,14 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
       }
 
       #plot
-      timemarks1.1 <- timemarks[timemarks <= max(ages) & timemarks >= min(ages)]
-      to_plot <- data.frame(age = ages, group = groups)
+      this_ages <- ages[,which(colnames(ages) == names(clade))]
+      timemarks1.1 <- timemarks[timemarks <= max(this_ages) & timemarks >= min(this_ages)]
+      to_plot <- data.frame(age = this_ages, group = groups)
       plots[[j]] <- ggplot(to_plot, aes(x = age, color = group)) +
-        geom_density(alpha = 0.3, size = 2) + scale_x_reverse() +
+        geom_density(alpha = 0.3, linewidth = 2) + scale_x_reverse() +
         theme_bw() + scale_color_manual(values = colors) +
-        theme(plot.title = element_text(size = 8), panel.grid = element_blank()) +
+        theme(plot.title = element_text(size = 8), panel.grid = element_blank(),
+              axis.ticks.y = element_blank(), axis.text.y = element_blank()) +
         xlab('Age of MRCA') + ylab('Density') +
         geom_vline(xintercept = timemarks1.1, lty = 2, col = "gray")
 
