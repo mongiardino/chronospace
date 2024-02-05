@@ -342,8 +342,7 @@ plot.chronospace <- function(obj, output = "all", sdev = 1, timemarks = NULL, gs
 }
 
 
-#get user-specified nodes ----------------------------------------------------
-
+#get user-specified nodes ------------------------------------------------------
 
 #' Plot the ages of a user-specified node
 #'
@@ -388,7 +387,6 @@ plot.chronospace <- function(obj, output = "all", sdev = 1, timemarks = NULL, gs
 #' #Show age distribution for the MRCA of the two terminals associated with
 #' factor A
 #' MRCA_Brissus_Abatus$factor_A
-
 specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$factors),
                             plot = TRUE, colors = 1:5, timemarks = NULL, gscale = FALSE) {
 
@@ -475,8 +473,8 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
   return(invisible(results))
 }
 
-#get sensitive nodes ----------------------------------------------------
 
+#get sensitive nodes ----------------------------------------------------
 
 #' Identify the most sensitive nodes and depict their age distribution
 #'
@@ -529,7 +527,6 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
 #'
 #' #Show ages distribution for the 5 most sensitive nodes associated to factor A
 #' sensinodes5$factor_A
-
 sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
                             factor = 1:ncol(data_ages$factors), plot = TRUE,
                             colors = 1:5, timemarks = NULL, gscale = FALSE) {
@@ -659,8 +656,8 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
   return(invisible(results))
 }
 
-#LTT by group-------------------------------------------------------------------
 
+#LTT by group-------------------------------------------------------------------
 
 #' Plot average Lineage Through Time (LTT) curves
 #'
