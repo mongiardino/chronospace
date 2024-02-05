@@ -695,7 +695,7 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
 #' sensiltt$factor_A
 ltt_sensitivity <- function(data_ages, summary = 'median', colors = 1:5,
                             factor = 1:ncol(data_ages$factors), plot = TRUE,
-                            timemarks = NULL, gscale = TRUE) {
+                            timemarks = NULL, gscale = FALSE) {
 
   ages <- data_ages$ages
   factors <- data_ages$factors
