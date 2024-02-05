@@ -9,7 +9,7 @@ ltt_sensitivity(
   summary = "median",
   colors = 1:5,
   factor = 1:ncol(data_ages$factors),
-  plot = T,
+  plot = TRUE,
   timemarks = NULL,
   gscale = TRUE
 )
