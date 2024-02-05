@@ -4,7 +4,7 @@
 \alias{extract_ages}
 \title{Import and format node ages data}
 \usage{
-extract_ages(path = NULL, type, sample, facnames = NULL)
+extract_ages(path = NULL, type, sample)
 }
 \arguments{
 \item{path}{An optional character string specifying the path to the folder
@@ -13,12 +13,10 @@ directory is used instead.}
 
 \item{type}{A list of \code{f} vectors (one for each factor being tested)
 specifying the group to which the chronograms from each file will be
-assigned to.}
+assigned to. The list can be optionally named, in which case the names will
+be assigned to the factors.}
 
 \item{sample}{Numeric; the fixed number of trees to retain from each file.}
-
-\item{facnames}{An optional character vector indicating the names of the
-factors.}
 }
 \value{
 An object of class \code{"nodeAges"} with a list containing 1) the
@@ -64,12 +62,12 @@ for(i in 1:length(files)) download.file(paste0(url, files[i]), paste(temp, files
 list.files(temp)
 
 #Set type of runs and number of chronograms to be retained
-type <- list(c('clock', 'clock', 'random', 'random', 'signal', 'signal'),
-             c('CATGTR', 'GTR', 'CATGTR', 'GTR', 'CATGTR', 'GTR'))
+type <- list(loci = c('clock', 'clock', 'random', 'random', 'signal', 'signal'),
+             model = c('CATGTR', 'GTR', 'CATGTR', 'GTR', 'CATGTR', 'GTR'))
 sample <- 500
 
 #Import data to R (this might take a minute)
-data <- extract_ages(path = temp, type = type, sample = sample, facnames = c("loci", "model"))
+data <- extract_ages(path = temp, type = type, sample = sample)
 data
 }
 \seealso{

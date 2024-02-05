@@ -7,7 +7,7 @@
 \method{plot}{chronospace}(
   obj,
   output = "all",
-  sdev = NULL,
+  sdev = 1,
   timemarks = NULL,
   gscale = TRUE,
   ellipses = FALSE,
@@ -96,10 +96,9 @@ ordination maximizing variation in node age between the groups (of
 each factor). The first of these is a projection of the phylogenetic trees
 (whose ages were used to generate the ordination) into the ordination axes,
 and can be either a histogram for two-level factors, or a bivariate
-scatterplot for factors with three or more levels. The second output
-contains 'theoretical' trees representing the positive and negative
-extremes of each ordination axis, depicting the variation in nodes ages
-it captures.
+scatter plot for factors with three or more levels. The second output
+contains trees representing the positive and negative extremes of each
+ordination axis, depicting the variation in nodes ages it captures.
 }
 \examples{
 #Load ages data

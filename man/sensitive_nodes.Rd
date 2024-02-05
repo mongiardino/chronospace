@@ -9,7 +9,7 @@ sensitive_nodes(
   amount_of_change = NULL,
   num_clades = 5,
   factor = 1:ncol(data_ages$factors),
-  plot = T,
+  plot = TRUE,
   colors = 1:5,
   timemarks = NULL,
   gscale = FALSE
