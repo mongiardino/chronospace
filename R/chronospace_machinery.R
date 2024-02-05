@@ -30,10 +30,10 @@
 #'
 #' @examples
 #' #Load ages data
-#' data("data_ages")
+#' data("echinoid_dates")
 #'
 #' #Create chronospace
-#' cspace <- chronospace(data_ages)
+#' cspace <- chronospace(echinoid_dates)
 #'
 #' #Inspect object
 #' cspace
@@ -151,10 +151,10 @@ chronospace <- function(data_ages) {
 #'
 #' @examples
 #' #Load ages data
-#' data("data_ages")
+#' data("echinoid_dates")
 #'
 #' #Create chronospace
-#' cspace <- chronospace(data_ages)
+#' cspace <- chronospace(echinoid_dates)
 #'
 #' #Inspect object
 #' print(cspace)

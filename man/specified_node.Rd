@@ -50,10 +50,10 @@ for said node across the conditions explored.
 }
 \examples{
 #Load ages data
-data("data_ages")
+data("echinoid_dates")
 
 #Get the 5 most sensitive nodes
-MRCA_Brissus_Abatus <- specified_node(data_ages, tips = c('Brissus_obesus',
+MRCA_Brissus_Abatus <- specified_node(echinoid_dates, tips = c('Brissus_obesus',
    'Abatus_cordatus'), plot = F)
 
 #Show age distribution for the MRCA of the two terminals associated with

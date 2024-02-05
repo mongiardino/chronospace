@@ -62,10 +62,10 @@ distribution of relative proportion of ages, by level.
 }
 \examples{
 #Load ages data
-data("data_ages")
+data("echinoid_dates")
 
 #Get the 5 most sensitive nodes
-sensinodes5 <- sensitive_nodes(data_ages, num_clades = 5, plot = F)
+sensinodes5 <- sensitive_nodes(echinoid_dates, num_clades = 5, plot = F)
 
 #Show ages distribution for the 5 most sensitive nodes associated to factor A
 sensinodes5$factor_A

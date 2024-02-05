@@ -69,10 +69,10 @@
 #'
 #' @examples
 #' #Load ages data
-#' data("data_ages")
+#' data("echinoid_dates")
 #'
 #' #Create chronospace
-#' cspace <- chronospace(data_ages)
+#' cspace <- chronospace(echinoid_dates)
 #'
 #' #Plot chronospace
 #' csp.ord <- plot(cspace)
@@ -378,10 +378,10 @@ plot.chronospace <- function(obj, output = "all", sdev = 1, timemarks = NULL, gs
 #'
 #' @examples
 #' #Load ages data
-#' data("data_ages")
+#' data("echinoid_dates")
 #'
 #' #Get the 5 most sensitive nodes
-#' MRCA_Brissus_Abatus <- specified_node(data_ages, tips = c('Brissus_obesus',
+#' MRCA_Brissus_Abatus <- specified_node(echinoid_dates, tips = c('Brissus_obesus',
 #'    'Abatus_cordatus'), plot = F)
 #'
 #' #Show age distribution for the MRCA of the two terminals associated with
@@ -390,7 +390,7 @@ plot.chronospace <- function(obj, output = "all", sdev = 1, timemarks = NULL, gs
 specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$factors),
                             plot = TRUE, colors = 1:5, timemarks = NULL, gscale = FALSE) {
 
-  #create data_agesect for storing overall results, assign names
+  #create data_ages object for storing overall results, assign names
   results <- vector(mode = "list", length = length(factor))
   names(results) <- colnames(data_ages$factors)[factor]
 
@@ -520,10 +520,10 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
 #'
 #' @examples
 #' #Load ages data
-#' data("data_ages")
+#' data("echinoid_dates")
 #'
 #' #Get the 5 most sensitive nodes
-#' sensinodes5 <- sensitive_nodes(data_ages, num_clades = 5, plot = F)
+#' sensinodes5 <- sensitive_nodes(echinoid_dates, num_clades = 5, plot = F)
 #'
 #' #Show ages distribution for the 5 most sensitive nodes associated to factor A
 #' sensinodes5$factor_A
@@ -531,7 +531,7 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
                             factor = 1:ncol(data_ages$factors), plot = TRUE,
                             colors = 1:5, timemarks = NULL, gscale = FALSE) {
 
-  #create data_agesect for storing overall results, assign names
+  #create data_ages object for storing overall results, assign names
   results <- vector(mode = "list", length = length(factor))
   names(results) <- colnames(data_ages$factors)[factor]
 
@@ -683,10 +683,10 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
 #'
 #' @examples
 #' #Load ages data
-#' data("data_ages")
+#' data("echinoid_dates")
 #'
 #' #Create LTT plots
-#' sensiltt <- ltt_sensitivity(data_ages = data_ages, summary = "mean", plot = F)
+#' sensiltt <- ltt_sensitivity(echinoid_dates, summary = "mean", plot = F)
 #'
 #' #Show LTT plot for factor A only
 #' sensiltt$factor_A

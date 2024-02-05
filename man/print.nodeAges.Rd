@@ -17,6 +17,6 @@ the object.
 Print \code{"nodeAges"} objects
 }
 \examples{
-data("data_ages")
-print(data_ages)
+data("echinoid_dates")
+print(echinoid_dates)
 }

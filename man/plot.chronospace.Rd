@@ -102,10 +102,10 @@ ordination axis, depicting the variation in nodes ages it captures.
 }
 \examples{
 #Load ages data
-data("data_ages")
+data("echinoid_dates")
 
 #Create chronospace
-cspace <- chronospace(data_ages)
+cspace <- chronospace(echinoid_dates)
 
 #Plot chronospace
 csp.ord <- plot(cspace)

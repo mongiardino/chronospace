@@ -1,8 +1,8 @@
 test_that(desc = "tests for chronospace", code = {
-  data("data_ages")
-  cspace<-chronospace(data_ages = data_ages)
+  data("echinoid_dates")
+  cspace<-chronospace(data_ages = echinoid_dates)
 
   expect_match(class(cspace), "chronospace")
-  expect_equal(length(cspace), ncol(data_ages$factors))
+  expect_equal(length(cspace), ncol(echinoid_dates$factors))
 
 })

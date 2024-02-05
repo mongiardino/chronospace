@@ -192,8 +192,8 @@ extract_ages <- function(path = NULL, type, sample) {
 #' @export
 #'
 #' @examples
-#' data("data_ages")
-#' print(data_ages)
+#' data("echinoid_dates")
+#' print(echinoid_dates)
 print.nodeAges <- function(x) {
 
   ages <- x$ages

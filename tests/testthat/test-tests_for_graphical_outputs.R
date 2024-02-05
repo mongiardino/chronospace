@@ -1,6 +1,6 @@
 test_that(desc = "tests for plot.chronospace", code = {
-  data("data_ages")
-  cspace <- chronospace(data_ages = data_ages)
+  data("echinoid_dates")
+  cspace <- chronospace(data_ages = echinoid_dates)
   ordination <- plot(obj=cspace)
 
   expect_match(class(ordination), "list")
@@ -17,8 +17,8 @@ test_that(desc = "tests for plot.chronospace", code = {
 
 
 test_that(desc = "tests for sensitive_nodes", code = {
-  data("data_ages")
-  cspace <- chronospace(data_ages = data_ages)
+  data("echinoid_dates")
+  cspace <- chronospace(data_ages = echinoid_dates)
   sensinodes <-sensitive_nodes(obj = cspace, chosen_clades = 5)
 
   expect_equal(length(sensinodes), length(cspace))
@@ -28,10 +28,10 @@ test_that(desc = "tests for sensitive_nodes", code = {
 
 
 test_that(desc = "tests for ltt_sensitivity", code = {
-  data("data_ages")
-  sensiltt<-ltt_sensitivity(data_ages = data_ages, average = "mean")
+  data("echinoid_dates")
+  sensiltt<-ltt_sensitivity(data_ages = echinoid_dates, average = "mean")
 
-  expect_equal(length(sensiltt), ncol(data_ages$factors))
+  expect_equal(length(sensiltt), ncol(echinoid_dates$factors))
   for(i in 1:length(sensiltt)) expect_match(class(sensiltt[[i]]), "ggplot", all = FALSE)
 
 })

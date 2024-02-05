@@ -30,4 +30,4 @@
 #'   reconstruction with infinite mixtures of profiles in a parallel environment.
 #'   Systematic Biology 62:611–615. DOI: https://doi.org/10.1093/sysbio/syt022,
 #'   PMID: 23564032
-"data_ages"
+"echinoid_dates"
