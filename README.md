@@ -15,7 +15,7 @@ You can install the development version of chronospace from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("millacarmona/chronospace")
+devtools::install_github("mongiardino/chronospace")
 ```
 
 ## Example
