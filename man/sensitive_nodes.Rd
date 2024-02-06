@@ -45,7 +45,7 @@ A panel showing the relative proportions distribution for the age of
 each of the most sensitive nodes associated to each factor.
 }
 \description{
-For each node, identify the most variables nodes (in terms of
+For each factor, identify the most variables nodes (in terms of
 age), and plot their age proportion distributions.
 }
 \details{

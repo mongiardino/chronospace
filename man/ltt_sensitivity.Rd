@@ -11,7 +11,7 @@ ltt_sensitivity(
   factor = 1:ncol(data_ages$factors),
   plot = TRUE,
   timemarks = NULL,
-  gscale = TRUE
+  gscale = FALSE
 )
 }
 \arguments{

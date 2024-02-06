@@ -480,7 +480,7 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
 #'
 #' @import ggplot2
 #'
-#' @description For each node, identify the most variables nodes (in terms of
+#' @description For each factor, identify the most variables nodes (in terms of
 #'   age), and plot their age proportion distributions.
 #'
 #' @param data_ages An object of class \code{"nodeAges"}.
