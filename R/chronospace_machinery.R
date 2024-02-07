@@ -35,8 +35,11 @@
 #' #Create chronospace
 #' cspace <- chronospace(echinoid_dates)
 #'
-#' #Inspect object
+#' #print table
 #' cspace
+#'
+#' #access ordination and SSQ for factor A
+#' cspace$factor_A$ordination
 chronospace <- function(data_ages) {
 
   #split data.frame 'data_ages' into ages and factors

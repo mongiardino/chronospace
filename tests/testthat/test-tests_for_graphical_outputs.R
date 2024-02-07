@@ -36,7 +36,7 @@ test_that(desc = "tests for ltt_sensitivity", code = {
 })
 
 
-test_that(desc = "tests for ", code = {
+test_that(desc = "tests for specified_nodes", code = {
   data("echinoid_dates")
   specnode <- specified_node(echinoid_dates, tips = c('Brissus_obesus',
                                                       'Abatus_cordatus'), plot = TRUE)

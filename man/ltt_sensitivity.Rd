@@ -43,7 +43,7 @@ across the corresponding subsample of chronograms.
 data("echinoid_dates")
 
 #Create LTT plots
-sensiltt <- ltt_sensitivity(echinoid_dates, summary = "mean", plot = F)
+sensiltt <- ltt_sensitivity(echinoid_dates, summary = "mean", plot = FALSE)
 
 #Show LTT plot for factor A only
 sensiltt$factor_A

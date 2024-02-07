@@ -54,9 +54,9 @@ data("echinoid_dates")
 
 #Get the 5 most sensitive nodes
 MRCA_Brissus_Abatus <- specified_node(echinoid_dates, tips = c('Brissus_obesus',
-   'Abatus_cordatus'), plot = F)
+   'Abatus_cordatus'), plot = FALSE)
 
 #Show age distribution for the MRCA of the two terminals associated with
-factor A
+#factor A
 MRCA_Brissus_Abatus$factor_A
 }

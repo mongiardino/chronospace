@@ -3,42 +3,52 @@
 \docType{data}
 \name{echinoid_dates}
 \alias{echinoid_dates}
-\title{Sample of chronograms from the Echinodermata phylogeny}
+\title{Sample of echinoid chronograms}
 \format{
-a \code{"nodeAges"} object with a list containing
+a \code{"nodeAges"} object containing
 \describe{
 \item{$ages}{: a \code{t x n} data frame containing node ages data (where
 each row is one of \code{t} trees and each column one of \code{n} nodes.}
 \item{$factors}{: a \code{t x f} data frame containing the classification
 of each of the \code{t} trees into \code{f} factors.}
-\item{$topology}{: the fixed phylogenetic topology.}
+\item{$topology}{: the fixed phylogenetic topology used to run the
+analyses.}
 }
 }
 \usage{
 echinoid_dates
 }
 \description{
-Ages data of 3000 chronograms extracted from six posterior
-distributions of time-calibrated trees, created using \code{\link[=extract_ages]{extract_ages()}}.
+Node age data of 3000 chronograms extracted from six posterior
+distributions of time-calibrated trees (500 each), created using
+\code{\link[=extract_ages]{extract_ages()}}.
 }
 \details{
-A sample of chronograms extracted from six posterior distributions
-of time-calibrated trees (500 trees each), obtained using PhyloBayes
-(Lartillot et al. 2013). These were all run using the same constrained
-topology and three different sets of 100 genes subsampled from a larger
-phylogenomic dataset based on their level of clock-likeness or phylogenetic
-signal, or otherwise at random. Each subsample was also run under two
-different models of molecular evolution, the site-homogeneous GTR+G and the
-site-heterogeneous CAT+GTR+G (Lartillot & Philippe 2004).
+Divergence times of major echinoid (sea urchin) lineages taken from
+the analyses of Mongiardino Koch et al. (2022). Node ages were extracted
+from six posterior distributions of time-calibrated trees (500 trees each),
+obtained using PhyloBayes (Lartillot et al. 2013). These were all run using
+the same constrained topology and three different sets of genes subsampled
+from a larger phylogenomic dataset, based either on their clock-likeness,
+phylogenetic signal, or at random. Each subsample was also run under two
+different models of molecular evolution, the site-homogeneous GTR + G and
+the site-heterogeneous CAT + GTR + G (Lartillot & Philippe 2004). Thus, the
+data represents six different parametric conditions, and can be used to
+assess the impact of two factors.
 }
 \references{
-Mongiardino Koch, N., Thompson, J. R., Hiley, A. S., McCowin, M. F., Armstrong,
-A. F., Coppard, S. E., Aguilera, F., Bronstein, O., Kroh, A., Mooi, R., & Rouse,
-G. W. (2022). \emph{Phylogenomic analyses of echinoid diversification prompt a
-re-evaluation of their fossil record}. Elife, 11.
-Lartillot N, Rodrigue N, Stubbs D, Richer J. 2013. PhyloBayes MPI: phylogenetic
-reconstruction with infinite mixtures of profiles in a parallel environment.
-Systematic Biology 62:611–615. DOI: https://doi.org/10.1093/sysbio/syt022,
-PMID: 23564032
+Lartillot N,  Philippe H. 2004. \emph{A Bayesian mixture model for
+across-site heterogeneities in the amino-acid replacement process}.
+Molecular Biology and Evolution, 21(6):1095–1109. DOI:
+https://doi.org/10.1093/molbev/msh112.
+Lartillot N, Rodrigue N, Stubbs D, Richer J. 2013. \emph{PhyloBayes MPI:
+phylogenetic  reconstruction with infinite mixtures of profiles in a
+parallel environment}. Systematic Biology 62:611–615. DOI:
+https://doi.org/10.1093/sysbio/syt022.
+Mongiardino Koch N, Thompson JR, Hiley AS, McCowin MF, Armstrong AF, Coppard
+SE, Aguilera F, Bronstein O, Kroh A, Mooi R, Rouse GW. 2022.
+\emph{Phylogenomic analyses of echinoid diversification prompt a
+re-evaluation of their fossil record}. eLife, 11:e72460. DOI:
+https://doi.org/10.7554/eLife.72460.
 }
 \keyword{datasets}

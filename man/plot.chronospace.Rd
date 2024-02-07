@@ -107,18 +107,22 @@ data("echinoid_dates")
 #Create chronospace
 cspace <- chronospace(echinoid_dates)
 
-#Plot chronospace
-csp.ord <- plot(cspace)
+#Plot chronospace ordination
+csp.ord <- plot(cspace, output = "ordination")
 
-#Show (bivariate) ordination for factor A
+#Call same ordination for factor A from object
 csp.ord$factor_A$ordination
 
-#Show extremes of the first bgPC axis for factor A
-csp.ord$factor_A$PC_extremes$bgPC1
+#Plot chronospace ordination
+csp.ext <- plot(cspace, output = "extremes")
 
-#' #Show (univariate) ordination for factor B
+#Call extremes of the first bgPC axis for factor A from object
+csp.ext$factor_A$PC_extremes$bgPC1
+
+#Show univariate ordination for factor B from object
 csp.ord$factor_B$ordination
 
-#Show extremes of the (only) bgPC axis for factor B
+#Show extremes of the (only) bgPC axis for factor B object (notice all the
+#results are stored there, even when output = "ordination")
 csp.ord$factor_B$PC_extremes$bgPC1
 }

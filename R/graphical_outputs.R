@@ -74,19 +74,23 @@
 #' #Create chronospace
 #' cspace <- chronospace(echinoid_dates)
 #'
-#' #Plot chronospace
-#' csp.ord <- plot(cspace)
+#' #Plot chronospace ordination
+#' csp.ord <- plot(cspace, output = "ordination")
 #'
-#' #Show (bivariate) ordination for factor A
+#' #Call same ordination for factor A from object
 #' csp.ord$factor_A$ordination
 #'
-#' #Show extremes of the first bgPC axis for factor A
-#' csp.ord$factor_A$PC_extremes$bgPC1
+#' #Plot chronospace ordination
+#' csp.ext <- plot(cspace, output = "extremes")
 #'
-#' #' #Show (univariate) ordination for factor B
+#' #Call extremes of the first bgPC axis for factor A from object
+#' csp.ext$factor_A$PC_extremes$bgPC1
+#'
+#' #Show univariate ordination for factor B from object
 #' csp.ord$factor_B$ordination
 #'
-#' #Show extremes of the (only) bgPC axis for factor B
+#' #Show extremes of the (only) bgPC axis for factor B object (notice all the
+#' #results are stored there, even when output = "ordination")
 #' csp.ord$factor_B$PC_extremes$bgPC1
 plot.chronospace <- function(obj, output = "all", sdev = 1, timemarks = NULL, gscale = TRUE,
                              ellipses = FALSE, centroids = FALSE, distances = FALSE,
@@ -382,10 +386,10 @@ plot.chronospace <- function(obj, output = "all", sdev = 1, timemarks = NULL, gs
 #'
 #' #Get the 5 most sensitive nodes
 #' MRCA_Brissus_Abatus <- specified_node(echinoid_dates, tips = c('Brissus_obesus',
-#'    'Abatus_cordatus'), plot = F)
+#'    'Abatus_cordatus'), plot = FALSE)
 #'
 #' #Show age distribution for the MRCA of the two terminals associated with
-#' factor A
+#' #factor A
 #' MRCA_Brissus_Abatus$factor_A
 specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$factors),
                             plot = TRUE, colors = 1:5, timemarks = NULL, gscale = FALSE) {
@@ -523,7 +527,7 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
 #' data("echinoid_dates")
 #'
 #' #Get the 5 most sensitive nodes
-#' sensinodes5 <- sensitive_nodes(echinoid_dates, num_clades = 5, plot = F)
+#' sensinodes5 <- sensitive_nodes(echinoid_dates, num_clades = 5, plot = FALSE)
 #'
 #' #Show ages distribution for the 5 most sensitive nodes associated to factor A
 #' sensinodes5$factor_A
@@ -686,7 +690,7 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
 #' data("echinoid_dates")
 #'
 #' #Create LTT plots
-#' sensiltt <- ltt_sensitivity(echinoid_dates, summary = "mean", plot = F)
+#' sensiltt <- ltt_sensitivity(echinoid_dates, summary = "mean", plot = FALSE)
 #'
 #' #Show LTT plot for factor A only
 #' sensiltt$factor_A
