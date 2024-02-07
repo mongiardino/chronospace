@@ -9,7 +9,7 @@
 #'   representations of a chronospace: the projection of the sampled chronograms
 #'   into the ordination axes, and the two 'theoretical' extremes of those axes.
 #'
-#' @param obj An object of class \code{"chronospace"} containing one or more
+#' @param x An object of class \code{"chronospace"} containing one or more
 #'   ordinations.
 #' @param output Character, specifying which output should be plotted. Options
 #'   are \code{"ordination"} for histograms / scatter plots of bgPC axes,
@@ -49,6 +49,7 @@
 #'   vertical lines in chronospace representations.
 #' @param gscale Logical; whether to add chronostratigraphic scale to trees
 #'   (via \code{deeptime}).
+#' @param ... Additional arguments passed to \code{plot}
 #'
 #' @details Starting from the object returned by [chronospace()], this function
 #'   creates the two basic types of plots allowing interpretation of the
@@ -92,17 +93,17 @@
 #' #Show extremes of the (only) bgPC axis for factor B object (notice all the
 #' #results are stored there, even when output = "ordination")
 #' csp.ord$factor_B$PC_extremes$bgPC1
-plot.chronospace <- function(obj, output = "all", sdev = 1, timemarks = NULL, gscale = TRUE,
+plot.chronospace <- function(x, output = "all", sdev = 1, timemarks = NULL, gscale = TRUE,
                              ellipses = FALSE, centroids = FALSE, distances = FALSE,
                              colors = 1:5, factor = 1:(length(obj)), axes = c(1, 2),
                              pt.alpha = 0.5, pt.size = 1.5, ell.width = 1.2,
-                             dist.width = 1, ct.size = 5) {
+                             dist.width = 1, ct.size = 5, ...) {
 
 
   if(all(output != c("all", "ordination", "extremes", "none")))
     stop("output must be one of 'all', 'ordination', 'extremes', or 'none'")
 
-  obj <- obj[names(obj) != "Total_vartable"]
+  obj <- x[names(x) != "Total_vartable"]
   if(length(axes) != 2) axes <- c(1, 2)
 
   #create object for storing overall results, assign names

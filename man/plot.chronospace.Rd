@@ -5,7 +5,7 @@
 \title{Plot chronospace ordination(s) and axes' extremes}
 \usage{
 \method{plot}{chronospace}(
-  obj,
+  x,
   output = "all",
   sdev = 1,
   timemarks = NULL,
@@ -20,11 +20,12 @@
   pt.size = 1.5,
   ell.width = 1.2,
   dist.width = 1,
-  ct.size = 5
+  ct.size = 5,
+  ...
 )
 }
 \arguments{
-\item{obj}{An object of class \code{"chronospace"} containing one or more
+\item{x}{An object of class \code{"chronospace"} containing one or more
 ordinations.}
 
 \item{output}{Character, specifying which output should be plotted. Options
@@ -79,6 +80,8 @@ factors with less than three levels).}
 
 \item{ct.size}{Numeric, indicating the size of the points marking groups'
 centroids (not meaningful for factors with less than three levels).}
+
+\item{...}{Additional arguments passed to \code{plot}}
 }
 \value{
 A list containing the histogram/scatterplot and axes' extremes for

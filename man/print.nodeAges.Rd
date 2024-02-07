@@ -4,10 +4,12 @@
 \alias{print.nodeAges}
 \title{Print \code{"nodeAges"} objects}
 \usage{
-\method{print}{nodeAges}(x)
+\method{print}{nodeAges}(x, ...)
 }
 \arguments{
 \item{x}{a \code{"nodeAges"} object.}
+
+\item{...}{Additional arguments passed to \code{print}}
 }
 \value{
 Reports the number of trees, factors, and general structure of

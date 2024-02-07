@@ -4,10 +4,12 @@
 \alias{print.chronospace}
 \title{Print \code{"chronospace"} objects}
 \usage{
-\method{print}{chronospace}(x)
+\method{print}{chronospace}(x, ...)
 }
 \arguments{
 \item{x}{A \code{"chronospace"} object.}
+
+\item{...}{Additional arguments passed to \code{print}}
 }
 \value{
 Reports percentages in node ages variation explained by the factors

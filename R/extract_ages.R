@@ -185,6 +185,7 @@ extract_ages <- function(path = NULL, type, sample) {
 #' Print \code{"nodeAges"} objects
 #'
 #' @param x a \code{"nodeAges"} object.
+#' @param ... Additional arguments passed to \code{print}
 #'
 #' @return Reports the number of trees, factors, and general structure of
 #'   the object.
@@ -194,7 +195,7 @@ extract_ages <- function(path = NULL, type, sample) {
 #' @examples
 #' data("echinoid_dates")
 #' print(echinoid_dates)
-print.nodeAges <- function(x) {
+print.nodeAges <- function(x, ...) {
 
   ages <- x$ages
   npathw <- prod(apply(x$factors, 2, \(x) {length(unique(x))}))

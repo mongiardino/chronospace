@@ -1,7 +1,7 @@
 test_that(desc = "tests for plot.chronospace", code = {
   data("echinoid_dates")
   cspace <- chronospace(data_ages = echinoid_dates)
-  ordination <- plot.chronospace(obj=cspace, output = "none")
+  ordination <- plot.chronospace(cspace, output = "none")
 
   expect_match(class(ordination), "list")
   expect_equal(length(ordination), ncol(echinoid_dates$factors))

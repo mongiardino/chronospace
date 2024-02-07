@@ -146,6 +146,7 @@ chronospace <- function(data_ages) {
 #' Print \code{"chronospace"} objects
 #'
 #' @param x A \code{"chronospace"} object.
+#' @param ... Additional arguments passed to \code{print}
 #'
 #' @return Reports percentages in node ages variation explained by the factors
 #'   included.
@@ -161,7 +162,7 @@ chronospace <- function(data_ages) {
 #'
 #' #Inspect object
 #' print(cspace)
-print.chronospace <- function(x) {
+print.chronospace <- function(x, ...) {
   cat("_____________________________________________________________________________________\n")
   print(x$Total_vartable)
   cat("_____________________________________________________________________________________\n")
