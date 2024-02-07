@@ -59,16 +59,16 @@ chronospace <- function(data_ages) {
 
   #decompose total variation in node ages. For simplification, interactions are
   #assumed to be absent.
-  form <- formula(paste0("as.matrix(ages)[,i] ~", paste(facnames, collapse = " + ")))
+  form <- stats::formula(paste0("as.matrix(ages)[,i] ~", paste(facnames, collapse = " + ")))
   n <- nrow(ages)
 
   SS <- NULL
   for(i in 1:ncol(ages)) {
-    model <- lm(form, data = data.frame(factors, ages))
-    ss <- anova(model)$`Sum Sq`/ (n - 1)
+    model <- stats::lm(form, data = data.frame(factors, ages))
+    ss <- stats::anova(model)$`Sum Sq`/ (n - 1)
     SS <- rbind(SS, ss)
   }
-  colnames(SS) <- paste0(row.names(anova(model)), sep = " (%)")
+  colnames(SS) <- paste0(row.names(stats::anova(model)), sep = " (%)")
   colnames(SS)[colnames(SS) == "Residuals (%)"] <- "Unaccounted (%)"
   SS_perc <- rbind(round(100 * colSums(SS)/totvar, 5))
   rownames(SS_perc) <- "Total variation"
@@ -85,8 +85,8 @@ chronospace <- function(data_ages) {
     #perform bgPCA between groups defined by factor i over original variation
     bgPCA <- bgprcomp(x = ages, groups = factors[,i])
 
-    subtotvar <- sum(apply(bgPCA$x, 2, var))
-    form <- formula(paste0("bgPCA$x[,j] ~", paste(facnames, collapse = " + ")))
+    subtotvar <- sum(apply(bgPCA$x, 2, stats::var))
+    form <- stats::formula(paste0("bgPCA$x[,j] ~", paste(facnames, collapse = " + ")))
 
     subSS <- NULL
     for(j in 1:ncol(bgPCA$x)) {
@@ -100,7 +100,7 @@ chronospace <- function(data_ages) {
     subSS_perc <- round(100 * subSS / totvar, 5)
     rownames(subSS_perc) <- paste0("bgPC", 1:ncol(bgPCA$x), "(",
                                    round(
-                                     100 * apply(bgPCA$x, 2, var) /
+                                     100 * apply(bgPCA$x, 2, stats::var) /
                                        totvar, 2), "%)")
 
     #report proportion of total variation explained
