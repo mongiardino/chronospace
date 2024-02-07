@@ -87,12 +87,12 @@ chronospace <- function(data_ages) {
 
     subSS <- NULL
     for(j in 1:ncol(bgPCA$x)) {
-      model <- lm(form, data = data.frame(factors))
-      ss <- anova(model)$`Sum Sq`/ (n - 1)
+      model <- stats::lm(form, data = data.frame(factors))
+      ss <- stats::anova(model)$`Sum Sq`/ (n - 1)
       subSS <- rbind(subSS, ss)
     }
 
-    colnames(subSS) <- paste0(row.names(anova(model)), sep = " (%)")
+    colnames(subSS) <- paste0(row.names(stats::anova(model)), sep = " (%)")
     colnames(subSS)[colnames(subSS) == "Residuals (%)"] <- "Unaccounted (%)"
     subSS_perc <- round(100 * subSS / totvar, 5)
     rownames(subSS_perc) <- paste0("bgPC", 1:ncol(bgPCA$x), "(",
