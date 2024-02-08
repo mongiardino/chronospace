@@ -7,7 +7,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%", 
+  dpi = 400
 )
 ```
 
@@ -22,7 +23,7 @@ Calibrating phylogenies to absolute time is a complex and time-consuming, yet cr
 
 `chronospace` is an R package devised to help visualizing and quantifying the sensitivity of results to methodological decisions through the use of chronospaces, i.e., graphical representations summarizing variation in the node ages contained in time-calibrated trees with fixed topology. In particular, this package uses between-groups PCA (bgPCA) for summarizing variation in node ages produced by specific methodological choices, and estimates their impact using a Sum of squares (SSQ) approach for measuring effect size. Visualization of chronospaces is and other graphical tools included in `chronospace` are built with the aid of `ggplot2` (Wickham 2016), `ggtree` (Yu 2017) and `deeptime` (Gearty 2023), among others packages.
 
-**Note: this repository addresses the version of `chronospace` described in Mongiardino Koch and Milla Carmona (in preparation). If you are interested in the data and procedures described in Mongiardino Koch et al. 2022 eLife paper (on which this version of the package is based), go to the [chronospaces_eLife repository](https://github.com/mongiardino/chronospaces_eLife/tree/main)**
+**Note: this repository addresses the version of `chronospace` described in Mongiardino Koch and Milla Carmona (in preparation). If you are interested in the data and procedures described in Mongiardino Koch et al. 2022 eLife paper (on which this version of the package is based), go to the [chronospaces_eLife repository](https://github.com/mongiardino/chronospaces_eLife/tree/main).**
   
   
 ## Installation
@@ -65,7 +66,7 @@ The `extract_ages` function imports the input data from a series of external `.t
 
 `extract_ages` has two main arguments: `type` - a list of vectors, one for each factor being tested (in this case two, loci choice and model of evolution), specifying the group (i.e., factor levels) to which the chronograms from each file will be assigned to (in this case, three groups for loci choice and two for model of evolution); and `sample` - the fixed number of topologies to retain from each file (here we will sample 500 trees from each file for a total of 3000 trees). 
 
-**Note: `extract_ages` will import the files in the order they appear in the folder; the list provided in `type` must follow this same order**
+**Note: `extract_ages` will import the files in the order they appear in the folder; the list provided in `type` must follow this same order.**
 
 
 ```{r}
@@ -76,7 +77,8 @@ library(chronospace)
 list.files(temp)
 
 #Set type of runs and number of chronograms to be retained. 
-#Name the listed elements in type to change factor names:
+#Name the listed elements in type to add factor names; otherwise,
+#generic names will be given.
 type <- list(loci = c('clock', 'clock', 'random', 'random', 'signal', 'signal'),
              model = c('CATGTR', 'GTR', 'CATGTR', 'GTR', 'CATGTR', 'GTR'))
 sample <- 500
@@ -113,7 +115,7 @@ plot(cspace, factor = 1, output = "ordination",
 #Plot scatterplot for loci, show distances between centroids 
 #in multivariate space
 plot(cspace, factor = 1, output = "ordination", 
-     distances = TRUE, pt.alpha = 0.2)
+     distances = TRUE, pt.alpha = 0.05)
 
 #Plot histogram for model
 plot(cspace, factor = 2, output = "ordination")

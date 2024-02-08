@@ -34,7 +34,7 @@ in Mongiardino Koch and Milla Carmona (in preparation). If you are
 interested in the data and procedures described in Mongiardino Koch et
 al. 2022 eLife paper (on which this version of the package is based), go
 to the [chronospaces_eLife
-repository](https://github.com/mongiardino/chronospaces_eLife/tree/main)**
+repository](https://github.com/mongiardino/chronospaces_eLife/tree/main).**
 
 ## Installation
 
@@ -87,7 +87,7 @@ the fixed number of topologies to retain from each file (here we will
 sample 500 trees from each file for a total of 3000 trees).
 
 **Note: `extract_ages` will import the files in the order they appear in
-the folder; the list provided in `type` must follow this same order**
+the folder; the list provided in `type` must follow this same order.**
 
 ``` r
 #load chronospace
@@ -100,7 +100,8 @@ list.files(temp)
 #> [5] "signalCATGTR_ln_sample.datedist" "signalGTR_ln_sample.datedist"
 
 #Set type of runs and number of chronograms to be retained. 
-#Name the listed elements in type to change factor names:
+#Name the listed elements in type to add factor names; otherwise,
+#generic names will be given.
 type <- list(loci = c('clock', 'clock', 'random', 'random', 'signal', 'signal'),
              model = c('CATGTR', 'GTR', 'CATGTR', 'GTR', 'CATGTR', 'GTR'))
 sample <- 500
@@ -148,16 +149,16 @@ gauge the relative importance of each choice over node age estimation.
 #Summarize chronospace
 cspace <- chronospace(data)
 #>                 loci (%) model (%) Unaccounted (%)
-#> Total variation 14.96326   4.84851        80.18823
+#> Total variation 15.01718   4.69546        80.28737
 #> _________________________________________________________________________________
 #> --- Results for loci (clock/random/signal) ---
 #>               loci (%) model (%) Unaccounted (%)
-#> bgPC1(18.38%) 11.20975   0.18892         6.97700
-#> bgPC2(7.87%)   3.75350   0.12947         3.98815
+#> bgPC1(18.15%) 11.20589   0.24411         6.69824
+#> bgPC2(8.02%)   3.81128   0.06515         4.14400
 #> ---------------------------------------------------------------------------------
 #> --- Results for model (CATGTR/GTR) ---
-#>              loci (%) model (%) Unaccounted (%)
-#> bgPC1(10.5%)    0.537   4.84851          5.1175
+#>               loci (%) model (%) Unaccounted (%)
+#> bgPC1(10.81%)  0.63545   4.69546         5.47785
 #> ---------------------------------------------------------------------------------
 #>  * All percentages are relative to the total amount of variation in node ages
 ```
@@ -180,7 +181,7 @@ plot(cspace, factor = 1, output = "ordination",
 #Plot scatterplot for loci, show distances between centroids 
 #in multivariate space
 plot(cspace, factor = 1, output = "ordination", 
-     distances = TRUE, pt.alpha = 0.2)
+     distances = TRUE, pt.alpha = 0.05)
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-2.png" width="100%" />
