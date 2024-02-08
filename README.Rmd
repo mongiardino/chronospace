@@ -75,8 +75,8 @@ library(chronospace)
 #Important! Check files names, compare against type order below
 list.files(temp)
 
-#Set type of runs and number of chronograms to be retained. Name the listed 
-#elements in type to change factor names:
+#Set type of runs and number of chronograms to be retained. 
+#Name the listed elements in type to change factor names:
 type <- list(loci = c('clock', 'clock', 'random', 'random', 'signal', 'signal'),
              model = c('CATGTR', 'GTR', 'CATGTR', 'GTR', 'CATGTR', 'GTR'))
 sample <- 500
@@ -91,11 +91,10 @@ The function will organize these files into an object of class `"nodeAges"`, con
 #Print nodeAges object
 data
 
-
 ```
 
 ## Summarizing chronospaces
-The node ages data stored in `"nodeAges"` objects can be summarized using the `chronospace` function, which uses bgPCA to find the major directions of variation between groups - i.e., the different alternatives (levels; e.g., GTR+G vs CAT+GTR+G) associated to a particular methodological choice (factor; e.g., model of evolution). The function reports the percentage of variation explained by each factor, both in relation to the total amount of variation in node ages and for each individual bgPC extracted. This information can be used to gauge the relative importance of each choice over node age estimation.
+The node ages data stored in `"nodeAges"` objects can be summarized using the `chronospace` function, which uses bgPCA to find the major directions of variation between groups - i.e., the different alternatives (levels; e.g., GTR+G vs CAT+GTR+G) associated to a particular methodological choice (factor; e.g., model of evolution). The function reports the percentage of variation explained by each factor, both in relation to the total amount of raw variation in node ages and for each individual bgPC extracted. This information can be used to gauge the relative importance of each choice over node age estimation.
 
 ```{r}
 #Summarize chronospace
@@ -108,7 +107,13 @@ Chronospaces can be also assessed using visualization tools. The `plot` function
   
 ```{r}
 #Plot scatterplot for loci
-plot(cspace, factor = 1, output = "ordination")
+plot(cspace, factor = 1, output = "ordination", 
+     ellipses = TRUE)
+
+#Plot scatterplot for loci, show distances between centroids 
+#in multivariate space
+plot(cspace, factor = 1, output = "ordination", 
+     distances = TRUE, pt.alpha = 0.2)
 
 #Plot histogram for model
 plot(cspace, factor = 2, output = "ordination")
@@ -124,7 +129,7 @@ plot(cspace, factor = 1, output = "extremes")
 
 
 ## Dissecting the effect of methodological choices
-`"nodeAges"` objects can also be fed to a number of functions that help characterizing the impact of methodological choices over particular aspects of evolutionary history. 
+`"nodeAges"` objects can also be fed to a number of functions that help characterize the impact of methodological choices over particular aspects of evolutionary history. 
 
 `sensitive_nodes` plots the age distribution of the nodes whose ages vary the most when a particular methodological choice is faced. The user can either ask for a given number of most affected nodes, or specify a threshold for the amount of change above which nodes are considered to be relevant (arguments `amount_of_change` and `num_clades`, respectively). 
 
@@ -147,7 +152,8 @@ Finally, `ltt_sensitivity` allows exploring the impact of methodological choices
 
 ```{r}
 #Plot lineage through time plots for each model of evolution
-ltt_sensitivity(echinoid_dates, factor = 1, summary = "median")
+ltt_sensitivity(echinoid_dates, factor = 1, 
+                summary = "median", gscale = TRUE)
 ```
 
 

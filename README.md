@@ -99,8 +99,8 @@ list.files(temp)
 #> [3] "randomCATGTR_ln_sample.datedist" "randomGTR_ln_sample.datedist"   
 #> [5] "signalCATGTR_ln_sample.datedist" "signalGTR_ln_sample.datedist"
 
-#Set type of runs and number of chronograms to be retained. Name the listed 
-#elements in type to change factor names:
+#Set type of runs and number of chronograms to be retained. 
+#Name the listed elements in type to change factor names:
 type <- list(loci = c('clock', 'clock', 'random', 'random', 'signal', 'signal'),
              model = c('CATGTR', 'GTR', 'CATGTR', 'GTR', 'CATGTR', 'GTR'))
 sample <- 500
@@ -140,24 +140,24 @@ directions of variation between groups - i.e., the different
 alternatives (levels; e.g., GTR+G vs CAT+GTR+G) associated to a
 particular methodological choice (factor; e.g., model of evolution). The
 function reports the percentage of variation explained by each factor,
-both in relation to the total amount of variation in node ages and for
-each individual bgPC extracted. This information can be used to gauge
-the relative importance of each choice over node age estimation.
+both in relation to the total amount of raw variation in node ages and
+for each individual bgPC extracted. This information can be used to
+gauge the relative importance of each choice over node age estimation.
 
 ``` r
 #Summarize chronospace
 cspace <- chronospace(data)
 #>                 loci (%) model (%) Unaccounted (%)
-#> Total variation 14.80542   4.94622        80.24837
+#> Total variation 14.96326   4.84851        80.18823
 #> _________________________________________________________________________________
 #> --- Results for loci (clock/random/signal) ---
 #>               loci (%) model (%) Unaccounted (%)
-#> bgPC1(17.99%) 11.38766   0.17511         6.42991
-#> bgPC2(6.99%)   3.41776   0.10213         3.47202
+#> bgPC1(18.38%) 11.20975   0.18892         6.97700
+#> bgPC2(7.87%)   3.75350   0.12947         3.98815
 #> ---------------------------------------------------------------------------------
 #> --- Results for model (CATGTR/GTR) ---
-#>               loci (%) model (%) Unaccounted (%)
-#> bgPC1(11.05%)  0.47373   4.94622         5.63404
+#>              loci (%) model (%) Unaccounted (%)
+#> bgPC1(10.5%)    0.537   4.84851          5.1175
 #> ---------------------------------------------------------------------------------
 #>  * All percentages are relative to the total amount of variation in node ages
 ```
@@ -169,10 +169,21 @@ the distribution of trees in the space configured by bgPC axes:
 
 ``` r
 #Plot scatterplot for loci
-plot(cspace, factor = 1, output = "ordination")
+plot(cspace, factor = 1, output = "ordination", 
+     ellipses = TRUE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+
+``` r
+
+#Plot scatterplot for loci, show distances between centroids 
+#in multivariate space
+plot(cspace, factor = 1, output = "ordination", 
+     distances = TRUE, pt.alpha = 0.2)
+```
+
+<img src="man/figures/README-unnamed-chunk-7-2.png" width="100%" />
 
 ``` r
 
@@ -180,7 +191,7 @@ plot(cspace, factor = 1, output = "ordination")
 plot(cspace, factor = 2, output = "ordination")
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-3.png" width="100%" />
 
 Another graphical output of feeding a `"nodeAges"` object to `plot` are
 pairs of chronograms showing the change in node ages at the extremes of
@@ -198,7 +209,7 @@ plot(cspace, factor = 1, output = "extremes")
 ## Dissecting the effect of methodological choices
 
 `"nodeAges"` objects can also be fed to a number of functions that help
-characterizing the impact of methodological choices over particular
+characterize the impact of methodological choices over particular
 aspects of evolutionary history.
 
 `sensitive_nodes` plots the age distribution of the nodes whose ages
@@ -239,7 +250,8 @@ using either the mean or the median (argument `summary`)
 
 ``` r
 #Plot lineage through time plots for each model of evolution
-ltt_sensitivity(echinoid_dates, factor = 1, summary = "median")
+ltt_sensitivity(echinoid_dates, factor = 1, 
+                summary = "median", gscale = TRUE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
