@@ -18,16 +18,16 @@ lack a consistent way to quantify (and therefore to compare) their
 effect.
 
 `chronospace` is an R package devised to help visualizing and
-quantifying the sensitivity of results to such decisions through the use
-of chronospaces, i.e., graphical representations summarizing variation
-in the node ages contained in time-calibrated trees with fixed topology.
-In particular, this package uses between-groups PCA (bgPCA) for
-summarizing variation in node ages produced by specific methodological
-choices, and estimates their impact using a Sum of squares (SSQ)
-approach for measuring effect size. Visualization of chronospaces is and
-other graphical tools included in `chronospace` are built with the aid
-of `ggplot2` (Wickham 2016), `ggtree` (Yu 2017) and `deeptime` (Gearty
-2023), among others packages.
+quantifying the sensitivity of results to methodological decisions
+through the use of chronospaces, i.e., graphical representations
+summarizing variation in the node ages contained in time-calibrated
+trees with fixed topology. In particular, this package uses
+between-groups PCA (bgPCA) for summarizing variation in node ages
+produced by specific methodological choices, and estimates their impact
+using a Sum of squares (SSQ) approach for measuring effect size.
+Visualization of chronospaces is and other graphical tools included in
+`chronospace` are built with the aid of `ggplot2` (Wickham 2016),
+`ggtree` (Yu 2017) and `deeptime` (Gearty 2023), among others packages.
 
 **Note: this repository addresses the version of `chronospace` described
 in Mongiardino Koch and Milla Carmona (in preparation). If you are
@@ -67,8 +67,7 @@ functions), but varying two methodological decisions:
     under two models of molecular evolution, the site-homogeneous GTR+G
     and the site-heterogeneous CAT+GTR+G (Lartillot & Philippe 2004).
 
-The code below will download the files into a temporal folder; this
-setting will allow us to evaluate whether inferred ages are more
+This setting will allow us to evaluate whether inferred ages are more
 sensitive to the choice of loci or to the choice of model of molecular
 evolution.
 
@@ -149,16 +148,16 @@ the relative importance of each choice over node age estimation.
 #Summarize chronospace
 cspace <- chronospace(data)
 #>                 loci (%) model (%) Unaccounted (%)
-#> Total variation 14.76024   4.68702        80.55274
+#> Total variation 14.80542   4.94622        80.24837
 #> _________________________________________________________________________________
 #> --- Results for loci (clock/random/signal) ---
 #>               loci (%) model (%) Unaccounted (%)
-#> bgPC1(18.14%) 11.18348   0.29235         6.66572
-#> bgPC2(7.83%)   3.57676   0.06972         4.18249
+#> bgPC1(17.99%) 11.38766   0.17511         6.42991
+#> bgPC2(6.99%)   3.41776   0.10213         3.47202
 #> ---------------------------------------------------------------------------------
 #> --- Results for model (CATGTR/GTR) ---
 #>               loci (%) model (%) Unaccounted (%)
-#> bgPC1(10.67%)  0.75076   4.68702         5.23268
+#> bgPC1(11.05%)  0.47373   4.94622         5.63404
 #> ---------------------------------------------------------------------------------
 #>  * All percentages are relative to the total amount of variation in node ages
 ```
@@ -169,7 +168,7 @@ more groups) or histograms (when there are only two groups), depicting
 the distribution of trees in the space configured by bgPC axes:
 
 ``` r
-#Plot histogram for model
+#Plot scatterplot for loci
 plot(cspace, factor = 1, output = "ordination")
 ```
 
@@ -177,17 +176,17 @@ plot(cspace, factor = 1, output = "ordination")
 
 ``` r
 
-#Plot scatterplot for loci
+#Plot histogram for model
 plot(cspace, factor = 2, output = "ordination")
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-2.png" width="100%" />
 
-Another graphical output of using `plot` on a `"nodeAges"` object are
-chronograms showing the change in node ages at the extremes of bgPC
-axes. Change is represented by color-coding branches according to their
-degree of contraction/expansion along the different bgPCA axis to get a
-sense of how these different node ages are realized:
+Another graphical output of feeding a `"nodeAges"` object to `plot` are
+pairs of chronograms showing the change in node ages at the extremes of
+bgPC axes. Change is represented by color-coding branches according to
+their degree of contraction/expansion along the different bgPCA axis to
+get a sense of how these different node ages are realized:
 
 ``` r
 #Plot between-models PC1 extremes 
@@ -206,7 +205,7 @@ aspects of evolutionary history.
 vary the most when a particular methodological choice is faced. The user
 can either ask for a given number of most affected nodes, or specify a
 threshold for the amount of change above which nodes are considered to
-be sensitive (arguments `amount_of_change` and `num_clades`,
+be relevant (arguments `amount_of_change` and `num_clades`,
 respectively).
 
 ``` r
@@ -226,8 +225,8 @@ tips).
 ``` r
 #Plot the ages distribution of the MRCA of Brissus obesus and Abatus cordatus
 #under different loci subsampling strategies
-MRCA_Bo_Ac <- specified_node(echinoid_dates, factor = 1,
-                             tips = c('Brissus_obesus', 'Abatus_cordatus'))
+specified_node(echinoid_dates, factor = 1, 
+               tips = c('Brissus_obesus', 'Abatus_cordatus'))
 ```
 
 <img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
