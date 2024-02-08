@@ -12,7 +12,8 @@ knitr::opts_chunk$set(
 ```
 
 
-# `chronospace`: statistical exploration of time-calibrated phylogenies and the relative impact of methodological decisions.
+## `chronospace`: statistical exploration of time-calibrated phylogenies and the relative impact of methodological decisions.
+
 
 <img src="man/figures/chronospace_hex.png" align="right" width="200"/>
 
@@ -21,24 +22,23 @@ Calibrating phylogenies to absolute time is a complex and time-consuming, yet cr
 
 `chronospace` is an R package devised to help visualizing and quantifying the sensitivity of results to such decisions through the use of chronospaces, i.e., graphical representations summarizing variation in the node ages contained in time-calibrated trees with fixed topology. In particular, `chronospace` uses between-groups PCA (bgPCA) for summarizing variation in node ages produced by specific methodological choices, and estimates their impact using a Sum of squares (SSQ) approach for measuring effect size.
 
-*Note: this repository addresses the version of `chronospace` described in Mongiardino Koch and Milla Carmona (in preparation). If you are interested in the data and procedures described in Mongiardino Koch et al. 2022 eLife paper (on which this version of the package is based), go to the [chronospaces_eLife repository] (https://github.com/mongiardino/chronospaces_eLife/tree/main)*
+**Note: this repository addresses the version of `chronospace` described in Mongiardino Koch and Milla Carmona (in preparation). If you are interested in the data and procedures described in Mongiardino Koch et al. 2022 eLife paper (on which this version of the package is based), go to the [chronospaces_eLife repository] (https://github.com/mongiardino/chronospaces_eLife/tree/main)**
   
   
 ## Installation
 The development version of `chronospace` can be installed from [GitHub](https://github.com/) using:
   
-```{r}
+```{r, eval = FALSE}
 # install.packages("devtools")
 devtools::install_github("mongiardino/chronospace")
-
 ```
 
 ## The data set
 Below, the capabilities of `chronospace` are showcased using the [echinoid data set](https://github.com/mongiardino/chronospaces_eLife/tree/main/example_files) described in [Mongiardino Koch et al. 2022](https://elifesciences.org/articles/72460), comprised of six posterior distributions of time-calibrated trees obtained using PhyloBayes (Lartillot et al. 2013). These were all run using the same constrained topology (as required by the `chronospace` suite of functions), but varying two methodological decisions:
 
-1) *Gene subsampling strategy*: three different sets of 100 genes, subsampled from a larger phylogenomic data set based on their level of clock-likeness or phylogenetic signal, or otherwise at random, were assessed. 
+1) **Gene subsampling strategy**: three different sets of 100 genes, subsampled from a larger phylogenomic data set based on their level of clock-likeness or phylogenetic signal, or otherwise at random, were assessed. 
 
-2) *Model of molecular evolution*: each gene subsample was also run under two models of molecular evolution, the site-homogeneous GTR+G and the site-heterogeneous CAT+GTR+G (Lartillot & Philippe 2004). 
+2) **Model of molecular evolution**: each gene subsample was also run under two models of molecular evolution, the site-homogeneous GTR+G and the site-heterogeneous CAT+GTR+G (Lartillot & Philippe 2004). 
 
 The code below will download the files into a temporal folder; this setting will allow us to evaluate whether inferred ages are more sensitive to the choice of loci or to the choice of model of molecular evolution. 
 
@@ -65,7 +65,7 @@ The `extract_ages` function imports the input data from a series of external `.t
 
 `extract_ages` has two main arguments: `type` - a list of vectors, one for each factor being tested (in this case two, loci choice and model of evolution), specifying the group (i.e., factor levels) to which the chronograms from each file will be assigned to (in this case, three groups for loci choice and two for model of evolution); and `sample` - the fixed number of topologies to retain from each file (here we will sample 500 trees from each file for a total of 3000 trees). 
 
-*Note: `extract_ages` will import the files in the order they appear in the folder; the list provided in `type` must follow this same order*
+**Note: `extract_ages` will import the files in the order they appear in the folder; the list provided in `type` must follow this same order**
 
 
 ```{r}
@@ -90,6 +90,8 @@ The function will organize these files into an object of class `"nodeAges"`, con
 ```{r}
 #Print nodeAges object
 data
+
+
 ```
 
 ## Summarizing chronospaces
@@ -98,6 +100,8 @@ The node ages data stored in `"nodeAges"` objects can be summarized using the `c
 ```{r}
 #Summarize chronospace
 cspace <- chronospace(data)
+
+
 ```
 
 Chronospaces can be also assessed using visualization tools. The `plot` function can be used to display scatter plots (when there are three or more groups) or histograms (when there are only two groups), depicting the distribution of trees in the space configured by bgPC axes:
@@ -147,7 +151,7 @@ ltt_sensitivity(echinoid_dates, factor = 1, summary = "median")
 ```
 
 
-# References
+## References
 Lartillot N., & Philippe H. (2004). *A Bayesian mixture model for across-site heterogeneities in the amino-acid replacement process*. Mol. Biol. Evol. 21, 1095–1109. <https://doi.org/10.1093/molbev/msh112>.
 
 Lartillot N., Rodrigue N., Stubbs D., & Richer J. (2013). *PhyloBayes MPI. Phylogenetic reconstruction with infinite mixtures of profiles in a parallel environment*. Syst. Biol. 62, 611–615. <https://doi.org/10.1093/sysbio/syt022>.

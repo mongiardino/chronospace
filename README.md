@@ -1,5 +1,5 @@
 
-# `chronospace`: statistical exploration of time-calibrated phylogenies and the relative impact of methodological decisions.
+## `chronospace`: statistical exploration of time-calibrated phylogenies and the relative impact of methodological decisions.
 
 <img src="man/figures/chronospace_hex.png" align="right" width="200"/>
 
@@ -26,12 +26,12 @@ summarizing variation in node ages produced by specific methodological
 choices, and estimates their impact using a Sum of squares (SSQ)
 approach for measuring effect size.
 
-*Note: this repository addresses the version of `chronospace` described
+**Note: this repository addresses the version of `chronospace` described
 in Mongiardino Koch and Milla Carmona (in preparation). If you are
 interested in the data and procedures described in Mongiardino Koch et
 al. 2022 eLife paper (on which this version of the package is based), go
 to the \[chronospaces_eLife repository\]
-(<https://github.com/mongiardino/chronospaces_eLife/tree/main>)*
+(<https://github.com/mongiardino/chronospaces_eLife/tree/main>)**
 
 ## Installation
 
@@ -41,66 +41,6 @@ The development version of `chronospace` can be installed from
 ``` r
 # install.packages("devtools")
 devtools::install_github("mongiardino/chronospace")
-#> Downloading GitHub repo mongiardino/chronospace@HEAD
-#> rlang     (1.1.1   -> 1.1.3  ) [CRAN]
-#> glue      (1.6.2   -> 1.7.0  ) [CRAN]
-#> cli       (3.6.1   -> 3.6.2  ) [CRAN]
-#> utf8      (1.2.3   -> 1.2.4  ) [CRAN]
-#> fansi     (1.0.4   -> 1.0.6  ) [CRAN]
-#> stringi   (1.7.12  -> 1.8.3  ) [CRAN]
-#> Rcpp      (1.0.10  -> 1.0.12 ) [CRAN]
-#> igraph    (1.4.2   -> 2.0.1.1) [CRAN]
-#> fastmatch (1.1-3   -> 1.1-4  ) [CRAN]
-#> digest    (0.6.31  -> 0.6.34 ) [CRAN]
-#> fs        (1.6.2   -> 1.6.3  ) [CRAN]
-#> ps        (1.7.5   -> 1.7.6  ) [CRAN]
-#> processx  (3.8.1   -> 3.8.3  ) [CRAN]
-#> jsonlite  (1.8.7   -> 1.8.8  ) [CRAN]
-#> dplyr     (1.1.2   -> 1.1.4  ) [CRAN]
-#> purrr     (1.0.1   -> 1.0.2  ) [CRAN]
-#> tidyr     (1.3.0   -> 1.3.1  ) [CRAN]
-#> expm      (0.999-7 -> 0.999-9) [CRAN]
-#> maps      (3.4.1   -> 3.4.2  ) [CRAN]
-#> curl      (5.0.0   -> 5.2.0  ) [CRAN]
-#> polyclip  (1.10-4  -> 1.10-6 ) [CRAN]
-#> Installing 21 packages: rlang, glue, cli, utf8, fansi, stringi, Rcpp, igraph, fastmatch, digest, fs, ps, processx, jsonlite, dplyr, purrr, tidyr, expm, maps, curl, polyclip
-#> Installing packages into 'C:/Users/pablo/AppData/Local/Temp/Rtmp2XRwHL/temp_libpath3bc073242a16'
-#> (as 'lib' is unspecified)
-#> package 'rlang' successfully unpacked and MD5 sums checked
-#> package 'glue' successfully unpacked and MD5 sums checked
-#> package 'cli' successfully unpacked and MD5 sums checked
-#> package 'utf8' successfully unpacked and MD5 sums checked
-#> package 'fansi' successfully unpacked and MD5 sums checked
-#> package 'stringi' successfully unpacked and MD5 sums checked
-#> package 'Rcpp' successfully unpacked and MD5 sums checked
-#> package 'igraph' successfully unpacked and MD5 sums checked
-#> package 'fastmatch' successfully unpacked and MD5 sums checked
-#> package 'digest' successfully unpacked and MD5 sums checked
-#> package 'fs' successfully unpacked and MD5 sums checked
-#> package 'ps' successfully unpacked and MD5 sums checked
-#> package 'processx' successfully unpacked and MD5 sums checked
-#> package 'jsonlite' successfully unpacked and MD5 sums checked
-#> package 'dplyr' successfully unpacked and MD5 sums checked
-#> package 'purrr' successfully unpacked and MD5 sums checked
-#> package 'tidyr' successfully unpacked and MD5 sums checked
-#> package 'expm' successfully unpacked and MD5 sums checked
-#> package 'maps' successfully unpacked and MD5 sums checked
-#> package 'curl' successfully unpacked and MD5 sums checked
-#> package 'polyclip' successfully unpacked and MD5 sums checked
-#> 
-#> The downloaded binary packages are in
-#>  C:\Users\pablo\AppData\Local\Temp\RtmpCuFT47\downloaded_packages
-#> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>          checking for file 'C:\Users\pablo\AppData\Local\Temp\RtmpCuFT47\remotes4fa875a53464\mongiardino-chronospace-7627484/DESCRIPTION' ...  ✔  checking for file 'C:\Users\pablo\AppData\Local\Temp\RtmpCuFT47\remotes4fa875a53464\mongiardino-chronospace-7627484/DESCRIPTION'
-#>       ─  preparing 'chronospace':
-#>    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   ✔  checking DESCRIPTION meta-information
-#>       ─  checking for LF line-endings in source and make files and shell scripts
-#>   ─  checking for empty or unneeded directories
-#>       ─  building 'chronospace_0.0.0.9000.tar.gz'
-#>      
-#> 
-#> Installing package into 'C:/Users/pablo/AppData/Local/Temp/Rtmp2XRwHL/temp_libpath3bc073242a16'
-#> (as 'lib' is unspecified)
 ```
 
 ## The data set
@@ -115,12 +55,12 @@ PhyloBayes (Lartillot et al. 2013). These were all run using the same
 constrained topology (as required by the `chronospace` suite of
 functions), but varying two methodological decisions:
 
-1)  *Gene subsampling strategy*: three different sets of 100 genes,
+1)  **Gene subsampling strategy**: three different sets of 100 genes,
     subsampled from a larger phylogenomic data set based on their level
     of clock-likeness or phylogenetic signal, or otherwise at random,
     were assessed.
 
-2)  *Model of molecular evolution*: each gene subsample was also run
+2)  **Model of molecular evolution**: each gene subsample was also run
     under two models of molecular evolution, the site-homogeneous GTR+G
     and the site-heterogeneous CAT+GTR+G (Lartillot & Philippe 2004).
 
@@ -144,8 +84,8 @@ groups for loci choice and two for model of evolution); and `sample` -
 the fixed number of topologies to retain from each file (here we will
 sample 500 trees from each file for a total of 3000 trees).
 
-*Note: `extract_ages` will import the files in the order they appear in
-the folder; the list provided in `type` must follow this same order*
+**Note: `extract_ages` will import the files in the order they appear in
+the folder; the list provided in `type` must follow this same order**
 
 ``` r
 #load chronospace
@@ -206,16 +146,16 @@ the relative importance of each choice over node age estimation.
 #Summarize chronospace
 cspace <- chronospace(data)
 #>                 loci (%) model (%) Unaccounted (%)
-#> Total variation 14.73367   5.05925        80.20709
+#> Total variation  14.0042   5.19656        80.79924
 #> _________________________________________________________________________________
 #> --- Results for loci (clock/random/signal) ---
 #>               loci (%) model (%) Unaccounted (%)
-#> bgPC1(17.66%) 11.13891   0.20625         6.31974
-#> bgPC2(7.43%)   3.59476   0.09241         3.73849
+#> bgPC1(17.13%) 10.58553   0.25417         6.28537
+#> bgPC2(6.86%)   3.41867   0.09813         3.34235
 #> ---------------------------------------------------------------------------------
 #> --- Results for model (CATGTR/GTR) ---
 #>               loci (%) model (%) Unaccounted (%)
-#> bgPC1(11.59%)  0.51975   5.05925         6.01423
+#> bgPC1(11.91%)   0.5823   5.19656         6.12717
 #> ---------------------------------------------------------------------------------
 #>  * All percentages are relative to the total amount of variation in node ages
 ```
@@ -302,7 +242,7 @@ ltt_sensitivity(echinoid_dates, factor = 1, summary = "median")
 
 <img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
-# References
+## References
 
 Lartillot N., & Philippe H. (2004). *A Bayesian mixture model for
 across-site heterogeneities in the amino-acid replacement process*. Mol.
