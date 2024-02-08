@@ -21,17 +21,20 @@ effect.
 quantifying the sensitivity of results to such decisions through the use
 of chronospaces, i.e., graphical representations summarizing variation
 in the node ages contained in time-calibrated trees with fixed topology.
-In particular, `chronospace` uses between-groups PCA (bgPCA) for
+In particular, this package uses between-groups PCA (bgPCA) for
 summarizing variation in node ages produced by specific methodological
 choices, and estimates their impact using a Sum of squares (SSQ)
-approach for measuring effect size.
+approach for measuring effect size. Visualization of chronospaces is and
+other graphical tools included in `chronospace` are built with the aid
+of `ggplot2` (Wickham 2016), `ggtree` (Yu 2017) and `deeptime` (Gearty
+2023), among others packages.
 
 **Note: this repository addresses the version of `chronospace` described
 in Mongiardino Koch and Milla Carmona (in preparation). If you are
 interested in the data and procedures described in Mongiardino Koch et
 al. 2022 eLife paper (on which this version of the package is based), go
-to the \[chronospaces_eLife repository\]
-(<https://github.com/mongiardino/chronospaces_eLife/tree/main>)**
+to the [chronospaces_eLife
+repository](https://github.com/mongiardino/chronospaces_eLife/tree/main)**
 
 ## Installation
 
@@ -146,16 +149,16 @@ the relative importance of each choice over node age estimation.
 #Summarize chronospace
 cspace <- chronospace(data)
 #>                 loci (%) model (%) Unaccounted (%)
-#> Total variation  14.0042   5.19656        80.79924
+#> Total variation 14.76024   4.68702        80.55274
 #> _________________________________________________________________________________
 #> --- Results for loci (clock/random/signal) ---
 #>               loci (%) model (%) Unaccounted (%)
-#> bgPC1(17.13%) 10.58553   0.25417         6.28537
-#> bgPC2(6.86%)   3.41867   0.09813         3.34235
+#> bgPC1(18.14%) 11.18348   0.29235         6.66572
+#> bgPC2(7.83%)   3.57676   0.06972         4.18249
 #> ---------------------------------------------------------------------------------
 #> --- Results for model (CATGTR/GTR) ---
 #>               loci (%) model (%) Unaccounted (%)
-#> bgPC1(11.91%)   0.5823   5.19656         6.12717
+#> bgPC1(10.67%)  0.75076   4.68702         5.23268
 #> ---------------------------------------------------------------------------------
 #>  * All percentages are relative to the total amount of variation in node ages
 ```
@@ -244,6 +247,10 @@ ltt_sensitivity(echinoid_dates, factor = 1, summary = "median")
 
 ## References
 
+Gearty W. (2023). *deeptime: Plotting Tools for Anyone Working in Deep
+Time*. R package version 1.0.1,
+<https://CRAN.R-project.org/package=deeptime>.
+
 Lartillot N., & Philippe H. (2004). *A Bayesian mixture model for
 across-site heterogeneities in the amino-acid replacement process*. Mol.
 Biol. Evol. 21, 1095–1109. <https://doi.org/10.1093/molbev/msh112>.
@@ -258,3 +265,11 @@ A.F., Coppard S.E., Aguilera F., Bronstein O., Kroh A., Mooi, R. & Rouse
 G.W. (2022). *Phylogenomic analyses of echinoid diversification prompt a
 re-evaluation of their fossil record*. Elife, 11, e72460.
 <https://doi.org/10.7554/eLife.72460>.
+
+Wickham H. (2016). *ggplot2: Elegant Graphics for Data Analysis*.
+Springer-Verlag New York.
+
+Yu G., Smith D.K., Zhu H., Guan Y., & Lam T.T.Y. (2017). *ggtree: an R
+package for visualization and annotation of phylogenetic trees with
+their covariates and other associated data*. MEE, 8(1), 28-36.
+<https://doi.org/10.1111/2041-210X.12628>.
