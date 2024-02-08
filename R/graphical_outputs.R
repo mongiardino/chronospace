@@ -385,7 +385,7 @@ plot.chronospace <- function(x, output = "all", sdev = 1, timemarks = NULL, gsca
 #' #Load ages data
 #' data("echinoid_dates")
 #'
-#' #Get the 5 most sensitive nodes
+#' #Get ages distribution for the MRCA of Brissus obesus and Abatus cordatus
 #' MRCA_Brissus_Abatus <- specified_node(echinoid_dates, tips = c('Brissus_obesus',
 #'    'Abatus_cordatus'), plot = FALSE)
 #'
