@@ -1,24 +1,29 @@
 #plot chronospace-------------------------------------------------------------------
 
-#' Plot chronospace ordination(s) and axes' extremes
+#' Plot chronospace ordination(s) and chronogram warpings
 #'
 #' @importFrom ggtree %<+%
 #' @import ggplot2
 #'
 #' @description For each factor, generate the two basic graphical
 #'   representations of a chronospace: the projection of the sampled chronograms
-#'   into the ordination axes, and the two 'theoretical' extremes of those axes.
+#'   into the bgPCA ordination axes (a histogram if the factor has two levels, a
+#'   scatter-plot otherwise), and the 'theoretical' representations of branch
+#'   lengths for chronograms occupying the extremes of each axis.
 #'
 #' @param x An object of class \code{"chronospace"} containing one or more
 #'   ordinations.
 #' @param output Character, specifying which output should be plotted. Options
 #'   are \code{"ordination"} for histograms / scatter plots of bgPC axes,
 #'   \code{"extremes"} for trees showing node variation captured by bgPC axes,
-#'   \code{"all"} for plotting both outputs, and \code{"none"}.
+#'   \code{"all"} for plotting both outputs. Option \code{"none"} is equivalent
+#'   to \code{"all"}, yet allows results to be saved to an object without being
+#'   plotted.
 #' @param sdev Numeric, indicating at how many standard deviations should the
-#'   extremes of the chronospace axes be depicted. If NULL (the default),
-#'   extremes will be depicted at the highest standard deviation avoiding
-#'   negative branch lengths.
+#'   extremes of the chronospace axes be depicted. Set to 1 sdev by default.
+#'   Note that negative branch lengths might be generated, in which case the
+#'   function automatically decreases the value until finding a representation
+#'   for which all branch lengths are positive.
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
 #' @param factor Numeric; the factor or factors whose results are to be
@@ -27,11 +32,11 @@
 #'   meaningful for factors with less than three levels).
 #' @param ellipses Logical, indicating whether to plot data ellipses for each
 #'   group (not meaningful for factors with less than three levels).
-#' @param centroids Logical, indicating whether to plot groups' centroids (not
+#' @param centroids Logical, indicating whether to plot group centroids (not
 #'   meaningful for factors with less than three levels).
-#' @param distances Logical, indicating whether to plot lines between groups'
-#'   centroids. The width of the former is inversely proportional to the
-#'   distances between the latter in the original variable space (not meaningful
+#' @param distances Logical, indicating whether to plot lines between group
+#'   centroids. The width of the lines is inversely proportional to the
+#'   distances between centroids in the original variable space (not meaningful
 #'   for factors with less than three levels).
 #' @param pt.alpha Numeric, indicating the transparency level of individual
 #'   points in the scatter (not meaningful for factors with less than three
@@ -41,9 +46,9 @@
 #' @param ell.width Numeric, indicating line width for data ellipses (not
 #'   meaningful for factors with less than three levels).
 #' @param dist.width Numeric; scaling factor for the width of lines representing
-#'   multivariate distances between groups' centroids (not meaningful for
+#'   multivariate distances between group centroids (not meaningful for
 #'   factors with less than three levels).
-#' @param ct.size Numeric, indicating the size of the points marking groups'
+#' @param ct.size Numeric, indicating the size of the points marking group
 #'   centroids (not meaningful for factors with less than three levels).
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
 #'   vertical lines in chronospace representations.
@@ -53,20 +58,23 @@
 #'
 #' @details Starting from the object returned by [chronospace()], this function
 #'   creates the two basic types of plots allowing interpretation of the
-#'   ordination maximizing variation in node age between the groups (of
-#'   each factor). The first of these is a projection of the phylogenetic trees
+#'   ordination maximizing discrimination in node ages between groups (for
+#'   each factor). The first of these is a projection of the chronograms
 #'   (whose ages were used to generate the ordination) into the ordination axes,
 #'   and can be either a histogram for two-level factors, or a bivariate
 #'   scatter plot for factors with three or more levels. The second output
 #'   contains trees representing the positive and negative extremes of each
-#'   ordination axis, depicting the variation in nodes ages it captures.
+#'   ordination axis, depicting the variation in nodes ages that it captures.
 #'
 #' @return A list containing the histogram/scatterplot and axes' extremes for
 #'   each factor included.
 #'
 #' @export
 #'
-#' @references
+#' @references Mongiardino Koch N, Milla Carmona P (2024). Chronospaces: an R
+#'   package for the statistical exploration of divergence times reveals extreme
+#'   dependence on molecular clocks and gene choice. bioRxiv 2024.02.04.578835;
+#'   doi: https://doi.org/10.1101/2024.02.04.578835.
 #'
 #' @examples
 #' #Load ages data
@@ -349,11 +357,12 @@ plot.chronospace <- function(x, output = "all", sdev = 1, timemarks = NULL, gsca
 
 #get user-specified nodes ------------------------------------------------------
 
-#' Plot the ages of a user-specified node
+#' Plot the posterior distribution of ages of a user-specified node
 #'
 #' @import ggplot2
 #'
-#' @description Plot the distribution of a given node across conditions.
+#' @description Plot the distribution of a given node across inference
+#'   conditions.
 #'
 #' @param data_ages An object of class \code{"nodeAges"}.
 #' @param tips Character vector of length 2, specifying the tip names of two
@@ -369,10 +378,10 @@ plot.chronospace <- function(x, output = "all", sdev = 1, timemarks = NULL, gsca
 #' @param gscale Logical; whether to add chronostratigraphic scale to trees
 #'   (via \code{deeptime}).
 #'
-#' @details This function identifies, takes a single character vector containing
-#'   the tip names of two terminals, finds the node representing their
-#'   most-recent common ancestor, and plots the distribution of inferred ages
-#'   for said node across the conditions explored.
+#' @details This function takes a single character vector containing the tip
+#'   names of two terminals, identifies their most recent common ancestor, and
+#'   plots the distribution of posterior ages for said node across the
+#'   conditions explored.
 #'
 #' @return A panel showing the distribution of ages for the target node under
 #'   each level of the requested factors.
@@ -486,7 +495,7 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
 #' @import ggplot2
 #'
 #' @description For each factor, identify the most variables nodes (in terms of
-#'   age), and plot their age proportion distributions.
+#'   age) for each factor, and plot their distribution of posterior ages.
 #'
 #' @param data_ages An object of class \code{"nodeAges"}.
 #' @param amount_of_change Numeric, specifying the desired amount of variation
@@ -506,22 +515,19 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
 #'   (via \code{deeptime}).
 #'
 #' @details This function identifies, for each factor, the nodes in the fixed
-#'   topology whose ages are most sensitive (i.e. variable) as a function of the
-#'   corresponding levels. These can be done either by indicating a threshold
-#'   for variation in age above which nodes are considered relevant, or by
-#'   specifying the number of most sensitive nodes which must be retained. The
-#'   nodes are named using two terminals selected at random from the two
-#'   subclades defined by each node.
+#'   topology whose ages are most sensitive (i.e. variable). This can be done
+#'   either by indicating a threshold for variation in age, above which nodes
+#'   are considered 'sensitive', or by specifying the number of most sensitive
+#'   nodes which must be retained. The nodes are named using two terminals
+#'   selected at random from the two descendant subclades of each node.
 #'
 #'   For each of these most sensitive nodes, the function will plot the
-#'   distribution of relative proportion of ages, by level.
+#'   posterior distribution of ages by level.
 #'
-#' @return A panel showing the relative proportions distribution for the age of
-#'   each of the most sensitive nodes associated to each factor.
+#' @return A panel showing the posterior distribution for the age of
+#'   each of the most sensitive nodes associated with each factor.
 #'
 #' @export
-#'
-#' @references
 #'
 #' @examples
 #' #Load ages data
@@ -664,13 +670,13 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
 
 #LTT by group-------------------------------------------------------------------
 
-#' Plot average Lineage Through Time (LTT) curves
+#' Plot average lineage-through-time (LTT) curves
 #'
 #' @importFrom magrittr %>%
 #' @import ggplot2
 #'
-#' @description For each factor, plot the LTT curve of each level averaged
-#'   across the corresponding subsample of chronograms.
+#' @description For each factor, plot the LTT curve obtained under each level by
+#'   averaging across the corresponding chronograms.
 #'
 #' @param data_ages A \code{"nodeAges"} object created using [extract_ages()].
 #' @param summary Character, indicating whether the 'mean' or 'median' is to be
@@ -684,7 +690,11 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
 #'   vertical lines in LTT plots.
 #' @param gscale Logical; whether to add chronostratigraphic scale to trees
 #'   (via \code{deeptime}).
+#'
 #' @export
+#'
+#' @references Harvey PH, May RM, & Nee S. (1994). Phylogenies without fossils.
+#'   Evolution, 48: 523–529.
 #'
 #' @examples
 #' #Load ages data

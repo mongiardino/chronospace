@@ -10,14 +10,14 @@
 #' @param data_ages A \code{"nodeAges"} object created using [extract_ages()].
 #'
 #' @details This function summarizes variation in node ages in two ways. First,
-#'   a between-groups PCA is performed for each individual factor, extracting
+#'   a between-group PCA is performed for each individual factor, extracting
 #'   ordination axes that maximize separation between the levels of that factor,
 #'   which can be visualized using \code{\link{plot.chronospace}}. Second, a Sum
-#'   of squares approaches is used to quantify variation accounted by each
-#'   factor, both from the raw total variation and from the bgPC axes computed
-#'   for each individual factor.
+#'   of squares (SSQ) approaches is used to quantify overall variation accounted
+#'   for by each factor, both from the raw total variation and from the bgPC
+#'   axes computed for each individual factor.
 #'
-#' @return Percentages of variation in node ages accounted by the factors
+#' @return Percentages of variation in node ages accounted for by the factors
 #'   considered, both in total and individually, are printed. An object of
 #'   class \code{"chronospace"} is returned invisibly, with a list containing
 #'   the ordination computed for each factor.
@@ -26,10 +26,13 @@
 #'
 #' @seealso \code{\link{plot.chronospace}}
 #'
-#' @references
+#' @references Mongiardino Koch N, Milla Carmona P (2024). Chronospaces: an R
+#'   package for the statistical exploration of divergence times reveals extreme
+#'   dependence on molecular clocks and gene choice. bioRxiv 2024.02.04.578835;
+#'   doi: https://doi.org/10.1101/2024.02.04.578835.
 #'
 #' @examples
-#' #Load ages data
+#' #Load age data set
 #' data("echinoid_dates")
 #'
 #' #Create chronospace

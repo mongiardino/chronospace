@@ -1,8 +1,8 @@
 #load input data ----------------------------------------------------------
 
-#' Import and format node ages data
+#' Import and format node age data
 #'
-#' @description Extract and organize ages from files containing the posterior
+#' @description Extract and format ages from files containing the posterior
 #'   distributions of time-calibrated phylogenetic trees (chronograms) obtained
 #'   through different methodological decisions.
 #'
@@ -15,24 +15,26 @@
 #'   specifying the group to which the chronograms from each file will be
 #'   assigned to. The list can be optionally named, in which case the names will
 #'   be assigned to the factors.
-#' @param sample Numeric; the fixed number of trees to retain from each file.
+#' @param sample Numeric; the fixed number of trees to retain from each file,
+#'   sampled randomly.
 #'
-#' @details This function imports and prepare the ages data such that they are
-#'   suitable for analysis using the chronospace suite of functions. The input
-#'   files are a series of files in Newick format containing time-calibrated
-#'   trees taken from the posterior distributions of separate Bayesian
-#'   inferences of the same data set (can be either different runs of the same
-#'   analysis or separate analyses). These should differ in specific aspects of
-#'   their initial setting whose effects are of interest (e.g. the model of
-#'   evolution used and/or the method employed to subsample genes), and be
-#'   stored in an exclusive folder. The topology is assumed to be constrained
-#'   such that chronograms differ only in branch length (and therefore in their
-#'   inferred node ages).
+#' @details This function imports and formats the node age data contained in
+#'   sets of chronograms such that they are suitable for analysis using the
+#'   chronospace suite of functions. The input files must be a series of tree
+#'   files in Newick format containing time-calibrated trees taken from the
+#'   posterior distributions of separate Bayesian inferences performed using the
+#'   same constrained topology. Each file con represent either either different
+#'   chains of the same analysis or separate analyses). Chronograms from
+#'   different files are expected to differ in the conditions under which they
+#'   were obtained  (e.g. the model of evolution employed and/or the method used
+#'   to subsample genes), and need to be stored in an exclusive folder. Given
+#'   that the topology is topology is constrained, chronograms differ only in
+#'   their branch lengths (and therefore, in their inferred node ages).
 #'
 #' @return An object of class \code{"nodeAges"} with a list containing 1) the
-#'   \code{t x n} ages matrix (where each row is one of \code{t} trees and each
-#'   column one of \code{n} nodes), 2) the \code{f} associated factors, and 3)
-#'   the fixed phylogenetic topology.
+#'   \code{t x n} node age matrix (where each row is one of \code{t} trees and
+#'   each column one of \code{n} nodes), 2) the \code{f} associated factors, and
+#'   3) the fixed phylogenetic topology.
 #'
 #' @export
 #'
@@ -67,7 +69,6 @@
 #' data <- extract_ages(path = temp, type = type, sample = sample)
 #' data
 extract_ages <- function(path = NULL, type, sample) {
-
 
   #Obtain the names of all files in the specified directory (or the working
   #directory otherwise). These should all be Newick tree files corresponding to
