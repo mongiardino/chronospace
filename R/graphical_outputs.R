@@ -681,6 +681,11 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
 #' @param data_ages A \code{"nodeAges"} object created using [extract_ages()].
 #' @param summary Character, indicating whether the 'mean' or 'median' is to be
 #'   used in computations.
+#' @param uncertainty Character, indicating whether (and how to) represent age
+#'   uncertainty. Options are 'none' (default), 'CI_<number>' (with <number>
+#'   being a value between 1 and 99, representing the extent of a confidence
+#'   interval, e.g. 'CI_95'), or 'sample_<number>' (with <number> being a number
+#'   of random posterior typologies to be drawn, e.g. 'sample_20').
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
 #' @param factor Numeric; the factor or factors whose results are to be
@@ -701,13 +706,13 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
 #' data("echinoid_dates")
 #'
 #' #Create LTT plots
-#' sensiltt <- ltt_sensitivity(echinoid_dates, summary = "mean", plot = FALSE)
+#' sensi_ltt <- ltt_sensitivity(echinoid_dates, summary = "mean", plot = FALSE)
 #'
 #' #Show LTT plot for factor A only
-#' sensiltt$factor_A
-ltt_sensitivity <- function(data_ages, summary = 'median', colors = 1:5,
-                            factor = 1:ncol(data_ages$factors), plot = TRUE,
-                            timemarks = NULL, gscale = FALSE) {
+#' sensi_ltt$factor_A
+ltt_sensitivity <- function(data_ages, summary = 'median', uncertainty = 'none',
+                            colors = 1:5, factor = 1:ncol(data_ages$factors),
+                            plot = TRUE, timemarks = NULL, gscale = FALSE) {
 
   ages <- data_ages$ages
   factors <- data_ages$factors
@@ -717,46 +722,121 @@ ltt_sensitivity <- function(data_ages, summary = 'median', colors = 1:5,
 
   for(i in 1:length(factor)) {
 
-    sample <- nrow(factors) / length(unique(factors[,factor[i]]))
-    num_nodes <- ncol(ages)
-
-    this_ages <- apply(ages, 1, sort)
     this_groups <- factors[,factor[i]]
-    this_order <- order(this_groups)
-
-    this_ages <- this_ages[,this_order]
-    this_groups <- this_groups[this_order]
-
-    colnames(this_ages) <- 1:ncol(this_ages)
-    this_ages <- tidyr::pivot_longer(tibble::as_tibble(this_ages), 1:ncol(this_ages)) %>%
-      dplyr::mutate(name = as.numeric(name)) %>% dplyr::arrange(name, dplyr::desc(value)) %>%
-      dplyr::mutate(type = rep(as.character(unique(this_groups)),
-                               each = sample * num_nodes),
-                    num_lineages = rep(2:(num_nodes + 1), length(this_groups)))
 
     if(summary == 'mean') {
-      ages_average <- this_ages %>% dplyr::group_by(type, num_lineages) %>%
-        dplyr::summarise(av_value = mean(value), .groups = 'drop')
+      ages_average <- ages %>% dplyr::mutate(type = this_groups) %>% group_by(type) %>%
+        dplyr::summarise_if(is.numeric, mean, .groups = 'drop') %>%
+        dplyr::mutate(metric = 'average') %>% select(type, metric, tidyr::everything())
     }
+
     if(summary == 'median') {
-      ages_average <- this_ages %>% dplyr::group_by(type, num_lineages) %>%
-        dplyr::summarise(av_value = stats::median(value), .groups = 'drop')
+      ages_average <- ages %>% dplyr::mutate(type = this_groups) %>% group_by(type) %>%
+        dplyr::summarise_if(is.numeric, stats::median, .groups = 'drop') %>%
+        dplyr::mutate(metric = 'average') %>% select(type, metric, tidyr::everything())
     }
+
+    if(grepl('CI', uncertainty)) {
+      level <- as.numeric(gsub('CI_', '', uncertainty)) / 100
+      level <- (1 - level) / 2
+
+      for(j in 1:length(levels(this_groups))) {
+        this_ages <- ages[this_groups == levels(this_groups)[j],]
+        this_ages <- apply(this_ages, 2, function(x) sort(x, decreasing  = F))
+
+        uncertain_ages <- cbind(type = rep(levels(this_groups)[j], 2),
+                                metric = c('min', 'max'),
+                                data.frame(this_ages[c(ceiling((nrow(this_ages) * level) + 1),
+                                            floor((nrow(this_ages) * (1 - level)) - 1)),]))
+
+        if(j == 1) {
+          all_uncertain <- uncertain_ages
+        } else {
+          all_uncertain <- rbind(all_uncertain, uncertain_ages)
+        }
+
+      }
+    }
+
+    if(grepl('sample', uncertainty)) {
+      sample <- as.numeric(gsub('sample_', '', uncertainty))
+
+      for(j in 1:length(levels(this_groups))) {
+        this_ages <- ages[this_groups == levels(this_groups)[j],]
+        this_ages <- this_ages[sample(1:nrow(this_ages), sample, replace = F),]
+
+        uncertain_ages <- cbind(type = rep(levels(this_groups)[j], sample),
+                                metric = paste0(levels(this_groups)[j], '_sample_', 1:sample),
+                                data.frame(this_ages))
+
+        if(j == 1) {
+          all_uncertain <- uncertain_ages
+        } else {
+          all_uncertain <- rbind(all_uncertain, uncertain_ages)
+        }
+      }
+    }
+
+    if(exists('all_uncertain')) {
+      ages_average <- rbind(ages_average, all_uncertain)
+    }
+
+    ages_average <- arrange(ages_average, type)
+
+    ages_average[,3:ncol(ages_average)] <- t(apply(ages_average[,3:ncol(ages_average)],
+                                                   1,
+                                                   sort, decreasing = T))
+
+    ages_average <- tidyr::pivot_longer(ages_average,
+                                        cols = starts_with('clade'),
+                                        names_to = 'num_lineages',
+                                        values_to = 'age') %>%
+      dplyr::mutate(num_lineages = as.numeric(gsub('clade_', '',
+                                                   num_lineages)) + 1)
 
     to_add <- ages_average %>% dplyr::mutate(num_lineages = num_lineages - 1)
-    ages_average <- rbind(ages_average, to_add) %>% dplyr::arrange(type, num_lineages)
-    timemarks1.1 <- timemarks[timemarks <= max(ages_average$av_value) &
-                                timemarks >= min(ages_average$av_value)]
+    ages_average <- rbind(ages_average, to_add,
+                          expand.grid(type = levels(ages_average$type),
+                                      metric = unique(ages_average$metric),
+                                      num_lineages = max(ages_average$num_lineages),
+                                      age = 0)) %>%
+      dplyr::arrange(type, num_lineages)
 
-    ltts[[i]] <- ggplot(ages_average, aes(x = av_value, y = num_lineages, color = type)) +
+    timemarks1.1 <- timemarks[timemarks <= max(ages_average$age) &
+                                timemarks >= min(ages_average$age)]
+
+    ltts[[i]] <- ggplot(ages_average, aes(color = type)) +
       scale_color_manual(values = colors) +
-      geom_line(alpha = 0.5, size = 2) + scale_y_log10() + scale_x_reverse() +
+      geom_line(data = subset(ages_average, ages_average$metric == 'average'),
+                aes(x = age, y = num_lineages, color = type),
+                alpha = 0.5, size = 2) + scale_y_log10() + scale_x_reverse() +
       theme_bw() + xlab('Age (Ma)') + ylab('Number of lineages') +
       theme(panel.grid = element_blank()) +
       geom_vline(xintercept = timemarks1.1, lty = 2, col = "gray") +
       guides(colour = guide_legend(override.aes = list(alpha = 1, shape = 21,
                                                        fill = colors[1:nlevels(this_groups)],
                                                        size = 3.5)))
+
+    if(grepl('CI', uncertainty)) {
+      ltts[[i]] <- ltts[[i]] +
+        geom_ribbon(data = unnest(tidyr::pivot_wider(subset(ages_average,
+                                                            ages_average$metric != 'average'),
+                                                     names_from = 'metric',
+                                                     values_from = 'age', values_fn = list),
+                                  cols = c(min, max)) %>%
+                      dplyr::arrange(type, num_lineages),
+                    aes(xmin = min, xmax = max, y = num_lineages, fill = type),
+                    color = NA, alpha = 0.1)
+    }
+
+    if(grepl('sample', uncertainty)) {
+      ltts[[i]] <- ltts[[i]] +
+        geom_line(data = subset(ages_average,
+                                ages_average$metric != 'average') %>%
+                    dplyr::arrange(type, metric, num_lineages),
+                  aes(x = age, y = num_lineages, color = type, group = metric),
+                  alpha = 0.1)
+    }
 
     if(gscale) {
       ltts[[i]] <- ltts[[i]] +
