@@ -373,6 +373,8 @@ plot.chronospace <- function(x, output = "all", sdev = 1, timemarks = NULL, gsca
 #' @param plot whether to plot the results, or only store them (default=TRUE)
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
+#' @param l.alpha Numeric, indicating the transparency level of density lines.
+#' @param l.width Numeric, indicating the width (thickness) of density lines.
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
 #'   vertical lines.
 #' @param gscale Logical; whether to add chronostratigraphic scale to trees
@@ -402,7 +404,8 @@ plot.chronospace <- function(x, output = "all", sdev = 1, timemarks = NULL, gsca
 #' #factor A
 #' MRCA_Brissus_Abatus$factor_A
 specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$factors),
-                            plot = TRUE, colors = 1:5, timemarks = NULL, gscale = FALSE) {
+                           plot = TRUE, colors = 1:5, l.alpha = 0.3, l.width = 2,
+                           timemarks = NULL, gscale = FALSE) {
 
   #create data_ages object for storing overall results, assign names
   results <- vector(mode = "list", length = length(factor))
@@ -450,7 +453,7 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
     timemarks1.1 <- timemarks[timemarks <= max(ages) & timemarks >= min(ages)]
     to_plot <- data.frame(age = ages, group = groups)
     plots <- ggplot(to_plot, aes(x = age, color = group)) +
-      geom_density(alpha = 0.3, linewidth = 2) + scale_x_reverse() +
+      geom_density(alpha = l.alpha, linewidth = l.width) + scale_x_reverse() +
       theme_bw() + scale_color_manual(values = colors) +
       theme(plot.title = element_text(size = 8), panel.grid = element_blank(),
             axis.ticks.y = element_blank(), axis.text.y = element_blank()) +
@@ -509,6 +512,8 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
 #' @param plot whether to plot the results, or only store them (default=TRUE)
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
+#' @param l.alpha Numeric, indicating the transparency level of density lines.
+#' @param l.width Numeric, indicating the width (thickness) of density lines.
 #' @param timemarks Numeric; an optional vector containing ages to be marked by
 #'   vertical lines.
 #' @param gscale Logical; whether to add chronostratigraphic scale to trees
@@ -540,7 +545,8 @@ specified_node <- function(data_ages, tips = NULL, factor = 1:ncol(data_ages$fac
 #' sensinodes5$factor_A
 sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
                             factor = 1:ncol(data_ages$factors), plot = TRUE,
-                            colors = 1:5, timemarks = NULL, gscale = FALSE) {
+                            colors = 1:5, l.alpha = 0.3, l.width = 2,
+                            timemarks = NULL, gscale = FALSE) {
 
   #create data_ages object for storing overall results, assign names
   results <- vector(mode = "list", length = length(factor))
@@ -621,7 +627,7 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
       timemarks1.1 <- timemarks[timemarks <= max(this_ages) & timemarks >= min(this_ages)]
       to_plot <- data.frame(age = this_ages, group = groups)
       plots[[j]] <- ggplot(to_plot, aes(x = age, color = group)) +
-        geom_density(alpha = 0.3, linewidth = 2) + scale_x_reverse() +
+        geom_density(alpha = l.alpha, linewidth = l.width) + scale_x_reverse() +
         theme_bw() + scale_color_manual(values = colors) +
         theme(plot.title = element_text(size = 8), panel.grid = element_blank(),
               axis.ticks.y = element_blank(), axis.text.y = element_blank()) +
@@ -688,6 +694,8 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
 #'   of random posterior typologies to be drawn, e.g. 'sample_20').
 #' @param colors The colors used to represent groups (i.e. levels) of each
 #'   factor.
+#' @param l.alpha Numeric, indicating the transparency level of density lines.
+#' @param l.width Numeric, indicating the width (thickness) of density lines.
 #' @param factor Numeric; the factor or factors whose results are to be
 #'   plotted and retained. If \code{NULL}, all the factors are retained.
 #' @param plot whether to plot the results, or only store them (default=TRUE)
@@ -711,7 +719,8 @@ sensitive_nodes <- function(data_ages, amount_of_change = NULL, num_clades = 5,
 #' #Show LTT plot for factor A only
 #' sensi_ltt$factor_A
 ltt_sensitivity <- function(data_ages, summary = 'median', uncertainty = 'none',
-                            colors = 1:5, factor = 1:ncol(data_ages$factors),
+                            colors = 1:5, l.alpha = 0.5, l.width = 2,
+                            factor = 1:ncol(data_ages$factors),
                             plot = TRUE, timemarks = NULL, gscale = FALSE) {
 
   ages <- data_ages$ages
@@ -813,7 +822,8 @@ ltt_sensitivity <- function(data_ages, summary = 'median', uncertainty = 'none',
       scale_color_manual(values = colors) +
       geom_line(data = subset(ages_average, ages_average$metric == 'average'),
                 aes(x = age, y = num_lineages, color = type),
-                alpha = 0.5, size = 2) + scale_y_log10() + scale_x_reverse() +
+                alpha = l.alpha, linewidth = l.width) +
+      scale_y_log10() + scale_x_reverse() +
       theme_bw() + xlab('Age (Ma)') + ylab('Number of lineages') +
       theme(panel.grid = element_blank()) +
       geom_vline(xintercept = timemarks1.1, lty = 2, col = "gray") +
