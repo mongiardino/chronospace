@@ -725,15 +725,19 @@ ltt_sensitivity <- function(data_ages, summary = 'median', uncertainty = 'none',
     this_groups <- factors[,factor[i]]
 
     if(summary == 'mean') {
-      ages_average <- ages %>% dplyr::mutate(type = this_groups) %>% group_by(type) %>%
+      ages_average <- ages %>% dplyr::mutate(type = this_groups) %>%
+        dplyr::group_by(type) %>%
         dplyr::summarise_if(is.numeric, mean, .groups = 'drop') %>%
-        dplyr::mutate(metric = 'average') %>% select(type, metric, tidyr::everything())
+        dplyr::mutate(metric = 'average') %>%
+        dplyr::select(type, metric, tidyr::everything())
     }
 
     if(summary == 'median') {
-      ages_average <- ages %>% dplyr::mutate(type = this_groups) %>% group_by(type) %>%
+      ages_average <- ages %>% dplyr::mutate(type = this_groups) %>%
+        dplyr::group_by(type) %>%
         dplyr::summarise_if(is.numeric, stats::median, .groups = 'drop') %>%
-        dplyr::mutate(metric = 'average') %>% select(type, metric, tidyr::everything())
+        dplyr::mutate(metric = 'average') %>%
+        dplyr::select(type, metric, tidyr::everything())
     }
 
     if(grepl('CI', uncertainty)) {
@@ -781,7 +785,7 @@ ltt_sensitivity <- function(data_ages, summary = 'median', uncertainty = 'none',
       ages_average <- rbind(ages_average, all_uncertain)
     }
 
-    ages_average <- arrange(ages_average, type)
+    ages_average <- dplyr::arrange(ages_average, type)
 
     ages_average[,3:ncol(ages_average)] <- t(apply(ages_average[,3:ncol(ages_average)],
                                                    1,
@@ -819,11 +823,12 @@ ltt_sensitivity <- function(data_ages, summary = 'median', uncertainty = 'none',
 
     if(grepl('CI', uncertainty)) {
       ltts[[i]] <- ltts[[i]] +
-        geom_ribbon(data = unnest(tidyr::pivot_wider(subset(ages_average,
-                                                            ages_average$metric != 'average'),
-                                                     names_from = 'metric',
-                                                     values_from = 'age', values_fn = list),
-                                  cols = c(min, max)) %>%
+        scale_fill_manual(values = colors) +
+        geom_ribbon(data = tidyr::unnest(tidyr::pivot_wider(subset(ages_average,
+                                                                   ages_average$metric != 'average'),
+                                                            names_from = 'metric',
+                                                            values_from = 'age', values_fn = list),
+                                         cols = c(min, max)) %>%
                       dplyr::arrange(type, num_lineages),
                     aes(xmin = min, xmax = max, y = num_lineages, fill = type),
                     color = NA, alpha = 0.1)
